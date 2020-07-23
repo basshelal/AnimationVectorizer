@@ -2,7 +2,7 @@
 
 ## TODO
 
-* Figure out a way to grab every frame from a video
+* Figure out a way to grab every frame from a video (ffmpeg-extract-frames dependency may do this!)
 
 * (Meat & 'taters) Vectorization algorithm! At first use someone else's and improve and fix later
 
@@ -17,3 +17,6 @@
 * Find some test clips from cartoons, I think a nice mix of time period and art styles would be nice
 
 * Figure out a decent way to quantitatively measure results (quality and compression)
+
+## Report
+

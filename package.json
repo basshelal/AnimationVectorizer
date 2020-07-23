@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "commander": "^4.1.1",
     "debug": "~2.6.9",
+    "ffmpeg-extract-frames": "^2.0.2",
     "fs-extra": "^8.1.0",
     "hidefile": "^3.0.0",
     "jquery": "^3.5.0",
