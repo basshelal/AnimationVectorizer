@@ -2,9 +2,31 @@
   "name": "animation_vectorizer",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "commander": "^4.1.1",
+    "debug": "~2.6.9",
+    "fs-extra": "^8.1.0",
+    "hidefile": "^3.0.0",
+    "jquery": "^3.5.0",
+    "materialize-css": "^1.0.0-rc.2",
+    "moment": "^2.24.0",
+    "morgan": "~1.9.1",
+    "nedb": "^1.8.0",
+    "p-queue": "^6.2.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^8.0.1",
+    "@types/jquery": "^3.3.35",
+    "@types/materialize-css": "^1.0.7",
+    "@types/nedb": "^1.8.9",
+    "@types/node": "^13.11.0",
+    "electron": "^8.4.1"
   },
   "keywords": [],
   "author": "Bassam Helal",
