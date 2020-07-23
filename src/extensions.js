@@ -15,7 +15,7 @@ function default_1() {
         };
     if (!Array.prototype.remove)
         Array.prototype.remove = function (element) {
-            var index = this.indexOf(element);
+            const index = this.indexOf(element);
             if (index >= 0)
                 this.splice(index);
         };

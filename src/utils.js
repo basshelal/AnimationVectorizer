@@ -1,16 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var electron = require("electron");
-function logD(message, calledFrom) {
-    if (calledFrom === void 0) { calledFrom = ""; }
+const electron = require("electron");
+const moment = require("moment");
+exports.momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS";
+function now() {
+    return moment().format(exports.momentFormat);
+}
+exports.now = now;
+function logD(message, calledFrom = "") {
     if (!electron.app.isPackaged)
-        console.log(message.toString() + "\n    " + calledFrom);
+        console.log(`${message.toString()}
+    ${calledFrom}`);
 }
 exports.logD = logD;
-function logE(message, calledFrom) {
-    if (calledFrom === void 0) { calledFrom = ""; }
+function logE(message, calledFrom = "") {
     if (!electron.app.isPackaged)
-        console.error(message.toString() + "\n    " + calledFrom);
+        console.error(`${message.toString()}
+    ${calledFrom}`);
 }
 exports.logE = logE;
 function assert(condition, message) {

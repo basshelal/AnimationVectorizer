@@ -2,6 +2,8 @@
 
 ## TODO
 
+* tsconfig.json !!!
+
 * Figure out a way to grab every frame from a video (ffmpeg-extract-frames dependency may do this!)
 
 * (Meat & 'taters) Vectorization algorithm! At first use someone else's and improve and fix later

@@ -1,4 +1,11 @@
 import * as electron from "electron";
+import * as moment from "moment";
+
+export const momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
+
+export function now(): string {
+    return moment().format(momentFormat)
+}
 
 export function logD(message: any, calledFrom: string = "") {
     if (!electron.app.isPackaged)
