@@ -1,16 +1,33 @@
 import {logD, now} from "./utils";
+import {mkdirpSync} from "fs-extra";
+import ffmpeg from "./ffmpeg";
 
-const ffmpegExtractFrames = require("ffmpeg-extract-frames");
+export async function extractFrames(options: {
+    videoFilePath: string,
+    framesFolderPath: string
+}) {
+    logD(`Beginning extract frames for ${options.videoFilePath} on ${now()}`)
 
-export async function extractFrames(filePath: string) {
+    mkdirpSync(options.framesFolderPath)
 
-    logD(`Beginning extract frames for ${filePath} on ${now()}`)
+    await ffmpeg("-i", options.videoFilePath, `${options.framesFolderPath}/%d.png`, "-y")
 
-    await ffmpegExtractFrames({
-        input: filePath,
-        output: "out/frame-%d.png"
-    })
+    logD(`Finished extract frames for ${options.videoFilePath} on ${now()}`)
+}
 
-    logD(`Finished extract frames for ${filePath} on ${now()}`)
+export async function joinFrames(options: {
+    framesFolderPath: string,
+    outputFilePath: string,
+    frameRate?: number
+}) {
 
+    if (!options.frameRate) options.frameRate = 24
+
+    logD(`Beginning join frames for ${options.framesFolderPath} on ${now()}`)
+
+    await ffmpeg("-framerate", `${options.frameRate}`,
+        "-i", `${options.framesFolderPath}/%d.png`,
+        `${options.outputFilePath}`, "-y")
+
+    logD(`Finished join frames for ${options.framesFolderPath} on ${now()}`)
 }
