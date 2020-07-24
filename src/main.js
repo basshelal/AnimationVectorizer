@@ -1,16 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const frames_1 = require("./frames");
-const path = require("path");
+const ImageTracer_1 = require("./ImageTracer");
 async function main() {
-    await frames_1.extractFrames({
+    /*await extractFrames({
         videoFilePath: path.resolve("./res/PIE.avi"),
         framesFolderPath: path.resolve("./out/PIE")
-    });
-    await frames_1.joinFrames({
+    })
+
+    await joinFrames({
         framesFolderPath: path.resolve("./out/PIE"),
         outputFilePath: path.resolve("./out/PIE/output.mp4"),
         frameRate: 1
+    })*/
+    await ImageTracer_1.default({
+        inputFile: "./out/PIE/350.png",
+        outputFile: "./out.svg"
     });
 }
 main();

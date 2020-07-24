@@ -1,8 +1,7 @@
-import {extractFrames, joinFrames} from "./frames";
-import * as path from "path";
+import ImageTracer from "./ImageTracer";
 
 async function main() {
-    await extractFrames({
+    /*await extractFrames({
         videoFilePath: path.resolve("./res/PIE.avi"),
         framesFolderPath: path.resolve("./out/PIE")
     })
@@ -11,6 +10,11 @@ async function main() {
         framesFolderPath: path.resolve("./out/PIE"),
         outputFilePath: path.resolve("./out/PIE/output.mp4"),
         frameRate: 1
+    })*/
+
+    await ImageTracer({
+        inputFile: "./out/PIE/350.png",
+        outputFile: "./out.svg"
     })
 }
 
