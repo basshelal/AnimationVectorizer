@@ -16,10 +16,6 @@ async function main() {
         outputFilePath: path.resolve("./out/PIE/output.mp4"),
         frameRate: 1
     })*/
-    /*await ImageTracer({
-        inputFile: "./out/PIE/350.png",
-        outputFile: "./out.svg"
-    })*/
     const framesDir = "./out/PIE";
     const frames = fs_1.readdirSync(framesDir)
         .sort()
@@ -28,7 +24,8 @@ async function main() {
     utils_1.logD(`Starting Vectorization at ${utils_1.now()}`);
     await Promise.all(frames.map((file, index) => ImageTracer_1.default({
         inputFile: file,
-        outputFile: path.join(`./svg/${index + 1}.svg`)
+        outputFile: path.join(`./svg/${index + 1}.svg`),
+        args: ["numberofcolors", "64"]
     })));
     utils_1.logD(`Finished Vectorization at ${utils_1.now()}`);
     Electron.app.exit(0);

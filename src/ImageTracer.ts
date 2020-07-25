@@ -4,11 +4,12 @@ import {logD, logE} from "./utils";
 export default async function (options: {
     inputFile: string,
     outputFile: string,
+    args?: Array<string>,
 }): Promise<void> {
     return new Promise((resolve, reject) => {
         const process: ChildProcess = spawn("node",
             ["./node_modules/imagetracerjs/nodecli/nodecli", options.inputFile,
-                "-outfilename", options.outputFile])
+                "-outfilename", options.outputFile].concat(options.args))
             .on("message", logD)
             .on("close", code => {
                 if (code !== 0) {

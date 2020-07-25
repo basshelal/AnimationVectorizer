@@ -16,12 +16,6 @@ async function main() {
         frameRate: 1
     })*/
 
-    /*await ImageTracer({
-        inputFile: "./out/PIE/350.png",
-        outputFile: "./out.svg"
-    })*/
-
-
     const framesDir = "./out/PIE"
 
     const frames: Array<string> =
@@ -36,7 +30,8 @@ async function main() {
     await Promise.all(frames.map((file: string, index: number) =>
         ImageTracer({
             inputFile: file,
-            outputFile: path.join(`./svg/${index + 1}.svg`)
+            outputFile: path.join(`./svg/${index + 1}.svg`),
+            args: ["numberofcolors", "64"]
         })
     ))
 

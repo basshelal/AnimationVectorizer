@@ -5,7 +5,7 @@ const utils_1 = require("./utils");
 async function default_1(options) {
     return new Promise((resolve, reject) => {
         const process = child_process_1.spawn("node", ["./node_modules/imagetracerjs/nodecli/nodecli", options.inputFile,
-            "-outfilename", options.outputFile])
+            "-outfilename", options.outputFile].concat(options.args))
             .on("message", utils_1.logD)
             .on("close", code => {
             if (code !== 0) {
