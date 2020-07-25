@@ -1,6 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
+const fs_extra_1 = require("fs-extra");
+const path = require("path");
 const ImageTracer_1 = require("./ImageTracer");
+const utils_1 = require("./utils");
 async function main() {
     /*await extractFrames({
         videoFilePath: path.resolve("./res/PIE.avi"),
@@ -12,9 +16,21 @@ async function main() {
         outputFilePath: path.resolve("./out/PIE/output.mp4"),
         frameRate: 1
     })*/
-    await ImageTracer_1.default({
+    /*await ImageTracer({
         inputFile: "./out/PIE/350.png",
         outputFile: "./out.svg"
-    });
+    })*/
+    const framesDir = "./out/PIE";
+    const frames = fs_1.readdirSync(framesDir)
+        .sort()
+        .map(it => path.join(framesDir, it));
+    fs_extra_1.mkdirpSync("./svg");
+    utils_1.logD(`Starting Vectorization at ${utils_1.now()}`);
+    await Promise.all(frames.map((file, index) => ImageTracer_1.default({
+        inputFile: file,
+        outputFile: path.join(`./svg/${index + 1}.svg`)
+    })));
+    utils_1.logD(`Finished Vectorization at ${utils_1.now()}`);
+    Electron.app.exit(0);
 }
 main();
