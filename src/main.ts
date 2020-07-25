@@ -1,8 +1,8 @@
 import {readdirSync} from "fs";
 import {mkdirpSync} from "fs-extra";
 import * as path from "path";
-import ImageTracer from "./ImageTracer";
 import {logD, now} from "./utils";
+import ImageTracerCLI from "./ImageTracerCLI";
 
 async function main() {
     /*await extractFrames({
@@ -28,7 +28,7 @@ async function main() {
     logD(`Starting Vectorization at ${now()}`)
 
     await Promise.all(frames.map((file: string, index: number) =>
-        ImageTracer({
+        ImageTracerCLI({
             inputFile: file,
             outputFile: path.join(`./svg/${index + 1}.svg`),
             args: ["numberofcolors", "64"]

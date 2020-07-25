@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const fs_extra_1 = require("fs-extra");
 const path = require("path");
-const ImageTracer_1 = require("./ImageTracer");
 const utils_1 = require("./utils");
+const ImageTracerCLI_1 = require("./ImageTracerCLI");
 async function main() {
     /*await extractFrames({
         videoFilePath: path.resolve("./res/PIE.avi"),
@@ -22,7 +22,7 @@ async function main() {
         .map(it => path.join(framesDir, it));
     fs_extra_1.mkdirpSync("./svg");
     utils_1.logD(`Starting Vectorization at ${utils_1.now()}`);
-    await Promise.all(frames.map((file, index) => ImageTracer_1.default({
+    await Promise.all(frames.map((file, index) => ImageTracerCLI_1.default({
         inputFile: file,
         outputFile: path.join(`./svg/${index + 1}.svg`),
         args: ["numberofcolors", "64"]
