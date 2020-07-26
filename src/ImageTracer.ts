@@ -2,7 +2,7 @@
 //  the original libraries NodeCLI directory for details
 
 class ImageTracer {
-    versionnumber: string = "1.2.6"
+    version: string = "1.2.6"
 
     // Loading an image from a URL, tracing when loaded,
     optionpresets = {
@@ -81,7 +81,7 @@ class ImageTracer {
         }
     }
     // pathscan_combined_lookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
-    pathscan_combined_lookup = [
+    pathscan_combined_lookup: NumberArray3D = [
         [[-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1]],// arr[py][px]===0 is invalid
         [[0, 1, 0, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [0, 2, -1, 0]],
         [[-1, -1, -1, -1], [-1, -1, -1, -1], [0, 1, 0, -1], [0, 0, 1, 0]],
@@ -105,7 +105,7 @@ class ImageTracer {
 
     // Loading an image from a URL, tracing when loaded,
     // Gaussian kernels for blur
-    gks: Array<Array<number>> = [
+    gks: NumberArray2D = [
         [0.27901, 0.44198, 0.27901],
         [0.135336, 0.228569, 0.272192, 0.228569, 0.135336],
         [0.086776, 0.136394, 0.178908, 0.195843, 0.178908, 0.136394, 0.086776],
@@ -113,7 +113,7 @@ class ImageTracer {
         [0.049692, 0.069304, 0.089767, 0.107988, 0.120651, 0.125194, 0.120651, 0.107988, 0.089767, 0.069304, 0.049692]
     ]
     // Special palette to use with drawlayers()
-    specpalette = [
+    specpalette: Array<Palette> = [
         {r: 0, g: 0, b: 0, a: 255},
         {r: 128, g: 128, b: 128, a: 255},
         {r: 0, g: 0, b: 128, a: 255},
@@ -133,23 +133,23 @@ class ImageTracer {
     ]
 
     // then executing callback with the scaled svg string as argument
-    imageToSVG(url, callback, options) {
-        options = this.checkoptions(options);
+    imageToSVG(url, callback, options: Options) {
+        options = this.checkOptions(options);
         // loading image, tracing and callback
         this.loadImage(
             url,
-            (canvas) => callback(this.imagedataToSVG(this.getImageData(canvas), options)),
+            (canvas) => callback(this.imageDataToSVG(this.getImageData(canvas), options)),
             options
         );
     }
 
     // Tracing imagedata, then returning the scaled svg string
-    imagedataToSVG(imgd, options) {
-        options = this.checkoptions(options);
+    imageDataToSVG(imageData: ImageData, options: Options): string {
+        options = this.checkOptions(options)
         // tracing imagedata
-        var td = this.imagedataToTracedata(imgd, options);
+        const traceData: TraceData = this.imageDataToTraceData(imageData, options)
         // returning SVG string
-        return this.getsvgstring(td, options);
+        return this.getSvgString(traceData, options)
     }
 
     ////////////////////////////////////////////////////////////
@@ -161,8 +161,8 @@ class ImageTracer {
     // 1. Color quantization
 
     // then executing callback with tracedata as argument
-    imageToTracedata(url, callback, options) {
-        options = this.checkoptions(options);
+    imageToTraceData(url, callback, options: Options) {
+        options = this.checkOptions(options);
         // loading image, tracing and callback
         this.loadImage(
             url,
@@ -176,31 +176,33 @@ class ImageTracer {
     }
 
     // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
-    imagedataToTracedata(imgd, options) {
-        options = this.checkoptions(options);
+    imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
+        options = this.checkOptions(options);
 
         // 1. Color quantization
-        var ii = this.colorquantization(imgd, options);
+        const indexedImage: IndexedImage = this.colorQuantization(imageData, options)
+
+        let traceData: TraceData
 
         if (options.layering === 0) {// Sequential layering
 
             // create tracedata object
-            var tracedata = {
+            traceData = {
                 layers: [],
-                palette: ii.palette,
-                width: ii.array[0].length - 2,
-                height: ii.array.length - 2
+                palette: indexedImage.palette,
+                width: indexedImage.array[0].length - 2,
+                height: indexedImage.array.length - 2
             };
 
             // Loop to trace each color layer
-            for (var colornum = 0; colornum < ii.palette.length; colornum++) {
+            for (var colornum = 0; colornum < indexedImage.palette.length; colornum++) {
 
                 // layeringstep -> pathscan -> internodes -> batchtracepaths
                 var tracedlayer =
                     this.batchtracepaths(
                         this.internodes(
                             this.pathscan(
-                                this.layeringstep(ii, colornum),
+                                this.layeringstep(indexedImage, colornum),
                                 options.pathomit
                             ),
 
@@ -212,13 +214,13 @@ class ImageTracer {
                     );
 
                 // adding traced layer
-                tracedata.layers.push(tracedlayer);
+                traceData.layers.push(tracedlayer);
 
             }// End of color loop
 
         } else {// Parallel layering
             // 2. Layer separation and edge detection
-            var ls = this.layering(ii);
+            var ls = this.layering(indexedImage);
 
             // Optional edge node visualization
             if (options.layercontainerid) {
@@ -232,21 +234,21 @@ class ImageTracer {
             var bis = this.batchinternodes(bps, options);
 
             // 5. Batch tracing and creating tracedata object
-            var tracedata = {
+            traceData = {
                 layers: this.batchtracelayers(bis, options.ltres, options.qtres),
-                palette: ii.palette,
-                width: imgd.width,
-                height: imgd.height
+                palette: indexedImage.palette,
+                width: imageData.width,
+                height: imageData.height
             };
 
         }// End of parallel layering
 
-        return tracedata;
+        return traceData;
 
     }
 
     // creating options object, setting defaults for missing values
-    checkoptions(options) {
+    checkOptions(options: Options) {
         options = options || {};
         // Option preset
         if (typeof options === 'string') {
@@ -270,7 +272,7 @@ class ImageTracer {
     }
 
     // Using a form of k-means clustering repeatead options.colorquantcycles times. http://en.wikipedia.org/wiki/Color_quantization
-    colorquantization(imgd, options) {
+    colorQuantization(imgd: ImageData, options: Options): IndexedImage {
         var arr = [], idx = 0, cd, cdl, ci, paletteacc = [], pixelnum = imgd.width * imgd.height, i, j, k, cnt,
             palette;
 
@@ -1125,23 +1127,23 @@ class ImageTracer {
     }
 
     // Converting tracedata to an SVG string
-    getsvgstring(tracedata, options) {
+    getSvgString(traceData: TraceData, options): string {
 
-        options = this.checkoptions(options);
+        options = this.checkOptions(options);
 
-        var w = tracedata.width * options.scale, h = tracedata.height * options.scale;
+        var w = traceData.width * options.scale, h = traceData.height * options.scale;
 
         // SVG start
         var svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 ' + w + ' ' + h + '" ') : ('width="' + w + '" height="' + h + '" ')) +
-            'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with imagetracer.js version ' + this.versionnumber + '" >';
+            'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with imagetracer.js version ' + this.version + '" >';
 
         // Drawing: Layers and Paths loops
-        for (var lcnt = 0; lcnt < tracedata.layers.length; lcnt++) {
-            for (var pcnt = 0; pcnt < tracedata.layers[lcnt].length; pcnt++) {
+        for (var lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
+            for (var pcnt = 0; pcnt < traceData.layers[lcnt].length; pcnt++) {
 
                 // Adding SVG <path> string
-                if (!tracedata.layers[lcnt][pcnt].isholepath) {
-                    svgstr += this.svgpathstring(tracedata, lcnt, pcnt, options);
+                if (!traceData.layers[lcnt][pcnt].isholepath) {
+                    svgstr += this.svgpathstring(traceData, lcnt, pcnt, options);
                 }
 
             }// End of paths loop
@@ -1160,7 +1162,7 @@ class ImageTracer {
     }
 
     // Convert color object to rgba string
-    torgbastr(c) {
+    toRGBA(c): string {
         return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + c.a + ')';
     }
 
@@ -1324,7 +1326,7 @@ class ImageTracer {
     }
 
     // Helper function: Drawing all edge node layers into a container
-    drawLayers(layers, palette, scale, parentid) {
+    drawLayers(layers, palettes: Array<Palette>, scale, parentid) {
         scale = scale || 1;
         var w, h, i, j, k;
 
@@ -1361,7 +1363,7 @@ class ImageTracer {
             // Drawing
             for (j = 0; j < h; j++) {
                 for (i = 0; i < w; i++) {
-                    context.fillStyle = this.torgbastr(palette[layers[k][j][i] % palette.length]);
+                    context.fillStyle = this.toRGBA(palettes[layers[k][j][i] % palettes.length]);
                     context.fillRect(i * scale, j * scale, scale, scale);
                 }
             }
@@ -1370,5 +1372,57 @@ class ImageTracer {
             div.appendChild(canvas);
         }// End of Layers loop
     }
-
 }
+
+type TraceData = {
+    layers: Array<any>,
+    palette: any,
+    width: number,
+    height: number
+}
+
+type Palette = {
+    r: number, g: number, b: number, a: number
+}
+
+type IndexedImage = {
+    array: NumberArray2D,
+    palette: Palette
+}
+
+type Options = {
+    corsenabled: boolean,
+    ltres: number,
+    qtres: number,
+    pathomit: number,
+    rightangleenhance: boolean,
+
+    // Color quantization
+    colorsampling: number,
+    numberofcolors: number,
+    mincolorratio: number,
+    colorquantcycles: number,
+
+    // Layering method
+    layering: number,
+
+    // SVG rendering
+    strokewidth: number,
+    linefilter: boolean,
+    scale: number,
+    roundcoords: number,
+    viewbox: boolean,
+    desc: boolean,
+    lcpr: number,
+    qcpr: number,
+
+    // Blur
+    blurradius: number,
+    blurdelta: number
+
+    pal?: Palette
+    layercontainerid?: string
+}
+
+type NumberArray2D = Array<Array<number>>
+type NumberArray3D = Array<Array<Array<number>>>
