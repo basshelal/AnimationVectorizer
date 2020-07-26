@@ -15,6 +15,10 @@ declare global {
         in(array: Array<any>): boolean
 
         notIn(array: Array<any>): boolean
+
+        toJson(space: number): string
+
+        properties(): Array<{ key: string, value: any, type: any }>
     }
 }
 export default function () {
@@ -52,5 +56,17 @@ export default function () {
     if (!Object.prototype.notIn)
         Object.prototype.notIn = function (this: Object, array: Array<any>): boolean {
             return array.notContains(this)
+        }
+
+    if (!Object.prototype.toJson)
+        Object.prototype.toJson = function (this: Object, space: number = 0): string {
+            return JSON.stringify(this, null, space)
+        }
+
+    if (!Object.prototype.properties)
+        Object.prototype.properties = function (this: Object): Array<{ key: string, value: any, type: any }> {
+            return Object.keys(this).map((key, index) => {
+                return {key: key, value: this[key], type: typeof this[key]}
+            })
         }
 }

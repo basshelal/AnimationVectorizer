@@ -1,5 +1,5 @@
 // TODO find and replace all DOM stuff with Node compatible stuff, see
-//  the original libraries NodeCLI directory for details
+//  the original library's NodeCLI directory for details
 class ImageTracer {
     constructor() {
         this.version = "1.2.6";

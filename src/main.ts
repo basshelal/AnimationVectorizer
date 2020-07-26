@@ -1,8 +1,6 @@
-import {readdirSync} from "fs";
-import {mkdirpSync} from "fs-extra";
-import * as path from "path";
-import {logD, now} from "./utils";
-import ImageTracerCLI from "./ImageTracerCLI";
+import extensions from "./extensions";
+
+extensions()
 
 async function main() {
     /*await extractFrames({
@@ -14,7 +12,7 @@ async function main() {
         framesFolderPath: path.resolve("./out/PIE"),
         outputFilePath: path.resolve("./out/PIE/output.mp4"),
         frameRate: 1
-    })*/
+    })
 
     const framesDir = "./out/PIE"
 
@@ -35,9 +33,7 @@ async function main() {
         })
     ))
 
-    logD(`Finished Vectorization at ${now()}`)
-
-    Electron.app.exit(0)
+    logD(`Finished Vectorization at ${now()}`)*/
 }
 
 main()

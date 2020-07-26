@@ -31,5 +31,15 @@ function default_1() {
         Object.prototype.notIn = function (array) {
             return array.notContains(this);
         };
+    if (!Object.prototype.toJson)
+        Object.prototype.toJson = function (space = 0) {
+            return JSON.stringify(this, null, space);
+        };
+    if (!Object.prototype.properties)
+        Object.prototype.properties = function () {
+            return Object.keys(this).map((key, index) => {
+                return { key: key, value: this[key], type: typeof this[key] };
+            });
+        };
 }
 exports.default = default_1;
