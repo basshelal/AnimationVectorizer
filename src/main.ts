@@ -37,3 +37,5 @@ async function main() {
 }
 
 main()
+
+process.exit(0)
