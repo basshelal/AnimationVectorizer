@@ -1,15 +1,15 @@
 import {Palette} from "./ImageTracer";
 
 export type Options = {
-    corsenabled?: boolean,
-    ltres?: number,
-    qtres?: number,
+    corsEnabled?: boolean,
+    lineThreshold?: number,
+    qSplineThreshold?: number,
     pathomit?: number,
-    rightangleenhance?: boolean,
+    enhanceRightAngles?: boolean,
 
     // Color quantization
-    colorsampling?: number,
-    numberofcolors?: number,
+    colorSampling?: number,
+    colorsNumber?: number,
     mincolorratio?: number,
     colorquantcycles?: number,
 
@@ -17,8 +17,8 @@ export type Options = {
     layering?: number,
 
     // SVG rendering
-    strokewidth?: number,
-    linefilter?: boolean,
+    strokeWidth?: number,
+    lineFilter?: boolean,
     scale?: number,
     roundcoords?: number,
     viewbox?: boolean,
@@ -27,142 +27,142 @@ export type Options = {
     qcpr?: number,
 
     // Blur
-    blurradius?: number,
-    blurdelta?: number
+    blurRadius?: number,
+    blurDelta?: number
 
-    pal?: Palette
+    palette?: Palette
     layercontainerid?: string
 }
 
 export const optionDefault: Options = {
-    corsenabled: false,
-    ltres: 1,
-    qtres: 1,
+    corsEnabled: false,
+    lineThreshold: 1,
+    qSplineThreshold: 1,
     pathomit: 8,
-    rightangleenhance: true,
-    colorsampling: 2,
-    numberofcolors: 16,
+    enhanceRightAngles: true,
+    colorSampling: 2,
+    colorsNumber: 16,
     mincolorratio: 0,
     colorquantcycles: 3,
     layering: 0,
-    strokewidth: 1,
-    linefilter: false,
+    strokeWidth: 1,
+    lineFilter: false,
     scale: 1,
     roundcoords: 1,
     viewbox: false,
     desc: false,
     lcpr: 0,
     qcpr: 0,
-    blurradius: 0,
-    blurdelta: 20
+    blurRadius: 0,
+    blurDelta: 20
 }
 
 export const optionPosterized1: Options = {
-    numberofcolors: 4,
-    blurradius: 5
+    colorsNumber: 4,
+    blurRadius: 5
 }
 
 export const optionPosterized2: Options = {
-    numberofcolors: 4,
-    blurradius: 5
+    colorsNumber: 4,
+    blurRadius: 5
 }
 
 export const optionPosterized3: Options = {
-    ltres: 1,
-    qtres: 1,
+    lineThreshold: 1,
+    qSplineThreshold: 1,
     pathomit: 20,
-    rightangleenhance: true,
-    colorsampling: 0,
-    numberofcolors: 3,
+    enhanceRightAngles: true,
+    colorSampling: 0,
+    colorsNumber: 3,
     mincolorratio: 0,
     colorquantcycles: 3,
-    blurradius: 3,
-    blurdelta: 20,
-    strokewidth: 0,
-    linefilter: false,
+    blurRadius: 3,
+    blurDelta: 20,
+    strokeWidth: 0,
+    lineFilter: false,
     roundcoords: 1,
-    pal: [{r: 0, g: 0, b: 100, a: 255}, {r: 255, g: 255, b: 255, a: 255}]
+    palette: [{r: 0, g: 0, b: 100, a: 255}, {r: 255, g: 255, b: 255, a: 255}]
 }
 
 export const optionCurvy: Options = {
-    ltres: 0.01,
-    linefilter: true,
-    rightangleenhance: false
+    lineThreshold: 0.01,
+    lineFilter: true,
+    enhanceRightAngles: false
 }
 
 export const optionSharp: Options = {
-    qtres: 0.01,
-    linefilter: false
+    qSplineThreshold: 0.01,
+    lineFilter: false
 }
 
 export const optionDetailed: Options = {
     pathomit: 0,
     roundcoords: 2,
-    ltres: 0.5,
-    qtres: 0.5,
-    numberofcolors: 64
+    lineThreshold: 0.5,
+    qSplineThreshold: 0.5,
+    colorsNumber: 64
 }
 
 export const optionSmoothed: Options = {
-    blurradius: 5,
-    blurdelta: 64
+    blurRadius: 5,
+    blurDelta: 64
 }
 
 export const optionGrayscale: Options = {
-    colorsampling: 0,
+    colorSampling: 0,
     colorquantcycles: 1,
-    numberofcolors: 7
+    colorsNumber: 7
 }
 
 export const optionFixedPalette: Options = {
-    colorsampling: 0,
+    colorSampling: 0,
     colorquantcycles: 1,
-    numberofcolors: 27
+    colorsNumber: 27
 }
 
 export const optionRandomSampling1: Options = {
-    colorsampling: 1,
-    numberofcolors: 8
+    colorSampling: 1,
+    colorsNumber: 8
 }
 
 export const optionRandomSampling2: Options = {
-    colorsampling: 1,
-    numberofcolors: 64
+    colorSampling: 1,
+    colorsNumber: 64
 }
 
 export const optionArtistic1: Options = {
-    colorsampling: 0,
+    colorSampling: 0,
     colorquantcycles: 1,
     pathomit: 0,
-    blurradius: 5,
-    blurdelta: 64,
-    ltres: 0.01,
-    linefilter: true,
-    numberofcolors: 16,
-    strokewidth: 2
+    blurRadius: 5,
+    blurDelta: 64,
+    lineThreshold: 0.01,
+    lineFilter: true,
+    colorsNumber: 16,
+    strokeWidth: 2
 }
 
 export const optionArtistic2: Options = {
-    qtres: 0.01,
-    colorsampling: 0,
+    qSplineThreshold: 0.01,
+    colorSampling: 0,
     colorquantcycles: 1,
-    numberofcolors: 4,
-    strokewidth: 0
+    colorsNumber: 4,
+    strokeWidth: 0
 }
 
 export const optionArtistic3: Options = {
-    qtres: 10,
-    ltres: 10,
-    numberofcolors: 8
+    qSplineThreshold: 10,
+    lineThreshold: 10,
+    colorsNumber: 8
 }
 
 export const optionArtistic4: Options = {
-    qtres: 10,
-    ltres: 10,
-    numberofcolors: 64,
-    blurradius: 5,
-    blurdelta: 256,
-    strokewidth: 2
+    qSplineThreshold: 10,
+    lineThreshold: 10,
+    colorsNumber: 64,
+    blurRadius: 5,
+    blurDelta: 256,
+    strokeWidth: 2
 }
 
 export const optionPresets = {

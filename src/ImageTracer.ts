@@ -103,8 +103,8 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
                         options
                     ),
 
-                    options.ltres,
-                    options.qtres
+                    options.lineThreshold,
+                    options.qSplineThreshold
                 );
 
             // adding traced layer
@@ -129,7 +129,7 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 
         // 5. Batch tracing and creating tracedata object
         traceData = {
-            layers: batchtracelayers(bis, options.ltres, options.qtres),
+            layers: batchtracelayers(bis, options.lineThreshold, options.qSplineThreshold),
             palette: indexedImage.palette,
             width: imageData.width,
             height: imageData.height
@@ -191,19 +191,19 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
     }
 
     // Use custom palette if pal is defined or sample / generate custom length palette
-    if (options.pal) {
-        palette = options.pal;
-    } else if (options.colorsampling === 0) {
-        palette = generatePalette(options.numberofcolors);
-    } else if (options.colorsampling === 1) {
-        palette = samplePalette(options.numberofcolors, imgd);
+    if (options.palette) {
+        palette = options.palette;
+    } else if (options.colorSampling === 0) {
+        palette = generatePalette(options.colorsNumber);
+    } else if (options.colorSampling === 1) {
+        palette = samplePalette(options.colorsNumber, imgd);
     } else {
-        palette = samplePalette2(options.numberofcolors, imgd);
+        palette = samplePalette2(options.colorsNumber, imgd);
     }
 
     // Selective Gaussian blur preprocessing
-    if (options.blurradius > 0) {
-        imgd = blur(imgd, options.blurradius, options.blurdelta);
+    if (options.blurRadius > 0) {
+        imgd = blur(imgd, options.blurRadius, options.blurDelta);
     }
 
     // Repeat clustering step options.colorquantcycles times
