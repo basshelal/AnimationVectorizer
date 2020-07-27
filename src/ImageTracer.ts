@@ -52,7 +52,9 @@ const specialPalette: Palette = [
     {r: 0, g: 128, b: 0, a: 255}
 ]
 
-// Tracing imagedata, then returning the scaled svg string
+/**
+ * Converts the passed in `imageData` with the desired `options` into an SVG `string`
+ */
 export function imageDataToSVG(imageData: ImageData, options: Options): string {
     options = checkOptions(options)
     // tracing imagedata
@@ -115,11 +117,6 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     } else {// Parallel layering
         // 2. Layer separation and edge detection
         var ls = layering(indexedImage);
-
-        // Optional edge node visualization
-        if (options.layercontainerid) {
-            drawLayers(ls, specialPalette, options.scale, options.layercontainerid);
-        }
 
         // 3. Batch pathscan
         var bps = batchpathscan(ls, options.pathomit);
@@ -290,7 +287,7 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
 // Sampling a palette from imagedata
-function samplePalette(numberofcolors, imgd) {
+function samplePalette(numberofcolors: number, imgd: ImageData): Palette {
     var idx, palette = [];
     for (var i = 0; i < numberofcolors; i++) {
         idx = Math.floor(Math.random() * imgd.data.length / 4) * 4;
@@ -310,7 +307,7 @@ function samplePalette(numberofcolors, imgd) {
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
 // Deterministic sampling a palette from imagedata: rectangular grid
-function samplePalette2(numberofcolors, imgd) {
+function samplePalette2(numberofcolors: number, imgd: ImageData): Palette {
     var idx, palette = [], ni = Math.ceil(Math.sqrt(numberofcolors)), nj = Math.ceil(numberofcolors / ni),
         vx = imgd.width / (ni + 1), vy = imgd.height / (nj + 1);
     for (var j = 0; j < nj; j++) {
@@ -429,7 +426,7 @@ function layering(ii: IndexedImage): NumberArray3D {
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layeringStep(ii, cnum) {
+function layeringStep(ii: IndexedImage, cnum: number): NumberArray2D {
     // Creating layers for each indexed color in arr
     var layer = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
         i, j, k;
@@ -458,12 +455,13 @@ function layeringStep(ii, cnum) {
 }
 
 // Point in polygon test
-function isPointInPolygon(p, pa): boolean {
+function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean {
     var isin = false;
 
-    for (var i = 0, j = pa.length - 1; i < pa.length; j = i++) {
+    for (var i = 0, j = pointsList.length - 1; i < pointsList.length; j = i++) {
         isin =
-            (((pa[i].y > p.y) !== (pa[j].y > p.y)) && (p.x < (pa[j].x - pa[i].x) * (p.y - pa[i].y) / (pa[j].y - pa[i].y) + pa[i].x))
+            (((pointsList[i].y > point.y) !== (pointsList[j].y > point.y)) &&
+                (point.x < (pointsList[j].x - pointsList[i].x) * (point.y - pointsList[i].y) / (pointsList[j].y - pointsList[i].y) + pointsList[i].x))
                 ? !isin : isin;
     }
 
@@ -540,7 +538,7 @@ function pathscan(arr, pathomit) {
                                     if ((!paths[parentcnt].isholepath) &&
                                         boundingboxincludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
                                         boundingboxincludes(parentbbox, paths[parentcnt].boundingbox) &&
-                                        isPointInPolygon(paths[pacnt].points[0], paths[parentcnt].points)
+                                        isPointInPointsList(paths[pacnt].points[0], paths[parentcnt].points)
                                     ) {
                                         parentidx = parentcnt;
                                         parentbbox = paths[parentcnt].boundingbox;
@@ -1020,8 +1018,10 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
 
 }
 
-// Converting tracedata to an SVG string
-function getSvgString(traceData: TraceData, options): string {
+/**
+ * Converts the passed in `traceData` with the desired `options` into an SVG `string`
+ */
+function getSvgString(traceData: TraceData, options: Options): string {
 
     options = checkOptions(options);
 
@@ -1056,7 +1056,7 @@ function compareNumbers(a, b) {
 }
 
 // Convert color object to rgba stringfunction
-function toRGBA(c): string {
+function toRGBA(c: Color): string {
     return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + c.a + ')';
 }
 
@@ -1089,11 +1089,11 @@ function appendSVGString(svgstr, parentid) {
 }
 
 // Selective Gaussian blur for preprocessing
-function blur(imgd, radius, delta) {
+function blur(imgd: ImageData, radius, delta): ImageData {
     var i, j, k, d, idx, racc, gacc, bacc, aacc, wacc;
 
     // new ImageData
-    var imgd2 = {width: imgd.width, height: imgd.height, data: []};
+    var imgd2: ImageData = {width: imgd.width, height: imgd.height, data: Buffer.from([])};
 
     // radius and delta limits, this kernel
     radius = Math.floor(radius);
@@ -1194,54 +1194,6 @@ function blur(imgd, radius, delta) {
 
     return imgd2;
 
-}
-
-// Helper function: Drawing all edge node layers into a container
-function drawLayers(layers, palette: Palette, scale, parentid) {
-    scale = scale || 1;
-    var w, h, i, j, k;
-
-    // Preparing container
-    var div;
-    if (parentid) {
-        div = document.getElementById(parentid);
-        if (!div) {
-            div = document.createElement('div');
-            div.id = parentid;
-            document.body.appendChild(div);
-        }
-    } else {
-        div = document.createElement('div');
-        document.body.appendChild(div);
-    }
-
-    // Layers loop
-    for (k in layers) {
-        if (!layers.hasOwnProperty(k)) {
-            continue;
-        }
-
-        // width, height
-        w = layers[k][0].length;
-        h = layers[k].length;
-
-        // Creating new canvas for every layer
-        var canvas = document.createElement('canvas');
-        canvas.width = w * scale;
-        canvas.height = h * scale;
-        var context = canvas.getContext('2d');
-
-        // Drawing
-        for (j = 0; j < h; j++) {
-            for (i = 0; i < w; i++) {
-                context.fillStyle = toRGBA(palette[layers[k][j][i] % palette.length]);
-                context.fillRect(i * scale, j * scale, scale, scale);
-            }
-        }
-
-        // Appending canvas to container
-        div.appendChild(canvas);
-    }// End of Layers loop
 }
 
 export type ImageData = {

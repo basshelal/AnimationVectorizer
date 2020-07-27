@@ -1,12 +1,12 @@
-import extensions from "./extensions";
+import extensions from "./Extensions";
 import {PNGImageDataToImageData, readPNG} from "./PNG";
 import {imageDataToSVG} from "./ImageTracer";
 import {optionDetailed} from "./Options";
 import {writeFileSync} from "fs";
 
-extensions()
+(async function () {
+    extensions()
 
-async function main() {
     /*await extractFrames({
         videoFilePath: path.resolve("./res/PIE.avi"),
         framesFolderPath: path.resolve("./out/PIE")
@@ -40,7 +40,7 @@ async function main() {
     logD(`Finished Vectorization at ${now()}`)*/
 
 
-    let pngImageData = await readPNG("./out/PIE/315.png")
+    let pngImageData = await readPNG("./out/PIE/19.png")
 
     let imageData = PNGImageDataToImageData(pngImageData)
 
@@ -50,7 +50,5 @@ async function main() {
 
     console.log("Finished")
 
-}
-
-main()
+})()
 

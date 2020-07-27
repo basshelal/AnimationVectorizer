@@ -31,7 +31,6 @@ export type Options = {
     blurDelta?: number
 
     palette?: Palette
-    layercontainerid?: string
 }
 
 export const optionDefault: Options = {
