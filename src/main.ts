@@ -40,7 +40,7 @@ async function main() {
     logD(`Finished Vectorization at ${now()}`)*/
 
 
-    let pngImageData = await readPNG("./out/PIE/512.png")
+    let pngImageData = await readPNG("./out/PIE/315.png")
 
     let imageData = PNGImageDataToImageData(pngImageData)
 

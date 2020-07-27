@@ -1,9 +1,4 @@
-// TODO find and replace all DOM stuff with Node compatible stuff, see
-//  the original library's NodeCLI directory for details
-
 import {optionPresets, Options} from "./Options";
-
-const version: string = "1.2.6"
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -57,17 +52,6 @@ const specialPalette: Palette = [
     {r: 0, g: 128, b: 0, a: 255}
 ]
 
-// then executing callback with the scaled svg string as argument
-function imageToSVG(url, callback, options: Options) {
-    options = checkOptions(options);
-    // loading image, tracing and callback
-    loadImage(
-        url,
-        (canvas) => callback(imageDataToSVG(getImageData(canvas), options)),
-        options
-    );
-}
-
 // Tracing imagedata, then returning the scaled svg string
 export function imageDataToSVG(imageData: ImageData, options: Options): string {
     options = checkOptions(options)
@@ -84,21 +68,6 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 ////////////////////////////////////////////////////////////
 
 // 1. Color quantization
-
-// then executing callback with tracedata as argument
-function imageToTraceData(url, callback, options: Options) {
-    options = checkOptions(options);
-    // loading image, tracing and callback
-    loadImage(
-        url,
-        function (canvas) {
-            callback(
-                imageDataToTraceData(getImageData(canvas), options)
-            );
-        },
-        options
-    );
-}
 
 // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
@@ -203,7 +172,7 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
 
     // imgd.data must be RGBA, not just RGB
     if (imgd.data.length < pixelnum * 4) {
-        var newimgddata = new Uint8ClampedArray(pixelnum * 4);
+        var newimgddata = Buffer.alloc(pixelnum * 4);
         for (var pxcnt = 0; pxcnt < pixelnum; pxcnt++) {
             newimgddata[pxcnt * 4] = imgd.data[pxcnt * 3];
             newimgddata[pxcnt * 4 + 1] = imgd.data[pxcnt * 3 + 1];
@@ -363,7 +332,7 @@ function samplePalette2(numberofcolors, imgd) {
 }
 
 // Generating a palette with numberofcolors
-function generatePalette(numberofcolors) {
+function generatePalette(numberofcolors: number): Palette {
     var palette = [], rcnt, gcnt, bcnt;
     if (numberofcolors < 8) {
 
@@ -406,7 +375,7 @@ function generatePalette(numberofcolors) {
 // Lookup tables for pathscan
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layering(ii) {
+function layering(ii: IndexedImage): NumberArray3D {
     // Creating layers for each indexed color in arr
     var layers = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
         i, j, k;
@@ -1060,7 +1029,7 @@ function getSvgString(traceData: TraceData, options): string {
 
     // SVG start
     var svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 ' + w + ' ' + h + '" ') : ('width="' + w + '" height="' + h + '" ')) +
-        'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with imagetracer.js version ' + version + '" >';
+        'version="1.1" xmlns="http://www.w3.org/2000/svg" >';
 
     // Drawing: Layers and Paths loops
     for (var lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
@@ -1227,29 +1196,6 @@ function blur(imgd, radius, delta) {
 
 }
 
-// Helper function: loading an image from a URL, then executing callback with canvas as argument
-function loadImage(url, callback, options) {
-    var img = new Image();
-    if (options && options.corsenabled) {
-        img.crossOrigin = 'Anonymous';
-    }
-    img.onload = function () {
-        var canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        var context = canvas.getContext('2d');
-        context.drawImage(img, 0, 0);
-        callback(canvas);
-    };
-    img.src = url;
-}
-
-// Helper function: getting ImageData from a canvas
-function getImageData(canvas: HTMLCanvasElement): ImageData {
-    var context = canvas.getContext('2d')
-    return context.getImageData(0, 0, canvas.width, canvas.height)
-}
-
 // Helper function: Drawing all edge node layers into a container
 function drawLayers(layers, palette: Palette, scale, parentid) {
     scale = scale || 1;
@@ -1304,23 +1250,23 @@ export type ImageData = {
     data: Buffer
 }
 
-type TraceData = {
+export type TraceData = {
     layers: Array<any>,
     palette: any,
     width: number,
     height: number
 }
 
-type Color = {
+export type Color = {
     r: number, g: number, b: number, a: number
 }
 
 export type Palette = Array<Color>
 
-type IndexedImage = {
+export type IndexedImage = {
     array: NumberArray2D,
     palette: Palette
 }
 
-type NumberArray2D = Array<Array<number>>
-type NumberArray3D = Array<Array<Array<number>>>
+export type NumberArray2D = Array<Array<number>>
+export type NumberArray3D = Array<Array<Array<number>>>
