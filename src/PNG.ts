@@ -1,4 +1,5 @@
 import {readFileSync, writeFileSync} from "fs";
+import {ImageData} from "./ImageTracer";
 
 const lib = require("pngjs").PNG
 
@@ -34,4 +35,8 @@ export async function writePNG(path: string, pngImageData: PNGImageData): Promis
             reject(e)
         }
     })
+}
+
+export function PNGImageDataToImageData(pngImageData: PNGImageData): ImageData {
+    return {width: pngImageData.width, height: pngImageData.height, data: pngImageData.data}
 }

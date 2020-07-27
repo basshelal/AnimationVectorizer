@@ -1,12 +1,12 @@
 // TODO find and replace all DOM stuff with Node compatible stuff, see
 //  the original library's NodeCLI directory for details
 
-import {Options} from "./Options";
+import {optionPresets, Options} from "./Options";
 
 const version: string = "1.2.6"
 
-// pathscan_combined_lookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
-const pathscan_combined_lookup: NumberArray3D = [
+// pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
+const pathScanCombinedLookup: NumberArray3D = [
     [[-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1]],// arr[py][px]===0 is invalid
     [[0, 1, 0, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [0, 2, -1, 0]],
     [[-1, -1, -1, -1], [-1, -1, -1, -1], [0, 1, 0, -1], [0, 0, 1, 0]],
@@ -28,9 +28,8 @@ const pathscan_combined_lookup: NumberArray3D = [
     [[-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1]]// arr[py][px]===15 is invalid
 ]
 
-// Loading an image from a URL, tracing when loaded,
 // Gaussian kernels for blur
-const gks: NumberArray2D = [
+const gaussianKernels: NumberArray2D = [
     [0.27901, 0.44198, 0.27901],
     [0.135336, 0.228569, 0.272192, 0.228569, 0.135336],
     [0.086776, 0.136394, 0.178908, 0.195843, 0.178908, 0.136394, 0.086776],
@@ -39,7 +38,7 @@ const gks: NumberArray2D = [
 ]
 
 // Special palette to use with drawlayers()
-const specpalette: Palette = [
+const specialPalette: Palette = [
     {r: 0, g: 0, b: 0, a: 255},
     {r: 128, g: 128, b: 128, a: 255},
     {r: 0, g: 0, b: 128, a: 255},
@@ -60,22 +59,22 @@ const specpalette: Palette = [
 
 // then executing callback with the scaled svg string as argument
 function imageToSVG(url, callback, options: Options) {
-    options = this.checkOptions(options);
+    options = checkOptions(options);
     // loading image, tracing and callback
-    this.loadImage(
+    loadImage(
         url,
-        (canvas) => callback(this.imageDataToSVG(this.getImageData(canvas), options)),
+        (canvas) => callback(imageDataToSVG(getImageData(canvas), options)),
         options
     );
 }
 
 // Tracing imagedata, then returning the scaled svg string
-function imageDataToSVG(imageData: ImageData, options: Options): string {
-    options = this.checkOptions(options)
+export function imageDataToSVG(imageData: ImageData, options: Options): string {
+    options = checkOptions(options)
     // tracing imagedata
-    const traceData: TraceData = this.imageDataToTraceData(imageData, options)
+    const traceData: TraceData = imageDataToTraceData(imageData, options)
     // returning SVG string
-    return this.getSvgString(traceData, options)
+    return getSvgString(traceData, options)
 }
 
 ////////////////////////////////////////////////////////////
@@ -88,13 +87,13 @@ function imageDataToSVG(imageData: ImageData, options: Options): string {
 
 // then executing callback with tracedata as argument
 function imageToTraceData(url, callback, options: Options) {
-    options = this.checkOptions(options);
+    options = checkOptions(options);
     // loading image, tracing and callback
-    this.loadImage(
+    loadImage(
         url,
         function (canvas) {
             callback(
-                this.imagedataToTracedata(this.getImgdata(canvas), options)
+                imageDataToTraceData(getImageData(canvas), options)
             );
         },
         options
@@ -103,10 +102,10 @@ function imageToTraceData(url, callback, options: Options) {
 
 // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
-    options = this.checkOptions(options);
+    options = checkOptions(options);
 
     // 1. Color quantization
-    const indexedImage: IndexedImage = this.colorQuantization(imageData, options)
+    const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
     let traceData: TraceData
 
@@ -123,12 +122,12 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
         // Loop to trace each color layer
         for (var colornum = 0; colornum < indexedImage.palette.length; colornum++) {
 
-            // layeringstep -> pathscan -> internodes -> batchtracepaths
+            // layeringStep -> pathscan -> internodes -> batchtracepaths
             var tracedlayer =
-                this.batchtracepaths(
-                    this.internodes(
-                        this.pathscan(
-                            this.layeringstep(indexedImage, colornum),
+                batchtracepaths(
+                    internodes(
+                        pathscan(
+                            layeringStep(indexedImage, colornum),
                             options.pathomit
                         ),
 
@@ -146,22 +145,22 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 
     } else {// Parallel layering
         // 2. Layer separation and edge detection
-        var ls = this.layering(indexedImage);
+        var ls = layering(indexedImage);
 
         // Optional edge node visualization
         if (options.layercontainerid) {
-            this.drawLayers(ls, this.specpalette, options.scale, options.layercontainerid);
+            drawLayers(ls, specialPalette, options.scale, options.layercontainerid);
         }
 
         // 3. Batch pathscan
-        var bps = this.batchpathscan(ls, options.pathomit);
+        var bps = batchpathscan(ls, options.pathomit);
 
         // 4. Batch interpollation
-        var bis = this.batchinternodes(bps, options);
+        var bis = batchinternodes(bps, options);
 
         // 5. Batch tracing and creating tracedata object
         traceData = {
-            layers: this.batchtracelayers(bis, options.ltres, options.qtres),
+            layers: batchtracelayers(bis, options.ltres, options.qtres),
             palette: indexedImage.palette,
             width: imageData.width,
             height: imageData.height
@@ -179,17 +178,17 @@ function checkOptions(options: Options): Options {
     // Option preset
     if (typeof options === 'string') {
         options = options.toLowerCase();
-        if (this.optionpresets[options]) {
-            options = this.optionpresets[options];
+        if (optionPresets[options]) {
+            options = optionPresets[options];
         } else {
             options = {};
         }
     }
     // Defaults
-    var ok = Object.keys(this.optionpresets['default']);
+    var ok = Object.keys(optionPresets['default']);
     for (var k = 0; k < ok.length; k++) {
         if (!options.hasOwnProperty(ok[k])) {
-            options[ok[k]] = this.optionpresets['default'][ok[k]];
+            options[ok[k]] = optionPresets['default'][ok[k]];
         }
     }
     // options.pal is not defined here, the custom palette should be added externally: options.pal = [ { 'r':0, 'g':0, 'b':0, 'a':255 }, {...}, ... ];
@@ -226,16 +225,16 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
     if (options.pal) {
         palette = options.pal;
     } else if (options.colorsampling === 0) {
-        palette = this.generatepalette(options.numberofcolors);
+        palette = generatePalette(options.numberofcolors);
     } else if (options.colorsampling === 1) {
-        palette = this.samplepalette(options.numberofcolors, imgd);
+        palette = samplePalette(options.numberofcolors, imgd);
     } else {
-        palette = this.samplepalette2(options.numberofcolors, imgd);
+        palette = samplePalette2(options.numberofcolors, imgd);
     }
 
     // Selective Gaussian blur preprocessing
     if (options.blurradius > 0) {
-        imgd = this.blur(imgd, options.blurradius, options.blurdelta);
+        imgd = blur(imgd, options.blurradius, options.blurdelta);
     }
 
     // Repeat clustering step options.colorquantcycles times
@@ -322,7 +321,7 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
 // Sampling a palette from imagedata
-function samplepalette(numberofcolors, imgd) {
+function samplePalette(numberofcolors, imgd) {
     var idx, palette = [];
     for (var i = 0; i < numberofcolors; i++) {
         idx = Math.floor(Math.random() * imgd.data.length / 4) * 4;
@@ -342,7 +341,7 @@ function samplepalette(numberofcolors, imgd) {
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
 // Deterministic sampling a palette from imagedata: rectangular grid
-function samplepalette2(numberofcolors, imgd) {
+function samplePalette2(numberofcolors, imgd) {
     var idx, palette = [], ni = Math.ceil(Math.sqrt(numberofcolors)), nj = Math.ceil(numberofcolors / ni),
         vx = imgd.width / (ni + 1), vy = imgd.height / (nj + 1);
     for (var j = 0; j < nj; j++) {
@@ -364,7 +363,7 @@ function samplepalette2(numberofcolors, imgd) {
 }
 
 // Generating a palette with numberofcolors
-function generatepalette(numberofcolors) {
+function generatePalette(numberofcolors) {
     var palette = [], rcnt, gcnt, bcnt;
     if (numberofcolors < 8) {
 
@@ -461,7 +460,7 @@ function layering(ii) {
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layeringstep(ii, cnum) {
+function layeringStep(ii, cnum) {
     // Creating layers for each indexed color in arr
     var layer = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
         i, j, k;
@@ -490,7 +489,7 @@ function layeringstep(ii, cnum) {
 }
 
 // Point in polygon test
-function pointinpoly(p, pa) {
+function isPointInPolygon(p, pa): boolean {
     var isin = false;
 
     for (var i = 0, j = pa.length - 1; i < pa.length; j = i++) {
@@ -547,7 +546,7 @@ function pathscan(arr, pathomit) {
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
-                    lookuprow = this.pathscan_combined_lookup[arr[py][px]][dir];
+                    lookuprow = pathScanCombinedLookup[arr[py][px]][dir];
                     arr[py][px] = lookuprow[0];
                     dir = lookuprow[1];
                     px += lookuprow[2];
@@ -570,9 +569,9 @@ function pathscan(arr, pathomit) {
                                 var parentidx = 0, parentbbox = [-1, -1, w + 1, h + 1];
                                 for (var parentcnt = 0; parentcnt < pacnt; parentcnt++) {
                                     if ((!paths[parentcnt].isholepath) &&
-                                        this.boundingboxincludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
-                                        this.boundingboxincludes(parentbbox, paths[parentcnt].boundingbox) &&
-                                        this.pointinpoly(paths[pacnt].points[0], paths[parentcnt].points)
+                                        boundingboxincludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
+                                        boundingboxincludes(parentbbox, paths[parentcnt].boundingbox) &&
+                                        isPointInPolygon(paths[pacnt].points[0], paths[parentcnt].points)
                                     ) {
                                         parentidx = parentcnt;
                                         parentbbox = paths[parentcnt].boundingbox;
@@ -612,7 +611,7 @@ function batchpathscan(layers, pathomit) {
         if (!layers.hasOwnProperty(k)) {
             continue;
         }
-        bpaths[k] = this.pathscan(layers[k], pathomit);
+        bpaths[k] = pathscan(layers[k], pathomit);
     }
     return bpaths;
 }
@@ -641,11 +640,11 @@ function internodes(paths, options) {
             previdx2 = (pcnt - 2 + palen) % palen;
 
             // right angle enhance
-            if (options.rightangleenhance && this.testrightangle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
+            if (options.rightangleenhance && testrightangle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
 
                 // Fix previous direction
                 if (ins[pacnt].points.length > 0) {
-                    ins[pacnt].points[ins[pacnt].points.length - 1].linesegment = this.getdirection(
+                    ins[pacnt].points[ins[pacnt].points.length - 1].linesegment = getdirection(
                         ins[pacnt].points[ins[pacnt].points.length - 1].x,
                         ins[pacnt].points[ins[pacnt].points.length - 1].y,
                         paths[pacnt].points[pcnt].x,
@@ -657,7 +656,7 @@ function internodes(paths, options) {
                 ins[pacnt].points.push({
                     x: paths[pacnt].points[pcnt].x,
                     y: paths[pacnt].points[pcnt].y,
-                    linesegment: this.getdirection(
+                    linesegment: getdirection(
                         paths[pacnt].points[pcnt].x,
                         paths[pacnt].points[pcnt].y,
                         ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
@@ -671,7 +670,7 @@ function internodes(paths, options) {
             ins[pacnt].points.push({
                 x: ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                 y: ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
-                linesegment: this.getdirection(
+                linesegment: getdirection(
                     ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                     ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
                     ((paths[pacnt].points[nextidx].x + paths[pacnt].points[nextidx2].x) / 2),
@@ -754,7 +753,7 @@ function batchinternodes(bpaths, options) {
         if (!bpaths.hasOwnProperty(k)) {
             continue;
         }
-        binternodes[k] = this.internodes(bpaths[k], options);
+        binternodes[k] = internodes(bpaths[k], options);
     }
     return binternodes;
 }
@@ -786,7 +785,7 @@ function tracepath(path, ltres, qtres) {
         }
 
         // 5.2. - 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-        smp.segments = smp.segments.concat(this.fitseq(path, ltres, qtres, pcnt, seqend));
+        smp.segments = smp.segments.concat(fitseq(path, ltres, qtres, pcnt, seqend));
 
         // forward pcnt;
         if (seqend > 0) {
@@ -893,8 +892,8 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
     var splitpoint = fitpoint; // Earlier: Math.floor((fitpoint + errorpoint)/2);
 
     // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-    return this.fitseq(path, ltres, qtres, seqstart, splitpoint).concat(
-        this.fitseq(path, ltres, qtres, splitpoint, seqend));
+    return fitseq(path, ltres, qtres, seqstart, splitpoint).concat(
+        fitseq(path, ltres, qtres, splitpoint, seqend));
 
 }
 
@@ -911,7 +910,7 @@ function batchtracepaths(internodepaths, ltres, qtres) {
         if (!internodepaths.hasOwnProperty(k)) {
             continue;
         }
-        btracedpaths.push(this.tracepath(internodepaths[k], ltres, qtres));
+        btracedpaths.push(tracepath(internodepaths[k], ltres, qtres));
     }
     return btracedpaths;
 }
@@ -923,7 +922,7 @@ function batchtracelayers(binternodes, ltres, qtres) {
         if (!binternodes.hasOwnProperty(k)) {
             continue;
         }
-        btbis[k] = this.batchtracepaths(binternodes[k], ltres, qtres);
+        btbis[k] = batchtracepaths(binternodes[k], ltres, qtres);
     }
     return btbis;
 }
@@ -946,7 +945,7 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
     // Starting path element, desc contains layer and path number
     str = '<path ' +
         (options.desc ? ('desc="l ' + lnum + ' p ' + pathnum + '" ') : '') +
-        this.tosvgcolorstr(tracedata.palette[lnum], options) +
+        tosvgcolorstr(tracedata.palette[lnum], options) +
         'd="';
 
     // Creating non-hole path string
@@ -960,11 +959,11 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
         }
         str += 'Z ';
     } else {
-        str += 'M ' + this.roundtodec(smp.segments[0].x1 * options.scale, options.roundcoords) + ' ' + this.roundtodec(smp.segments[0].y1 * options.scale, options.roundcoords) + ' ';
+        str += 'M ' + roundtodec(smp.segments[0].x1 * options.scale, options.roundcoords) + ' ' + roundtodec(smp.segments[0].y1 * options.scale, options.roundcoords) + ' ';
         for (pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            str += smp.segments[pcnt].type + ' ' + this.roundtodec(smp.segments[pcnt].x2 * options.scale, options.roundcoords) + ' ' + this.roundtodec(smp.segments[pcnt].y2 * options.scale, options.roundcoords) + ' ';
+            str += smp.segments[pcnt].type + ' ' + roundtodec(smp.segments[pcnt].x2 * options.scale, options.roundcoords) + ' ' + roundtodec(smp.segments[pcnt].y2 * options.scale, options.roundcoords) + ' ';
             if (smp.segments[pcnt].hasOwnProperty('x3')) {
-                str += this.roundtodec(smp.segments[pcnt].x3 * options.scale, options.roundcoords) + ' ' + this.roundtodec(smp.segments[pcnt].y3 * options.scale, options.roundcoords) + ' ';
+                str += roundtodec(smp.segments[pcnt].x3 * options.scale, options.roundcoords) + ' ' + roundtodec(smp.segments[pcnt].y3 * options.scale, options.roundcoords) + ' ';
             }
         }
         str += 'Z ';
@@ -994,17 +993,17 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
         } else {
 
             if (hsmp.segments[hsmp.segments.length - 1].hasOwnProperty('x3')) {
-                str += 'M ' + this.roundtodec(hsmp.segments[hsmp.segments.length - 1].x3 * options.scale) + ' ' + this.roundtodec(hsmp.segments[hsmp.segments.length - 1].y3 * options.scale) + ' ';
+                str += 'M ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].x3 * options.scale) + ' ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].y3 * options.scale) + ' ';
             } else {
-                str += 'M ' + this.roundtodec(hsmp.segments[hsmp.segments.length - 1].x2 * options.scale) + ' ' + this.roundtodec(hsmp.segments[hsmp.segments.length - 1].y2 * options.scale) + ' ';
+                str += 'M ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].x2 * options.scale) + ' ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].y2 * options.scale) + ' ';
             }
 
             for (pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
                 str += hsmp.segments[pcnt].type + ' ';
                 if (hsmp.segments[pcnt].hasOwnProperty('x3')) {
-                    str += this.roundtodec(hsmp.segments[pcnt].x2 * options.scale) + ' ' + this.roundtodec(hsmp.segments[pcnt].y2 * options.scale) + ' ';
+                    str += roundtodec(hsmp.segments[pcnt].x2 * options.scale) + ' ' + roundtodec(hsmp.segments[pcnt].y2 * options.scale) + ' ';
                 }
-                str += this.roundtodec(hsmp.segments[pcnt].x1 * options.scale) + ' ' + this.roundtodec(hsmp.segments[pcnt].y1 * options.scale) + ' ';
+                str += roundtodec(hsmp.segments[pcnt].x1 * options.scale) + ' ' + roundtodec(hsmp.segments[pcnt].y1 * options.scale) + ' ';
             }
 
 
@@ -1055,13 +1054,13 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
 // Converting tracedata to an SVG string
 function getSvgString(traceData: TraceData, options): string {
 
-    options = this.checkOptions(options);
+    options = checkOptions(options);
 
     var w = traceData.width * options.scale, h = traceData.height * options.scale;
 
     // SVG start
     var svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 ' + w + ' ' + h + '" ') : ('width="' + w + '" height="' + h + '" ')) +
-        'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with imagetracer.js version ' + this.version + '" >';
+        'version="1.1" xmlns="http://www.w3.org/2000/svg" desc="Created with imagetracer.js version ' + version + '" >';
 
     // Drawing: Layers and Paths loops
     for (var lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
@@ -1069,7 +1068,7 @@ function getSvgString(traceData: TraceData, options): string {
 
             // Adding SVG <path> string
             if (!traceData.layers[lcnt][pcnt].isholepath) {
-                svgstr += this.svgpathstring(traceData, lcnt, pcnt, options);
+                svgstr += svgpathstring(traceData, lcnt, pcnt, options);
             }
 
         }// End of paths loop
@@ -1139,7 +1138,7 @@ function blur(imgd, radius, delta) {
     if (delta > 1024) {
         delta = 1024;
     }
-    var thisgk = this.gks[radius - 1];
+    var thisgk = gaussianKernels[radius - 1];
 
     // loop through all pixels, horizontal blur
     for (j = 0; j < imgd.height; j++) {
@@ -1226,7 +1225,7 @@ function blur(imgd, radius, delta) {
 
     return imgd2;
 
-}// End of blur()
+}
 
 // Helper function: loading an image from a URL, then executing callback with canvas as argument
 function loadImage(url, callback, options) {
@@ -1289,7 +1288,7 @@ function drawLayers(layers, palette: Palette, scale, parentid) {
         // Drawing
         for (j = 0; j < h; j++) {
             for (i = 0; i < w; i++) {
-                context.fillStyle = this.toRGBA(palette[layers[k][j][i] % palette.length]);
+                context.fillStyle = toRGBA(palette[layers[k][j][i] % palette.length]);
                 context.fillRect(i * scale, j * scale, scale, scale);
             }
         }
@@ -1297,6 +1296,12 @@ function drawLayers(layers, palette: Palette, scale, parentid) {
         // Appending canvas to container
         div.appendChild(canvas);
     }// End of Layers loop
+}
+
+export type ImageData = {
+    height: number
+    width: number
+    data: Buffer
 }
 
 type TraceData = {
