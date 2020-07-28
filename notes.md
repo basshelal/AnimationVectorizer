@@ -55,5 +55,34 @@ act as a true background layer, meaning it takes over a large space and the char
 the character moves the background doesn't actually need to be redrawn and instead only the character changes. Just a 
 general idea, not sure how we would implement this.
 
+## Concurrency
+
+Vectorization is a relatively expensive operation, and we need to vectorize hundreds and thousands of frames. It is 
+also important to note that vectorization of a frame should for the most part not depend on any other frame, meaning 
+vectorization is a highly parallelizable computation workload.
+
+Node has some excellent utilities we can use to help make the most of our hardware cores while running our 
+vectorization in a highly concurrent manner. These are:
+
+* [Child Process](https://nodejs.org/api/child_process.html)
+* [Cluster](https://nodejs.org/api/cluster.html)
+* [Worker Threads](https://nodejs.org/api/worker_threads.html)
+
+Even if we did need a context before a vectorization operation on a frame, the actual vectorization operation 
+itself can still be done fairly independently per frame. So even if we need some smart context detection such as 
+when detecting FrameSets or Scenes, we can always run a serial first pass (just like how the ffmpeg frame extraction 
+is serial) to gather the necessary information and then smartly save the intermediate data which can then be used 
+by the threads to perform their workload.
+
+This is all important because vectorization of a video will often be slower than realtime. ie a 22 minute Teen Titans 
+Go clip at 30fps will produce 39,600 total frames! At 1280x720 I have witnessed vectorization of a frame take a couple 
+of seconds meaning approximately 2 seconds PER FRAME vectorization. Vectorization of the initial 20 second clip took 
+around 4 minutes with 520 frames even on a modern 6 Core 12 Thread CPU using a single child process per frame and 
+destroying the CPU to 100%. This is a computationally expensive task! Even if we optimize severely, we will almost 
+always be slower than realtime and if done poorly then sometimes by orders of magnitude!
+
+So it is absolutely important we optimize this, not so much for the report or results, but for the overall time 
+and sanity on our end.
+
 ## Report
 
