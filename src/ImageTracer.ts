@@ -101,10 +101,8 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
                             layeringStep(indexedImage, colornum),
                             options.pathomit
                         ),
-
                         options
                     ),
-
                     options.lineThreshold,
                     options.qSplineThreshold
                 );
@@ -163,7 +161,11 @@ function checkOptions(options: Options): Options {
 }
 
 // Using a form of k-means clustering repeatead options.colorquantcycles times. http://en.wikipedia.org/wiki/Color_quantization
+// BH: We should be doing this because we need to reduce the number of "color regions" as much as possible but pixels
+// will not be helpful in this so we have to lose data, or more accurately, regain the data that rasterization loses
+// because of pixels etc
 function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
+    // TODO 28-July-2020: simplify and understand this function!
     var arr = [], idx = 0, cd, cdl, ci, paletteacc = [], pixelnum = imgd.width * imgd.height, i, j, k, cnt,
         palette;
 

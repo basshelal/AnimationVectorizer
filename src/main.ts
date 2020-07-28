@@ -33,10 +33,9 @@ import extensions from "./Extensions";
         })
     ))
 
-    logD(`Finished Vectorization at ${now()}`)*/
+    logD(`Finished Vectorization at ${now()}`)
 
-
-    /*let pngImageData = await readPNG("./out/PIE/19.png")
+    let pngImageData = await readPNG("./out/PIE/19.png")
 
     let imageData = PNGImageDataToImageData(pngImageData)
 
