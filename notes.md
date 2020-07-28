@@ -31,6 +31,11 @@
 
 * Figure out a decent way to quantitatively measure results (quality and compression)
 
+### Region Detection
+
+How do we differentiate between fills (single color areas or polygons) and gradients (function based shifting color 
+polygons)??
+
 ### Animated SVG
 
 Since cartoons and most frame based media may have a lot of frames in succession using the same parts, we can take 

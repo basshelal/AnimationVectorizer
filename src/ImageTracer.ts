@@ -32,26 +32,6 @@ const gaussianKernels: NumberArray2D = [
     [0.049692, 0.069304, 0.089767, 0.107988, 0.120651, 0.125194, 0.120651, 0.107988, 0.089767, 0.069304, 0.049692]
 ]
 
-// Special palette to use with drawlayers()
-const specialPalette: Palette = [
-    {r: 0, g: 0, b: 0, a: 255},
-    {r: 128, g: 128, b: 128, a: 255},
-    {r: 0, g: 0, b: 128, a: 255},
-    {r: 64, g: 64, b: 128, a: 255},
-    {r: 192, g: 192, b: 192, a: 255},
-    {r: 255, g: 255, b: 255, a: 255},
-    {r: 128, g: 128, b: 192, a: 255},
-    {r: 0, g: 0, b: 192, a: 255},
-    {r: 128, g: 0, b: 0, a: 255},
-    {r: 128, g: 64, b: 64, a: 255},
-    {r: 128, g: 0, b: 128, a: 255},
-    {r: 168, g: 168, b: 168, a: 255},
-    {r: 192, g: 128, b: 128, a: 255},
-    {r: 192, g: 0, b: 0, a: 255},
-    {r: 255, g: 255, b: 255, a: 255},
-    {r: 0, g: 128, b: 0, a: 255}
-]
-
 /**
  * Converts the passed in `imageData` with the desired `options` into an SVG `string`
  */
@@ -137,17 +117,9 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 }
 
 // creating options object, setting defaults for missing values
+// TODO fix and clean this up! Ugly JS style code
 function checkOptions(options: Options): Options {
-    options = options || {};
-    // Option preset
-    if (typeof options === 'string') {
-        options = options.toLowerCase();
-        if (optionPresets[options]) {
-            options = optionPresets[options];
-        } else {
-            options = {};
-        }
-    }
+    options = options || {}
     // Defaults
     var ok = Object.keys(optionPresets['default']);
     for (var k = 0; k < ok.length; k++) {
@@ -164,28 +136,35 @@ function checkOptions(options: Options): Options {
 // BH: We should be doing this because we need to reduce the number of "color regions" as much as possible but pixels
 // will not be helpful in this so we have to lose data, or more accurately, regain the data that rasterization loses
 // because of pixels etc
-function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
+function colorQuantization(imageData: ImageData, options: Options): IndexedImage {
     // TODO 28-July-2020: simplify and understand this function!
-    var arr = [], idx = 0, cd, cdl, ci, paletteacc = [], pixelnum = imgd.width * imgd.height, i, j, k, cnt,
-        palette;
 
-    // imgd.data must be RGBA, not just RGB
-    if (imgd.data.length < pixelnum * 4) {
-        var newimgddata = Buffer.alloc(pixelnum * 4);
-        for (var pxcnt = 0; pxcnt < pixelnum; pxcnt++) {
-            newimgddata[pxcnt * 4] = imgd.data[pxcnt * 3];
-            newimgddata[pxcnt * 4 + 1] = imgd.data[pxcnt * 3 + 1];
-            newimgddata[pxcnt * 4 + 2] = imgd.data[pxcnt * 3 + 2];
-            newimgddata[pxcnt * 4 + 3] = 255;
+    const totalPixels = imageData.width * imageData.height
+
+    const arr: NumberArray2D = []
+
+    const paletteacc: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
+    // TODO what is n??? This is a function scoped object so we can easily deduce this :P
+
+    let palette: Palette
+
+    // imageData.data must be RGBA, not just RGB
+    if (imageData.data.length < totalPixels * 4) {
+        const newImgData = Buffer.alloc(totalPixels * 4)
+        for (let pixelCount = 0; pixelCount < totalPixels; pixelCount++) {
+            newImgData[pixelCount * 4] = imageData.data[pixelCount * 3]; // r
+            newImgData[pixelCount * 4 + 1] = imageData.data[pixelCount * 3 + 1]; // g
+            newImgData[pixelCount * 4 + 2] = imageData.data[pixelCount * 3 + 2]; // b
+            newImgData[pixelCount * 4 + 3] = 255; // a
         }
-        imgd.data = newimgddata;
-    }// End of RGBA imgd.data check
+        imageData.data = newImgData;
+    }// End of RGBA imageData.data check
 
     // Filling arr (color index array) with -1
-    for (j = 0; j < imgd.height + 2; j++) {
-        arr[j] = [];
-        for (i = 0; i < imgd.width + 2; i++) {
-            arr[j][i] = -1;
+    for (let y = 0; y < imageData.height + 2; y++) {
+        arr[y] = []
+        for (let x = 0; x < imageData.width + 2; x++) {
+            arr[y][x] = -1
         }
     }
 
@@ -195,23 +174,23 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
     } else if (options.colorSampling === 0) {
         palette = generatePalette(options.colorsNumber);
     } else if (options.colorSampling === 1) {
-        palette = samplePalette(options.colorsNumber, imgd);
+        palette = samplePalette(options.colorsNumber, imageData);
     } else {
-        palette = samplePalette2(options.colorsNumber, imgd);
+        palette = samplePalette2(options.colorsNumber, imageData);
     }
 
     // Selective Gaussian blur preprocessing
     if (options.blurRadius > 0) {
-        imgd = blur(imgd, options.blurRadius, options.blurDelta);
+        imageData = blur(imageData, options.blurRadius, options.blurDelta);
     }
 
     // Repeat clustering step options.colorquantcycles times
-    for (cnt = 0; cnt < options.colorquantcycles; cnt++) {
+    for (let cnt = 0; cnt < options.colorquantcycles; cnt++) {
 
         // Average colors from the second iteration
         if (cnt > 0) {
             // averaging paletteacc for palette
-            for (k = 0; k < palette.length; k++) {
+            for (let k = 0; k < palette.length; k++) {
 
                 // averaging
                 if (paletteacc[k].n > 0) {
@@ -224,7 +203,7 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
-                if ((paletteacc[k].n / pixelnum < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
+                if ((paletteacc[k].n / totalPixels < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
                     palette[k] = {
                         r: Math.floor(Math.random() * 255),
                         g: Math.floor(Math.random() * 255),
@@ -237,24 +216,24 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
         }// End of Average colors from the second iteration
 
         // Reseting palette accumulator for averaging
-        for (i = 0; i < palette.length; i++) {
+        for (let i = 0; i < palette.length; i++) {
             paletteacc[i] = {r: 0, g: 0, b: 0, a: 0, n: 0};
         }
 
         // loop through all pixels
-        for (j = 0; j < imgd.height; j++) {
-            for (i = 0; i < imgd.width; i++) {
+        for (let j = 0; j < imageData.height; j++) {
+            for (let i = 0; i < imageData.width; i++) {
 
                 // pixel index
-                idx = (j * imgd.width + i) * 4;
+                let idx = (j * imageData.width + i) * 4;
 
                 // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
-                ci = 0;
-                cdl = 1024; // 4 * 256 is the maximum RGBA distance
-                for (k = 0; k < palette.length; k++) {
+                let ci = 0;
+                let cdl = 1024; // 4 * 256 is the maximum RGBA distance
+                for (let k = 0; k < palette.length; k++) {
 
                     // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
-                    cd = Math.abs(palette[k].r - imgd.data[idx]) + Math.abs(palette[k].g - imgd.data[idx + 1]) + Math.abs(palette[k].b - imgd.data[idx + 2]) + Math.abs(palette[k].a - imgd.data[idx + 3]);
+                    let cd = Math.abs(palette[k].r - imageData.data[idx]) + Math.abs(palette[k].g - imageData.data[idx + 1]) + Math.abs(palette[k].b - imageData.data[idx + 2]) + Math.abs(palette[k].a - imageData.data[idx + 3]);
 
                     // Remember this color if this is the closest yet
                     if (cd < cdl) {
@@ -265,10 +244,10 @@ function colorQuantization(imgd: ImageData, options: Options): IndexedImage {
                 }// End of palette loop
 
                 // add to palettacc
-                paletteacc[ci].r += imgd.data[idx];
-                paletteacc[ci].g += imgd.data[idx + 1];
-                paletteacc[ci].b += imgd.data[idx + 2];
-                paletteacc[ci].a += imgd.data[idx + 3];
+                paletteacc[ci].r += imageData.data[idx];
+                paletteacc[ci].g += imageData.data[idx + 1];
+                paletteacc[ci].b += imageData.data[idx + 2];
+                paletteacc[ci].a += imageData.data[idx + 3];
                 paletteacc[ci].n++;
 
                 // update the indexed color array
@@ -728,11 +707,14 @@ function batchinternodes(bpaths, options) {
 }
 
 function tracepath(path, ltres, qtres) {
-    var pcnt = 0, segtype1, segtype2, seqend, smp = {};
-    smp.segments = [];
-    smp.boundingbox = path.boundingbox;
-    smp.holechildren = path.holechildren;
-    smp.isholepath = path.isholepath;
+    var pcnt = 0, segtype1, segtype2, seqend;
+
+    const smp = {
+        segments: [],
+        boundingbox: path.boundingbox,
+        holechildren: path.holechildren,
+        isholepath: path.isholepath
+    }
 
     while (pcnt < path.points.length) {
         // 5.1. Find sequences of points with only 2 segment types
@@ -897,7 +879,7 @@ function batchtracelayers(binternodes, ltres, qtres) {
 }
 
 // Rounding to given decimals https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-function roundtodec(val, places) {
+function roundtodec(val, places = 0) {
     return +val.toFixed(places);
 }
 
@@ -1091,6 +1073,7 @@ function appendSVGString(svgstr, parentid) {
 }
 
 // Selective Gaussian blur for preprocessing
+// BH: Probably safe to remove this if we're not going to be implementing or using any blur
 function blur(imgd: ImageData, radius, delta): ImageData {
     var i, j, k, d, idx, racc, gacc, bacc, aacc, wacc;
 
