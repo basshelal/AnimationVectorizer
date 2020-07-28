@@ -1,7 +1,7 @@
 import * as cp from "child_process";
 import {ChildProcess} from "child_process";
 import * as electron from "electron";
-import {logD, logE} from "./utils";
+import {logD, logE} from "./Utils";
 import * as path from "path";
 
 export default async function (...args: Array<string>): Promise<void> {

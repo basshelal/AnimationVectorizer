@@ -1,8 +1,4 @@
 import extensions from "./Extensions";
-import {PNGImageDataToImageData, readPNG} from "./PNG";
-import {imageDataToSVG} from "./ImageTracer";
-import {optionDetailed} from "./Options";
-import {writeFileSync} from "fs";
 
 (async function () {
     extensions()
@@ -40,7 +36,7 @@ import {writeFileSync} from "fs";
     logD(`Finished Vectorization at ${now()}`)*/
 
 
-    let pngImageData = await readPNG("./out/PIE/19.png")
+    /*let pngImageData = await readPNG("./out/PIE/19.png")
 
     let imageData = PNGImageDataToImageData(pngImageData)
 
@@ -48,7 +44,7 @@ import {writeFileSync} from "fs";
 
     writeFileSync("./out.svg", svg)
 
-    console.log("Finished")
+    console.log("Finished")*/
 
 })()
 

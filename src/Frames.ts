@@ -1,4 +1,4 @@
-import {logD, now} from "./utils";
+import {logD, now} from "./Utils";
 import {mkdirpSync} from "fs-extra";
 import ffmpeg from "./ffmpeg";
 
@@ -18,10 +18,8 @@ export async function extractFrames(options: {
 export async function joinFrames(options: {
     framesFolderPath: string,
     outputFilePath: string,
-    frameRate?: number
+    frameRate: number
 }) {
-
-    if (!options.frameRate) options.frameRate = 24
 
     logD(`Beginning join frames for ${options.framesFolderPath} on ${now()}`)
 

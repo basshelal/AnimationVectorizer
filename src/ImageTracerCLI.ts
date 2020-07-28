@@ -1,5 +1,5 @@
 import {ChildProcess, spawn} from "child_process";
-import {logD, logE} from "./utils";
+import {logD, logE} from "./Utils";
 
 export default async function (options: {
     inputFile: string,
