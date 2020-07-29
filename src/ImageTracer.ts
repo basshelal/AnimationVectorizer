@@ -1,4 +1,5 @@
 import {optionPresets, Options} from "./Options";
+import {abs, ceil, floor, random, sqrt} from "./Utils";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -71,10 +72,10 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
         };
 
         // Loop to trace each color layer
-        for (var colornum = 0; colornum < indexedImage.palette.length; colornum++) {
+        for (let colornum = 0; colornum < indexedImage.palette.length; colornum++) {
 
             // layeringStep -> pathscan -> internodes -> batchtracepaths
-            var tracedlayer =
+            let tracedlayer =
                 batchtracepaths(
                     internodes(
                         pathscan(
@@ -92,15 +93,15 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 
         }// End of color loop
 
-    } else {// Parallel layering
+    } else {// Parallel layering // TODO probably delete this and stick with sequential
         // 2. Layer separation and edge detection
-        var ls = layering(indexedImage);
+        const ls = layering(indexedImage);
 
         // 3. Batch pathscan
-        var bps = batchpathscan(ls, options.pathomit);
+        const bps = batchpathscan(ls, options.pathomit);
 
         // 4. Batch interpollation
-        var bis = batchinternodes(bps, options);
+        const bis = batchinternodes(bps, options);
 
         // 5. Batch tracing and creating tracedata object
         traceData = {
@@ -116,20 +117,14 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 
 }
 
-// creating options object, setting defaults for missing values
-// TODO fix and clean this up! Ugly JS style code
+/**
+ * Ensures the passed in `options` is initialized correctly with default values if any are missing
+ */
 function checkOptions(options: Options): Options {
-    options = options || {}
-    // Defaults
-    var ok = Object.keys(optionPresets['default']);
-    for (var k = 0; k < ok.length; k++) {
-        if (!options.hasOwnProperty(ok[k])) {
-            options[ok[k]] = optionPresets['default'][ok[k]];
-        }
-    }
-    // options.pal is not defined here, the custom palette should be added externally: options.pal = [ { 'r':0, 'g':0, 'b':0, 'a':255 }, {...}, ... ];
-    // options.layercontainerid is not defined here, can be added externally: options.layercontainerid = 'mydiv'; ... <div id="mydiv"></div>
-    return options;
+    Object.keys(optionPresets.default).forEach((key: string) => {
+        if (!options.hasOwnProperty(key)) options[key] = optionPresets.default[key]
+    })
+    return options
 }
 
 // Using a form of k-means clustering repeatead options.colorquantcycles times. http://en.wikipedia.org/wiki/Color_quantization
@@ -141,10 +136,11 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     const totalPixels = imageData.width * imageData.height
 
-    const arr: NumberArray2D = []
+    const colorArray: NumberArray2D = []
 
     const paletteacc: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
     // TODO what is n??? This is a function scoped object so we can easily deduce this :P
+    //  n is some kind of index
 
     let palette: Palette
 
@@ -158,13 +154,14 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             newImgData[pixelCount * 4 + 3] = 255; // a
         }
         imageData.data = newImgData;
-    }// End of RGBA imageData.data check
+    }
 
-    // Filling arr (color index array) with -1
+    // Filling colorArray (color index array) with -1
+    // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathscan
     for (let y = 0; y < imageData.height + 2; y++) {
-        arr[y] = []
+        colorArray[y] = []
         for (let x = 0; x < imageData.width + 2; x++) {
-            arr[y][x] = -1
+            colorArray[y][x] = -1
         }
     }
 
@@ -195,20 +192,20 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 // averaging
                 if (paletteacc[k].n > 0) {
                     palette[k] = {
-                        r: Math.floor(paletteacc[k].r / paletteacc[k].n),
-                        g: Math.floor(paletteacc[k].g / paletteacc[k].n),
-                        b: Math.floor(paletteacc[k].b / paletteacc[k].n),
-                        a: Math.floor(paletteacc[k].a / paletteacc[k].n)
+                        r: floor(paletteacc[k].r / paletteacc[k].n),
+                        g: floor(paletteacc[k].g / paletteacc[k].n),
+                        b: floor(paletteacc[k].b / paletteacc[k].n),
+                        a: floor(paletteacc[k].a / paletteacc[k].n)
                     };
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
                 if ((paletteacc[k].n / totalPixels < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
                     palette[k] = {
-                        r: Math.floor(Math.random() * 255),
-                        g: Math.floor(Math.random() * 255),
-                        b: Math.floor(Math.random() * 255),
-                        a: Math.floor(Math.random() * 255)
+                        r: floor(random() * 255),
+                        g: floor(random() * 255),
+                        b: floor(random() * 255),
+                        a: floor(random() * 255)
                     };
                 }
 
@@ -221,11 +218,11 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         }
 
         // loop through all pixels
-        for (let j = 0; j < imageData.height; j++) {
-            for (let i = 0; i < imageData.width; i++) {
+        for (let y = 0; y < imageData.height; y++) {
+            for (let x = 0; x < imageData.width; x++) {
 
-                // pixel index
-                let idx = (j * imageData.width + i) * 4;
+                // pixel index within imageData.data
+                let idx = (y * imageData.width + x) * 4
 
                 // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
                 let ci = 0;
@@ -233,7 +230,10 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 for (let k = 0; k < palette.length; k++) {
 
                     // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
-                    let cd = Math.abs(palette[k].r - imageData.data[idx]) + Math.abs(palette[k].g - imageData.data[idx + 1]) + Math.abs(palette[k].b - imageData.data[idx + 2]) + Math.abs(palette[k].a - imageData.data[idx + 3]);
+                    let cd = abs(palette[k].r - imageData.data[idx]) +
+                        abs(palette[k].g - imageData.data[idx + 1]) +
+                        abs(palette[k].b - imageData.data[idx + 2]) +
+                        abs(palette[k].a - imageData.data[idx + 3])
 
                     // Remember this color if this is the closest yet
                     if (cd < cdl) {
@@ -251,14 +251,13 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 paletteacc[ci].n++;
 
                 // update the indexed color array
-                arr[j + 1][i + 1] = ci;
+                colorArray[y + 1][x + 1] = ci;
 
-            }// End of i loop
-        }// End of j loop
-
+            }
+        }
     }// End of Repeat clustering step options.colorquantcycles times
 
-    return {array: arr, palette: palette};
+    return {array: colorArray, palette: palette};
 
 }
 
@@ -269,9 +268,9 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
 // Sampling a palette from imagedata
 function samplePalette(numberofcolors: number, imgd: ImageData): Palette {
-    var idx, palette = [];
-    for (var i = 0; i < numberofcolors; i++) {
-        idx = Math.floor(Math.random() * imgd.data.length / 4) * 4;
+    let idx, palette = [];
+    for (let i = 0; i < numberofcolors; i++) {
+        idx = floor(random() * imgd.data.length / 4) * 4;
         palette.push({
             r: imgd.data[idx],
             g: imgd.data[idx + 1],
@@ -289,14 +288,14 @@ function samplePalette(numberofcolors: number, imgd: ImageData): Palette {
 
 // Deterministic sampling a palette from imagedata: rectangular grid
 function samplePalette2(numberofcolors: number, imgd: ImageData): Palette {
-    var idx, palette = [], ni = Math.ceil(Math.sqrt(numberofcolors)), nj = Math.ceil(numberofcolors / ni),
+    let idx, palette = [], ni = ceil(sqrt(numberofcolors)), nj = ceil(numberofcolors / ni),
         vx = imgd.width / (ni + 1), vy = imgd.height / (nj + 1);
-    for (var j = 0; j < nj; j++) {
-        for (var i = 0; i < ni; i++) {
+    for (let j = 0; j < nj; j++) {
+        for (let i = 0; i < ni; i++) {
             if (palette.length === numberofcolors) {
                 break;
             } else {
-                idx = Math.floor(((j + 1) * vy) * imgd.width + ((i + 1) * vx)) * 4;
+                idx = floor(((j + 1) * vy) * imgd.width + ((i + 1) * vx)) * 4;
                 palette.push({
                     r: imgd.data[idx],
                     g: imgd.data[idx + 1],
@@ -311,20 +310,20 @@ function samplePalette2(numberofcolors: number, imgd: ImageData): Palette {
 
 // Generating a palette with numberofcolors
 function generatePalette(numberofcolors: number): Palette {
-    var palette = [], rcnt, gcnt, bcnt;
+    let palette = [], rcnt, gcnt, bcnt;
     if (numberofcolors < 8) {
 
         // Grayscale
-        var graystep = Math.floor(255 / (numberofcolors - 1));
-        for (var i = 0; i < numberofcolors; i++) {
+        let graystep = floor(255 / (numberofcolors - 1));
+        for (let i = 0; i < numberofcolors; i++) {
             palette.push({r: i * graystep, g: i * graystep, b: i * graystep, a: 255});
         }
 
     } else {
 
         // RGB color cube
-        var colorqnum = Math.floor(Math.pow(numberofcolors, 1 / 3)), // Number of points on each edge on the RGB color cube
-            colorstep = Math.floor(255 / (colorqnum - 1)), // distance between points
+        let colorqnum = floor(numberofcolors.pow(1 / 3)), // Number of points on each edge on the RGB color cube
+            colorstep = floor(255 / (colorqnum - 1)), // distance between points
             rndnum = numberofcolors - colorqnum * colorqnum * colorqnum; // number of random colors
 
         for (rcnt = 0; rcnt < colorqnum; rcnt++) {
@@ -338,10 +337,10 @@ function generatePalette(numberofcolors: number): Palette {
         // Rest is random
         for (rcnt = 0; rcnt < rndnum; rcnt++) {
             palette.push({
-                r: Math.floor(Math.random() * 255),
-                g: Math.floor(Math.random() * 255),
-                b: Math.floor(Math.random() * 255),
-                a: Math.floor(Math.random() * 255)
+                r: floor(random() * 255),
+                g: floor(random() * 255),
+                b: floor(random() * 255),
+                a: floor(random() * 255)
             });
         }
 
@@ -355,7 +354,7 @@ function generatePalette(numberofcolors: number): Palette {
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 function layering(ii: IndexedImage): NumberArray3D {
     // Creating layers for each indexed color in arr
-    var layers = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
+    let layers = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
         i, j, k;
 
     // Create layers
@@ -389,13 +388,13 @@ function layering(ii: IndexedImage): NumberArray3D {
             // this pixel's type and looking back on previous pixels
             layers[val][j + 1][i + 1] = 1 + n5 * 2 + n8 * 4 + n7 * 8;
             if (!n4) {
-                layers[val][j + 1][i] = 0 + 2 + n7 * 4 + n6 * 8;
+                layers[val][j + 1][i] = 2 + n7 * 4 + n6 * 8;
             }
             if (!n2) {
-                layers[val][j][i + 1] = 0 + n3 * 2 + n5 * 4 + 8;
+                layers[val][j][i + 1] = n3 * 2 + n5 * 4 + 8;
             }
             if (!n1) {
-                layers[val][j][i] = 0 + n2 * 2 + 4 + n4 * 8;
+                layers[val][j][i] = n2 * 2 + 4 + n4 * 8;
             }
 
         }// End of i loop
@@ -409,7 +408,7 @@ function layering(ii: IndexedImage): NumberArray3D {
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 function layeringStep(ii: IndexedImage, cnum: number): NumberArray2D {
     // Creating layers for each indexed color in arr
-    var layer = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
+    let layer = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
         i, j, k;
 
     // Create layer
@@ -437,9 +436,9 @@ function layeringStep(ii: IndexedImage, cnum: number): NumberArray2D {
 
 // Point in polygon test
 function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean {
-    var isin = false;
+    let isin = false;
 
-    for (var i = 0, j = pointsList.length - 1; i < pointsList.length; j = i++) {
+    for (let i = 0, j = pointsList.length - 1; i < pointsList.length; j = i++) {
         isin =
             (((pointsList[i].y > point.y) !== (pointsList[j].y > point.y)) &&
                 (point.x < (pointsList[j].x - pointsList[i].x) * (point.y - pointsList[i].y) / (pointsList[j].y - pointsList[i].y) + pointsList[i].x))
@@ -451,11 +450,11 @@ function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
 function pathscan(arr, pathomit) {
-    var paths = [], pacnt = 0, pcnt = 0, px = 0, py = 0, w = arr[0].length, h = arr.length,
+    let paths = [], pacnt = 0, pcnt = 0, px = 0, py = 0, w = arr[0].length, h = arr.length,
         dir = 0, pathfinished = true, holepath = false, lookuprow;
 
-    for (var j = 0; j < h; j++) {
-        for (var i = 0; i < w; i++) {
+    for (let j = 0; j < h; j++) {
+        for (let i = 0; i < w; i++) {
             if ((arr[j][i] == 4) || (arr[j][i] == 11)) { // Other values are not valid
 
                 // Init
@@ -509,13 +508,13 @@ function pathscan(arr, pathomit) {
                             paths.pop();
                         } else {
 
-                            paths[pacnt].isholepath = holepath ? true : false;
+                            paths[pacnt].isholepath = holepath;
 
                             // Finding the parent shape for this hole
                             if (holepath) {
 
-                                var parentidx = 0, parentbbox = [-1, -1, w + 1, h + 1];
-                                for (var parentcnt = 0; parentcnt < pacnt; parentcnt++) {
+                                let parentidx = 0, parentbbox = [-1, -1, w + 1, h + 1];
+                                for (let parentcnt = 0; parentcnt < pacnt; parentcnt++) {
                                     if ((!paths[parentcnt].isholepath) &&
                                         boundingboxincludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
                                         boundingboxincludes(parentbbox, paths[parentcnt].boundingbox) &&
@@ -554,8 +553,8 @@ function boundingboxincludes(parentbbox, childbbox) {
 
 // 3. Batch pathscan
 function batchpathscan(layers, pathomit) {
-    var bpaths = [];
-    for (var k in layers) {
+    let bpaths = [];
+    for (let k in layers) {
         if (!layers.hasOwnProperty(k)) {
             continue;
         }
@@ -566,7 +565,7 @@ function batchpathscan(layers, pathomit) {
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function internodes(paths, options) {
-    var ins = [], palen = 0, nextidx = 0, nextidx2 = 0, previdx = 0, previdx2 = 0, pacnt, pcnt;
+    let ins = [], palen = 0, nextidx = 0, nextidx2 = 0, previdx = 0, previdx2 = 0, pacnt, pcnt;
 
     // paths loop
     for (pacnt = 0; pacnt < paths.length; pacnt++) {
@@ -657,7 +656,7 @@ function testrightangle(path, idx1, idx2, idx3, idx4, idx5) {
 // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
 
 function getdirection(x1, y1, x2, y2) {
-    var val = 8;
+    let val = 8;
     if (x1 < x2) {
         if (y1 < y2) {
             val = 1;
@@ -696,8 +695,8 @@ function getdirection(x1, y1, x2, y2) {
 
 // 4. Batch interpollation
 function batchinternodes(bpaths, options) {
-    var binternodes = [];
-    for (var k in bpaths) {
+    let binternodes = [];
+    for (let k in bpaths) {
         if (!bpaths.hasOwnProperty(k)) {
             continue;
         }
@@ -707,7 +706,7 @@ function batchinternodes(bpaths, options) {
 }
 
 function tracepath(path, ltres, qtres) {
-    var pcnt = 0, segtype1, segtype2, seqend;
+    let pcnt = 0, segtype1, segtype2, seqend;
 
     const smp = {
         segments: [],
@@ -757,16 +756,16 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
         return [];
     }
     // variables
-    var errorpoint = seqstart, errorval = 0, curvepass = true, px, py, dist2;
-    var tl = (seqend - seqstart);
+    let errorpoint = seqstart, errorval = 0, curvepass = true, px, py, dist2;
+    let tl = (seqend - seqstart);
     if (tl < 0) {
         tl += path.points.length;
     }
-    var vx = (path.points[seqend].x - path.points[seqstart].x) / tl,
+    let vx = (path.points[seqend].x - path.points[seqstart].x) / tl,
         vy = (path.points[seqend].y - path.points[seqstart].y) / tl;
 
     // 5.2. Fit a straight line on the sequence
-    var pcnt = (seqstart + 1) % path.points.length, pl;
+    let pcnt = (seqstart + 1) % path.points.length, pl;
     while (pcnt != seqend) {
         pl = pcnt - seqstart;
         if (pl < 0) {
@@ -796,14 +795,14 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
     }
 
     // 5.3. If the straight line fails (distance error>ltres), find the point with the biggest error
-    var fitpoint = errorpoint;
+    let fitpoint = errorpoint;
     curvepass = true;
     errorval = 0;
 
     // 5.4. Fit a quadratic spline through this point, measure errors on every point in the sequence
     // helpers and projecting to get control point
-    var t = (fitpoint - seqstart) / tl, t1 = (1 - t) * (1 - t), t2 = 2 * (1 - t) * t, t3 = t * t;
-    var cpx = (t1 * path.points[seqstart].x + t3 * path.points[seqend].x - path.points[fitpoint].x) / -t2,
+    let t = (fitpoint - seqstart) / tl, t1 = (1 - t) * (1 - t), t2 = 2 * (1 - t) * t, t3 = t * t;
+    let cpx = (t1 * path.points[seqstart].x + t3 * path.points[seqend].x - path.points[fitpoint].x) / -t2,
         cpy = (t1 * path.points[seqstart].y + t3 * path.points[seqend].y - path.points[fitpoint].y) / -t2;
 
     // Check every point
@@ -840,7 +839,7 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
         }];
     }
     // 5.5. If the spline fails (distance error>qtres), find the point with the biggest error
-    var splitpoint = fitpoint; // Earlier: Math.floor((fitpoint + errorpoint)/2);
+    let splitpoint = fitpoint; // Earlier: floor((fitpoint + errorpoint)/2);
 
     // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
     return fitseq(path, ltres, qtres, seqstart, splitpoint).concat(
@@ -856,8 +855,8 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
 
 // 5. Batch tracing paths
 function batchtracepaths(internodepaths, ltres, qtres) {
-    var btracedpaths = [];
-    for (var k in internodepaths) {
+    let btracedpaths = [];
+    for (let k in internodepaths) {
         if (!internodepaths.hasOwnProperty(k)) {
             continue;
         }
@@ -868,8 +867,8 @@ function batchtracepaths(internodepaths, ltres, qtres) {
 
 // 5. Batch tracing layers
 function batchtracelayers(binternodes, ltres, qtres) {
-    var btbis = [];
-    for (var k in binternodes) {
+    let btbis = [];
+    for (let k in binternodes) {
         if (!binternodes.hasOwnProperty(k)) {
             continue;
         }
@@ -886,7 +885,7 @@ function roundtodec(val, places = 0) {
 // Getting SVG path element string from a traced path
 function svgpathstring(tracedata, lnum, pathnum, options) {
 
-    var layer = tracedata.layers[lnum], smp = layer[pathnum], str = '', pcnt;
+    let layer = tracedata.layers[lnum], smp = layer[pathnum], str = '', pcnt;
 
     // Line filter
     if (options.linefilter && (smp.segments.length < 3)) {
@@ -921,8 +920,8 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
     }// End of creating non-hole path string
 
     // Hole children
-    for (var hcnt = 0; hcnt < smp.holechildren.length; hcnt++) {
-        var hsmp = layer[smp.holechildren[hcnt]];
+    for (let hcnt = 0; hcnt < smp.holechildren.length; hcnt++) {
+        let hsmp = layer[smp.holechildren[hcnt]];
         // Creating hole path string
         if (options.roundcoords === -1) {
 
@@ -982,8 +981,8 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
         }
 
         // Hole children control points
-        for (var hcnt = 0; hcnt < smp.holechildren.length; hcnt++) {
-            var hsmp = layer[smp.holechildren[hcnt]];
+        for (let hcnt = 0; hcnt < smp.holechildren.length; hcnt++) {
+            let hsmp = layer[smp.holechildren[hcnt]];
             for (pcnt = 0; pcnt < hsmp.segments.length; pcnt++) {
                 if (hsmp.segments[pcnt].hasOwnProperty('x3') && options.qcpr) {
                     str += '<circle cx="' + hsmp.segments[pcnt].x2 * options.scale + '" cy="' + hsmp.segments[pcnt].y2 * options.scale + '" r="' + options.qcpr + '" fill="cyan" stroke-width="' + options.qcpr * 0.2 + '" stroke="black" />';
@@ -1009,15 +1008,15 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
     options = checkOptions(options);
 
-    var w = traceData.width * options.scale, h = traceData.height * options.scale;
+    let w = traceData.width * options.scale, h = traceData.height * options.scale;
 
     // SVG start
-    var svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 ' + w + ' ' + h + '" ') : ('width="' + w + '" height="' + h + '" ')) +
+    let svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 ' + w + ' ' + h + '" ') : ('width="' + w + '" height="' + h + '" ')) +
         'version="1.1" xmlns="http://www.w3.org/2000/svg" >';
 
     // Drawing: Layers and Paths loops
-    for (var lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
-        for (var pcnt = 0; pcnt < traceData.layers[lcnt].length; pcnt++) {
+    for (let lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
+        for (let pcnt = 0; pcnt < traceData.layers[lcnt].length; pcnt++) {
 
             // Adding SVG <path> string
             if (!traceData.layers[lcnt][pcnt].isholepath) {
@@ -1057,7 +1056,7 @@ function tosvgcolorstr(c, options) {
 
 // Helper function: Appending an <svg> element to a container from an svgstring
 function appendSVGString(svgstr, parentid) {
-    var div;
+    let div;
     if (parentid) {
         div = document.getElementById(parentid);
         if (!div) {
@@ -1075,24 +1074,24 @@ function appendSVGString(svgstr, parentid) {
 // Selective Gaussian blur for preprocessing
 // BH: Probably safe to remove this if we're not going to be implementing or using any blur
 function blur(imgd: ImageData, radius, delta): ImageData {
-    var i, j, k, d, idx, racc, gacc, bacc, aacc, wacc;
+    let i, j, k, d, idx, racc, gacc, bacc, aacc, wacc;
 
     // new ImageData
-    var imgd2: ImageData = {width: imgd.width, height: imgd.height, data: Buffer.from([])};
+    let imgd2: ImageData = {width: imgd.width, height: imgd.height, data: Buffer.from([])};
 
     // radius and delta limits, this kernel
-    radius = Math.floor(radius);
+    radius = floor(radius);
     if (radius < 1) {
         return imgd;
     }
     if (radius > 5) {
         radius = 5;
     }
-    delta = Math.abs(delta);
+    delta = abs(delta);
     if (delta > 1024) {
         delta = 1024;
     }
-    var thisgk = gaussianKernels[radius - 1];
+    let thisgk = gaussianKernels[radius - 1];
 
     // loop through all pixels, horizontal blur
     for (j = 0; j < imgd.height; j++) {
@@ -1117,16 +1116,16 @@ function blur(imgd: ImageData, radius, delta): ImageData {
             }
             // The new pixel
             idx = (j * imgd.width + i) * 4;
-            imgd2.data[idx] = Math.floor(racc / wacc);
-            imgd2.data[idx + 1] = Math.floor(gacc / wacc);
-            imgd2.data[idx + 2] = Math.floor(bacc / wacc);
-            imgd2.data[idx + 3] = Math.floor(aacc / wacc);
+            imgd2.data[idx] = floor(racc / wacc);
+            imgd2.data[idx + 1] = floor(gacc / wacc);
+            imgd2.data[idx + 2] = floor(bacc / wacc);
+            imgd2.data[idx + 3] = floor(aacc / wacc);
 
         }// End of width loop
     }// End of horizontal blur
 
     // copying the half blurred imgd2
-    var himgd = new Uint8ClampedArray(imgd2.data);
+    let himgd = new Uint8ClampedArray(imgd2.data);
 
     // loop through all pixels, vertical blur
     for (j = 0; j < imgd.height; j++) {
@@ -1151,10 +1150,10 @@ function blur(imgd: ImageData, radius, delta): ImageData {
             }
             // The new pixel
             idx = (j * imgd.width + i) * 4;
-            imgd2.data[idx] = Math.floor(racc / wacc);
-            imgd2.data[idx + 1] = Math.floor(gacc / wacc);
-            imgd2.data[idx + 2] = Math.floor(bacc / wacc);
-            imgd2.data[idx + 3] = Math.floor(aacc / wacc);
+            imgd2.data[idx] = floor(racc / wacc);
+            imgd2.data[idx + 1] = floor(gacc / wacc);
+            imgd2.data[idx + 2] = floor(bacc / wacc);
+            imgd2.data[idx + 3] = floor(aacc / wacc);
 
         }// End of width loop
     }// End of vertical blur
@@ -1165,8 +1164,8 @@ function blur(imgd: ImageData, radius, delta): ImageData {
 
             idx = (j * imgd.width + i) * 4;
             // d is the difference between the blurred and the original pixel
-            d = Math.abs(imgd2.data[idx] - imgd.data[idx]) + Math.abs(imgd2.data[idx + 1] - imgd.data[idx + 1]) +
-                Math.abs(imgd2.data[idx + 2] - imgd.data[idx + 2]) + Math.abs(imgd2.data[idx + 3] - imgd.data[idx + 3]);
+            d = abs(imgd2.data[idx] - imgd.data[idx]) + abs(imgd2.data[idx + 1] - imgd.data[idx + 1]) +
+                abs(imgd2.data[idx + 2] - imgd.data[idx + 2]) + abs(imgd2.data[idx + 3] - imgd.data[idx + 3]);
             // selective blur: if d>delta, put the original pixel back
             if (d > delta) {
                 imgd2.data[idx] = imgd.data[idx];

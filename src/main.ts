@@ -16,7 +16,9 @@ async function test() {
     let imageData: ImageData = PNGImageDataToImageData(pngImageData)
 
     logD("Converting ImageData to SVG string...")
-    let svg: string = imageDataToSVG(imageData, optionDetailed)
+    const options = optionDetailed
+    options.layering = 1
+    let svg: string = imageDataToSVG(imageData, options)
 
     logD("Writing output svg file...")
     writeFileSync("./out/test.svg", svg)

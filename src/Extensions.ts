@@ -1,3 +1,5 @@
+import {abs, ceil, floor, pow, sqrt} from "./Utils";
+
 declare global {
     interface Array<T> {
         contains(element: T): boolean
@@ -19,6 +21,18 @@ declare global {
         toJson(space: number): string
 
         properties(): Array<{ key: string, value: any, type: any }>
+    }
+
+    interface Number {
+        abs(): number
+
+        floor(): number
+
+        ceil(): number
+
+        sqrt(): number
+
+        pow(exponent: number): number
     }
 }
 export default function () {
@@ -69,4 +83,30 @@ export default function () {
                 return {key: key, value: this[key], type: typeof this[key]}
             })
         }
+
+    if (!Number.prototype.abs)
+        Number.prototype.abs = function (this: number): number {
+            return abs(this)
+        }
+
+    if (!Number.prototype.floor)
+        Number.prototype.floor = function (this: number): number {
+            return floor(this)
+        }
+
+    if (!Number.prototype.ceil)
+        Number.prototype.ceil = function (this: number): number {
+            return ceil(this)
+        }
+
+    if (!Number.prototype.sqrt)
+        Number.prototype.sqrt = function (this: number): number {
+            return sqrt(this)
+        }
+
+    if (!Number.prototype.pow)
+        Number.prototype.pow = function (this: number, exponent: number): number {
+            return pow(this, exponent)
+        }
+
 }
