@@ -864,25 +864,22 @@ function batchtracelayers(binternodes, ltres, qtres) {
 }
 
 // Rounding to given decimals https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-function roundtodec(val, places = 0) {
-    return +val.toFixed(places);
+function roundtodec(val: number, places: number = 0) {
+    return +val.toFixed(places)
 }
 
 // Getting SVG path element string from a traced path
-function svgpathstring(tracedata, lnum, pathnum, options) {
+function svgpathstring(tracedata: TraceData, lnum: number, pathnum: number, options: Options): string {
 
-    let layer = tracedata.layers[lnum], smp = layer[pathnum], str = '', pcnt;
+    let layer = tracedata.layers[lnum], smp = layer[pathnum], str = '', pcnt
 
     // Line filter
-    if (options.linefilter && (smp.segments.length < 3)) {
+    if (options.lineFilter && (smp.segments.length < 3)) {
         return str;
     }
 
     // Starting path element, desc contains layer and path number
-    str = '<path ' +
-        (options.desc ? ('desc="l ' + lnum + ' p ' + pathnum + '" ') : '') +
-        tosvgcolorstr(tracedata.palette[lnum], options) +
-        'd="';
+    str = `<path ${tosvgcolorstr(tracedata.palette[lnum], options)}d="`
 
     // Creating non-hole path string
     if (options.roundcoords === -1) {
@@ -992,13 +989,9 @@ function svgpathstring(tracedata, lnum, pathnum, options) {
  */
 function getSvgString(traceData: TraceData, options: Options): string {
 
-    options = checkOptions(options);
+    options = checkOptions(options)
 
-    let w = traceData.width * options.scale, h = traceData.height * options.scale;
-
-    // SVG start
-    let svgstr = '<svg ' + (options.viewbox ? ('viewBox="0 0 ' + w + ' ' + h + '" ') : ('width="' + w + '" height="' + h + '" ')) +
-        'version="1.1" xmlns="http://www.w3.org/2000/svg" >';
+    let svgString = `<svg width="${traceData.width}" height="${traceData.height}" xmlns="http://www.w3.org/2000/svg" >`
 
     // Drawing: Layers and Paths loops
     for (let lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
@@ -1006,16 +999,16 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
             // Adding SVG <path> string
             if (!traceData.layers[lcnt][pcnt].isholepath) {
-                svgstr += svgpathstring(traceData, lcnt, pcnt, options);
+                svgString += svgpathstring(traceData, lcnt, pcnt, options);
             }
 
         }// End of paths loop
     }// End of layers loop
 
     // SVG End
-    svgstr += '</svg>';
+    svgString += '</svg>'
 
-    return svgstr;
+    return svgString;
 
 }
 
@@ -1025,8 +1018,8 @@ function toRGBA(c: Color): string {
 }
 
 // Convert color object to SVG color string
-function tosvgcolorstr(c, options) {
-    return 'fill="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke-width="' + options.strokewidth + '" opacity="' + c.a / 255.0 + '" ';
+function tosvgcolorstr(c: Color, options: Options): string {
+    return 'fill="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke-width="' + options.strokeWidth + '" opacity="' + c.a / 255.0 + '" ';
 }
 
 export type ImageData = {

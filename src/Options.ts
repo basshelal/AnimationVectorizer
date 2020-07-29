@@ -1,11 +1,9 @@
 import {Palette} from "./ImageTracer";
 
 export type Options = {
-    corsEnabled?: boolean,
     lineThreshold?: number,
     qSplineThreshold?: number,
     pathomit?: number,
-    enhanceRightAngles?: boolean,
 
     // Color quantization
     colorSampling?: number,
@@ -19,10 +17,8 @@ export type Options = {
     // SVG rendering
     strokeWidth?: number,
     lineFilter?: boolean,
-    scale?: number,
+    scale?: number, // TODO delete this we don't need it!
     roundcoords?: number,
-    viewbox?: boolean,
-    desc?: boolean,
     lcpr?: number,
     qcpr?: number,
 
@@ -34,11 +30,9 @@ export type Options = {
 }
 
 export const optionDefault: Options = {
-    corsEnabled: false,
     lineThreshold: 1,
     qSplineThreshold: 1,
     pathomit: 8,
-    enhanceRightAngles: true,
     colorSampling: 2,
     colorsNumber: 16,
     mincolorratio: 0,
@@ -48,8 +42,6 @@ export const optionDefault: Options = {
     lineFilter: false,
     scale: 1,
     roundcoords: 1,
-    viewbox: false,
-    desc: false,
     lcpr: 0,
     qcpr: 0,
     blurRadius: 0,
@@ -70,7 +62,6 @@ export const optionPosterized3: Options = {
     lineThreshold: 1,
     qSplineThreshold: 1,
     pathomit: 20,
-    enhanceRightAngles: true,
     colorSampling: 0,
     colorsNumber: 3,
     mincolorratio: 0,
@@ -86,7 +77,6 @@ export const optionPosterized3: Options = {
 export const optionCurvy: Options = {
     lineThreshold: 0.01,
     lineFilter: true,
-    enhanceRightAngles: false
 }
 
 export const optionSharp: Options = {
