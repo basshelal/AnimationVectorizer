@@ -24,15 +24,6 @@ const pathScanCombinedLookup: NumberArray3D = [
     [[-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1]]// arr[py][px]===15 is invalid
 ]
 
-// Gaussian kernels for blur
-const gaussianKernels: NumberArray2D = [
-    [0.27901, 0.44198, 0.27901],
-    [0.135336, 0.228569, 0.272192, 0.228569, 0.135336],
-    [0.086776, 0.136394, 0.178908, 0.195843, 0.178908, 0.136394, 0.086776],
-    [0.063327, 0.093095, 0.122589, 0.144599, 0.152781, 0.144599, 0.122589, 0.093095, 0.063327],
-    [0.049692, 0.069304, 0.089767, 0.107988, 0.120651, 0.125194, 0.120651, 0.107988, 0.089767, 0.069304, 0.049692]
-]
-
 /**
  * Converts the passed in `imageData` with the desired `options` into an SVG `string`
  */
@@ -138,7 +129,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     const colorArray: NumberArray2D = []
 
-    const paletteacc: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
+    const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
     // TODO what is n??? This is a function scoped object so we can easily deduce this :P
     //  n is some kind of index
 
@@ -176,31 +167,26 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         palette = samplePalette2(options.colorsNumber, imageData);
     }
 
-    // Selective Gaussian blur preprocessing
-    if (options.blurRadius > 0) {
-        imageData = blur(imageData, options.blurRadius, options.blurDelta);
-    }
-
     // Repeat clustering step options.colorquantcycles times
     for (let cnt = 0; cnt < options.colorquantcycles; cnt++) {
 
         // Average colors from the second iteration
         if (cnt > 0) {
-            // averaging paletteacc for palette
+            // averaging accumulatorPalette for palette
             for (let k = 0; k < palette.length; k++) {
 
                 // averaging
-                if (paletteacc[k].n > 0) {
+                if (accumulatorPalette[k].n > 0) {
                     palette[k] = {
-                        r: floor(paletteacc[k].r / paletteacc[k].n),
-                        g: floor(paletteacc[k].g / paletteacc[k].n),
-                        b: floor(paletteacc[k].b / paletteacc[k].n),
-                        a: floor(paletteacc[k].a / paletteacc[k].n)
+                        r: floor(accumulatorPalette[k].r / accumulatorPalette[k].n),
+                        g: floor(accumulatorPalette[k].g / accumulatorPalette[k].n),
+                        b: floor(accumulatorPalette[k].b / accumulatorPalette[k].n),
+                        a: floor(accumulatorPalette[k].a / accumulatorPalette[k].n)
                     };
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
-                if ((paletteacc[k].n / totalPixels < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
+                if ((accumulatorPalette[k].n / totalPixels < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
                     palette[k] = {
                         r: floor(random() * 255),
                         g: floor(random() * 255),
@@ -214,7 +200,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
         // Reseting palette accumulator for averaging
         for (let i = 0; i < palette.length; i++) {
-            paletteacc[i] = {r: 0, g: 0, b: 0, a: 0, n: 0};
+            accumulatorPalette[i] = {r: 0, g: 0, b: 0, a: 0, n: 0};
         }
 
         // loop through all pixels
@@ -244,11 +230,11 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 }// End of palette loop
 
                 // add to palettacc
-                paletteacc[ci].r += imageData.data[idx];
-                paletteacc[ci].g += imageData.data[idx + 1];
-                paletteacc[ci].b += imageData.data[idx + 2];
-                paletteacc[ci].a += imageData.data[idx + 3];
-                paletteacc[ci].n++;
+                accumulatorPalette[ci].r += imageData.data[idx];
+                accumulatorPalette[ci].g += imageData.data[idx + 1];
+                accumulatorPalette[ci].b += imageData.data[idx + 2];
+                accumulatorPalette[ci].a += imageData.data[idx + 3];
+                accumulatorPalette[ci].n++;
 
                 // update the indexed color array
                 colorArray[y + 1][x + 1] = ci;
@@ -1033,151 +1019,14 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
 }
 
-// Comparator for numeric Array.sort
-function compareNumbers(a, b) {
-    return a - b;
-}
-
 // Convert color object to rgba stringfunction
 function toRGBA(c: Color): string {
     return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + c.a + ')';
 }
 
-////////////////////////////////////////////////////////////
-//
-//  Canvas functions
-//
-////////////////////////////////////////////////////////////
-
 // Convert color object to SVG color string
 function tosvgcolorstr(c, options) {
     return 'fill="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke-width="' + options.strokewidth + '" opacity="' + c.a / 255.0 + '" ';
-}
-
-// Helper function: Appending an <svg> element to a container from an svgstring
-function appendSVGString(svgstr, parentid) {
-    let div;
-    if (parentid) {
-        div = document.getElementById(parentid);
-        if (!div) {
-            div = document.createElement('div');
-            div.id = parentid;
-            document.body.appendChild(div);
-        }
-    } else {
-        div = document.createElement('div');
-        document.body.appendChild(div);
-    }
-    div.innerHTML += svgstr;
-}
-
-// Selective Gaussian blur for preprocessing
-// BH: Probably safe to remove this if we're not going to be implementing or using any blur
-function blur(imgd: ImageData, radius, delta): ImageData {
-    let i, j, k, d, idx, racc, gacc, bacc, aacc, wacc;
-
-    // new ImageData
-    let imgd2: ImageData = {width: imgd.width, height: imgd.height, data: Buffer.from([])};
-
-    // radius and delta limits, this kernel
-    radius = floor(radius);
-    if (radius < 1) {
-        return imgd;
-    }
-    if (radius > 5) {
-        radius = 5;
-    }
-    delta = abs(delta);
-    if (delta > 1024) {
-        delta = 1024;
-    }
-    let thisgk = gaussianKernels[radius - 1];
-
-    // loop through all pixels, horizontal blur
-    for (j = 0; j < imgd.height; j++) {
-        for (i = 0; i < imgd.width; i++) {
-
-            racc = 0;
-            gacc = 0;
-            bacc = 0;
-            aacc = 0;
-            wacc = 0;
-            // gauss kernel loop
-            for (k = -radius; k < radius + 1; k++) {
-                // add weighted color values
-                if ((i + k > 0) && (i + k < imgd.width)) {
-                    idx = (j * imgd.width + i + k) * 4;
-                    racc += imgd.data[idx] * thisgk[k + radius];
-                    gacc += imgd.data[idx + 1] * thisgk[k + radius];
-                    bacc += imgd.data[idx + 2] * thisgk[k + radius];
-                    aacc += imgd.data[idx + 3] * thisgk[k + radius];
-                    wacc += thisgk[k + radius];
-                }
-            }
-            // The new pixel
-            idx = (j * imgd.width + i) * 4;
-            imgd2.data[idx] = floor(racc / wacc);
-            imgd2.data[idx + 1] = floor(gacc / wacc);
-            imgd2.data[idx + 2] = floor(bacc / wacc);
-            imgd2.data[idx + 3] = floor(aacc / wacc);
-
-        }// End of width loop
-    }// End of horizontal blur
-
-    // copying the half blurred imgd2
-    let himgd = new Uint8ClampedArray(imgd2.data);
-
-    // loop through all pixels, vertical blur
-    for (j = 0; j < imgd.height; j++) {
-        for (i = 0; i < imgd.width; i++) {
-
-            racc = 0;
-            gacc = 0;
-            bacc = 0;
-            aacc = 0;
-            wacc = 0;
-            // gauss kernel loop
-            for (k = -radius; k < radius + 1; k++) {
-                // add weighted color values
-                if ((j + k > 0) && (j + k < imgd.height)) {
-                    idx = ((j + k) * imgd.width + i) * 4;
-                    racc += himgd[idx] * thisgk[k + radius];
-                    gacc += himgd[idx + 1] * thisgk[k + radius];
-                    bacc += himgd[idx + 2] * thisgk[k + radius];
-                    aacc += himgd[idx + 3] * thisgk[k + radius];
-                    wacc += thisgk[k + radius];
-                }
-            }
-            // The new pixel
-            idx = (j * imgd.width + i) * 4;
-            imgd2.data[idx] = floor(racc / wacc);
-            imgd2.data[idx + 1] = floor(gacc / wacc);
-            imgd2.data[idx + 2] = floor(bacc / wacc);
-            imgd2.data[idx + 3] = floor(aacc / wacc);
-
-        }// End of width loop
-    }// End of vertical blur
-
-    // Selective blur: loop through all pixels
-    for (j = 0; j < imgd.height; j++) {
-        for (i = 0; i < imgd.width; i++) {
-
-            idx = (j * imgd.width + i) * 4;
-            // d is the difference between the blurred and the original pixel
-            d = abs(imgd2.data[idx] - imgd.data[idx]) + abs(imgd2.data[idx + 1] - imgd.data[idx + 1]) +
-                abs(imgd2.data[idx + 2] - imgd.data[idx + 2]) + abs(imgd2.data[idx + 3] - imgd.data[idx + 3]);
-            // selective blur: if d>delta, put the original pixel back
-            if (d > delta) {
-                imgd2.data[idx] = imgd.data[idx];
-                imgd2.data[idx + 1] = imgd.data[idx + 1];
-                imgd2.data[idx + 2] = imgd.data[idx + 2];
-                imgd2.data[idx + 3] = imgd.data[idx + 3];
-            }
-        }
-    }// End of Selective blur
-
-    return imgd2;
-
 }
 
 export type ImageData = {
