@@ -1,5 +1,7 @@
+// Original Library https://github.com/jankovicsandras/imagetracerjs
+
 import {optionPresets, Options} from "./Options";
-import {abs, ceil, floor, random, sqrt} from "./Utils";
+import {abs, floor, from, logD, random} from "./Utils";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -55,12 +57,12 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     if (options.layering === 0) {// Sequential layering
 
         // create tracedata object
-        traceData = {
+        traceData = new TraceData({
             layers: [],
             palette: indexedImage.palette,
             width: indexedImage.array[0].length - 2,
             height: indexedImage.array.length - 2
-        };
+        })
 
         // Loop to trace each color layer
         for (let colornum = 0; colornum < indexedImage.palette.length; colornum++) {
@@ -95,12 +97,12 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
         const bis = batchinternodes(bps, options);
 
         // 5. Batch tracing and creating tracedata object
-        traceData = {
+        traceData = new TraceData({
             layers: batchtracelayers(bis, options.lineThreshold, options.qSplineThreshold),
             palette: indexedImage.palette,
             width: imageData.width,
             height: imageData.height
-        };
+        })
 
     }// End of parallel layering
 
@@ -149,6 +151,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     // Filling colorArray (color index array) with -1
     // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathscan
+    //  for a border perhaps??
     for (let y = 0; y < imageData.height + 2; y++) {
         colorArray[y] = []
         for (let x = 0; x < imageData.width + 2; x++) {
@@ -156,16 +159,8 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         }
     }
 
-    // Use custom palette if pal is defined or sample / generate custom length palette
-    if (options.palette) {
-        palette = options.palette;
-    } else if (options.colorSampling === 0) {
-        palette = generatePalette(options.colorsNumber);
-    } else if (options.colorSampling === 1) {
-        palette = samplePalette(options.colorsNumber, imageData);
-    } else {
-        palette = samplePalette2(options.colorsNumber, imageData);
-    }
+    // TODO why are we generating a palette??
+    palette = generatePalette(options.colorsNumber, imageData)
 
     // Repeat clustering step options.colorquantcycles times
     for (let cnt = 0; cnt < options.colorquantcycles; cnt++) {
@@ -177,22 +172,22 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
                 // averaging
                 if (accumulatorPalette[k].n > 0) {
-                    palette[k] = {
+                    palette[k] = new Color({
                         r: floor(accumulatorPalette[k].r / accumulatorPalette[k].n),
                         g: floor(accumulatorPalette[k].g / accumulatorPalette[k].n),
                         b: floor(accumulatorPalette[k].b / accumulatorPalette[k].n),
                         a: floor(accumulatorPalette[k].a / accumulatorPalette[k].n)
-                    };
+                    })
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
                 if ((accumulatorPalette[k].n / totalPixels < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
-                    palette[k] = {
+                    palette[k] = new Color({
                         r: floor(random() * 255),
                         g: floor(random() * 255),
                         b: floor(random() * 255),
                         a: floor(random() * 255)
-                    };
+                    })
                 }
 
             }// End of palette loop
@@ -243,6 +238,8 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         }
     }// End of Repeat clustering step options.colorquantcycles times
 
+    palette.forEach(color => logD(color.toRGBA()))
+
     return {array: colorArray, palette: palette};
 
 }
@@ -252,87 +249,45 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 // 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
-// Sampling a palette from imagedata
-function samplePalette(numberofcolors: number, imgd: ImageData): Palette {
-    let idx, palette = [];
-    for (let i = 0; i < numberofcolors; i++) {
-        idx = floor(random() * imgd.data.length / 4) * 4;
-        palette.push({
-            r: imgd.data[idx],
-            g: imgd.data[idx + 1],
-            b: imgd.data[idx + 2],
-            a: imgd.data[idx + 3]
-        });
-    }
-    return palette;
-}
-
-// 2. Layer separation and edge detection
-// Edge node types ( ▓: this layer or 1; ░: not this layer or 0 )
-// 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
-// 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
-
 // Deterministic sampling a palette from imagedata: rectangular grid
-function samplePalette2(numberofcolors: number, imgd: ImageData): Palette {
-    let idx, palette = [], ni = ceil(sqrt(numberofcolors)), nj = ceil(numberofcolors / ni),
-        vx = imgd.width / (ni + 1), vy = imgd.height / (nj + 1);
-    for (let j = 0; j < nj; j++) {
-        for (let i = 0; i < ni; i++) {
-            if (palette.length === numberofcolors) {
-                break;
-            } else {
-                idx = floor(((j + 1) * vy) * imgd.width + ((i + 1) * vx)) * 4;
-                palette.push({
-                    r: imgd.data[idx],
-                    g: imgd.data[idx + 1],
-                    b: imgd.data[idx + 2],
-                    a: imgd.data[idx + 3]
-                });
+function generatePalette(colorsNumber: number, imageData: ImageData): Palette {
+    let palette: Palette = []
+
+    logD(`width: ${imageData.width}`)
+    logD(`height: ${imageData.height}`)
+
+    // Divide the image into blocks depending on the given colorsNumber
+    logD(`colorsNumber: ${colorsNumber}`)
+    let horizontalBlocks = colorsNumber.sqrt().ceil()
+    logD(`horizontalBlocks: ${horizontalBlocks}`)
+    let verticalBlocks = (colorsNumber / horizontalBlocks).ceil()
+    logD(`verticalBlocks: ${verticalBlocks}`)
+    let blockWidth = imageData.width / (horizontalBlocks + 1)
+    logD(`blockWidth: ${blockWidth}`)
+    let blockHeight = imageData.height / (verticalBlocks + 1)
+    logD(`blockHeight: ${blockHeight}`)
+
+    from(0).to(verticalBlocks).forEach(yBlock => {
+        from(0).to(horizontalBlocks).forEach(xBlock => {
+            if (palette.length === colorsNumber) return palette
+            else {
+                let idx = 4 * (((yBlock + 1) * blockHeight) * imageData.width + ((xBlock + 1) * blockWidth)).floor()
+                palette.push(new Color({
+                    r: imageData.data[idx],
+                    g: imageData.data[idx + 1],
+                    b: imageData.data[idx + 2],
+                    a: imageData.data[idx + 3]
+                }))
+
+                logD(`yBlock: ${yBlock}`)
+                logD(`xBlock: ${xBlock}`)
+                logD(`idx: ${idx}`)
             }
-        }
-    }
-    return palette;
-}
-
-// Generating a palette with numberofcolors
-function generatePalette(numberofcolors: number): Palette {
-    let palette = [], rcnt, gcnt, bcnt;
-    if (numberofcolors < 8) {
-
-        // Grayscale
-        let graystep = floor(255 / (numberofcolors - 1));
-        for (let i = 0; i < numberofcolors; i++) {
-            palette.push({r: i * graystep, g: i * graystep, b: i * graystep, a: 255});
-        }
-
-    } else {
-
-        // RGB color cube
-        let colorqnum = floor(numberofcolors.pow(1 / 3)), // Number of points on each edge on the RGB color cube
-            colorstep = floor(255 / (colorqnum - 1)), // distance between points
-            rndnum = numberofcolors - colorqnum * colorqnum * colorqnum; // number of random colors
-
-        for (rcnt = 0; rcnt < colorqnum; rcnt++) {
-            for (gcnt = 0; gcnt < colorqnum; gcnt++) {
-                for (bcnt = 0; bcnt < colorqnum; bcnt++) {
-                    palette.push({r: rcnt * colorstep, g: gcnt * colorstep, b: bcnt * colorstep, a: 255});
-                }// End of blue loop
-            }// End of green loop
-        }// End of red loop
-
-        // Rest is random
-        for (rcnt = 0; rcnt < rndnum; rcnt++) {
-            palette.push({
-                r: floor(random() * 255),
-                g: floor(random() * 255),
-                b: floor(random() * 255),
-                a: floor(random() * 255)
-            });
-        }
-
-    }// End of numberofcolors check
-
-    return palette;
+        })
+    })
+    palette.forEach(color => logD(color.toRGBA()))
+    logD(`paletteSize: ${palette.length}`)
+    return palette
 }
 
 // Lookup tables for pathscan
@@ -1022,22 +977,101 @@ function tosvgcolorstr(c: Color, options: Options): string {
     return 'fill="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke-width="' + options.strokeWidth + '" opacity="' + c.a / 255.0 + '" ';
 }
 
-export type ImageData = {
-    height: number
-    width: number
-    data: Buffer
+export class ImageData {
+    public height: number
+    public width: number
+    public data: Buffer
+    public totalPixels: number
+
+    constructor(imageData: { height: number, width: number, data: Buffer }) {
+        this.height = imageData.height
+        this.width = imageData.width
+        this.data = imageData.data
+        this.totalPixels = this.width * this.height
+    }
+
+    ensureRGBA(): ImageData {
+        if (this.data.length < this.totalPixels * 4) {
+            const newImgData = Buffer.alloc(this.totalPixels * 4)
+            from(0).to(this.totalPixels).forEach((pxIndex: number) => {
+                newImgData[pxIndex * 4] = this.data[pxIndex * 3] // r
+                newImgData[pxIndex * 4 + 1] = this.data[pxIndex * 3 + 1] // g
+                newImgData[pxIndex * 4 + 2] = this.data[pxIndex * 3 + 2] // b
+                newImgData[pxIndex * 4 + 3] = 255; // a
+            })
+            this.data = newImgData
+        }
+        return this
+    }
+
+    colorPixels(): Array<Color> {
+        this.ensureRGBA()
+        const result: Array<Color> = []
+        let pxIndex = 0
+        for (let dataIndex = 0; dataIndex < this.data.length; dataIndex += 4, pxIndex++) {
+            result[pxIndex] = new Color({
+                r: this.data[dataIndex],
+                g: this.data[dataIndex + 1],
+                b: this.data[dataIndex + 2],
+                a: this.data[dataIndex + 3]
+            })
+        }
+        return result
+    }
 }
 
-export type TraceData = {
-    layers: Array<any>,
-    palette: any,
-    width: number,
-    height: number
+export class TraceData {
+    public layers: Array<any>
+    public palette: Palette
+    public width: number
+    public height: number
+
+    constructor(traceData: {
+        layers: Array<any>,
+        palette: Palette,
+        width: number,
+        height: number
+    }) {
+        this.layers = traceData.layers
+        this.palette = traceData.palette
+        this.width = traceData.width
+        this.height = traceData.height
+    }
 }
 
-export type Color = {
-    r: number, g: number, b: number, a: number
+export class Color {
+
+    public r: number
+    public g: number
+    public b: number
+    public a: number
+
+    constructor(color: { r: number, g: number, b: number, a: number }) {
+        this.r = color.r
+        this.g = color.g
+        this.b = color.b
+        this.a = color.a
+    }
+
+    private static hex(channelValue: number): string {
+        let hex = Number(channelValue).toString(16)
+        if (hex.length < 2) hex = "0" + hex
+        return hex
+    }
+
+    toRGB(): string {
+        return `rgb(${this.r},${this.g},${this.b})`
+    }
+
+    toRGBA(): string {
+        return `rgba(${this.r},${this.g},${this.b},${this.a})`
+    }
+
+    toHex(ignoreAlpha: boolean = false): string {
+        return `${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${ignoreAlpha ? Color.hex(this.r) : ""}`
+    }
 }
+
 
 export type Palette = Array<Color>
 

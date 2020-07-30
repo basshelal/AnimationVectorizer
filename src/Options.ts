@@ -1,12 +1,9 @@
-import {Palette} from "./ImageTracer";
-
 export type Options = {
     lineThreshold?: number,
     qSplineThreshold?: number,
     pathomit?: number,
 
     // Color quantization
-    colorSampling?: number,
     colorsNumber?: number,
     mincolorratio?: number,
     colorquantcycles?: number,
@@ -25,15 +22,12 @@ export type Options = {
     // Blur
     blurRadius?: number,
     blurDelta?: number
-
-    palette?: Palette
 }
 
 export const optionDefault: Options = {
     lineThreshold: 1,
     qSplineThreshold: 1,
     pathomit: 8,
-    colorSampling: 2,
     colorsNumber: 16,
     mincolorratio: 0,
     colorquantcycles: 3,
@@ -62,7 +56,6 @@ export const optionPosterized3: Options = {
     lineThreshold: 1,
     qSplineThreshold: 1,
     pathomit: 20,
-    colorSampling: 0,
     colorsNumber: 3,
     mincolorratio: 0,
     colorquantcycles: 3,
@@ -71,7 +64,6 @@ export const optionPosterized3: Options = {
     strokeWidth: 0,
     lineFilter: false,
     roundcoords: 1,
-    palette: [{r: 0, g: 0, b: 100, a: 255}, {r: 255, g: 255, b: 255, a: 255}]
 }
 
 export const optionCurvy: Options = {
@@ -98,29 +90,16 @@ export const optionSmoothed: Options = {
 }
 
 export const optionGrayscale: Options = {
-    colorSampling: 0,
     colorquantcycles: 1,
     colorsNumber: 7
 }
 
 export const optionFixedPalette: Options = {
-    colorSampling: 0,
     colorquantcycles: 1,
     colorsNumber: 27
 }
 
-export const optionRandomSampling1: Options = {
-    colorSampling: 1,
-    colorsNumber: 8
-}
-
-export const optionRandomSampling2: Options = {
-    colorSampling: 1,
-    colorsNumber: 64
-}
-
 export const optionArtistic1: Options = {
-    colorSampling: 0,
     colorquantcycles: 1,
     pathomit: 0,
     blurRadius: 5,
@@ -133,7 +112,6 @@ export const optionArtistic1: Options = {
 
 export const optionArtistic2: Options = {
     qSplineThreshold: 0.01,
-    colorSampling: 0,
     colorquantcycles: 1,
     colorsNumber: 4,
     strokeWidth: 0
@@ -165,8 +143,6 @@ export const optionPresets = {
     smoothed: optionSmoothed,
     grayscale: optionGrayscale,
     fixedPalette: optionFixedPalette,
-    randomSampling1: optionRandomSampling1,
-    randomSampling2: optionRandomSampling2,
     artistic1: optionArtistic1,
     artistic2: optionArtistic2,
     artistic3: optionArtistic3,

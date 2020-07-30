@@ -1,6 +1,7 @@
 import * as electron from "electron";
 import * as moment from "moment";
 
+
 export const momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
 
 export function now(): string {
@@ -10,8 +11,8 @@ export function now(): string {
 export function logD(message: any, calledFrom: string = "") {
     if (!electron.app.isPackaged)
         console.log(
-            `${message.toString()}
-    ${calledFrom}`)
+            `${message.toString()} ${calledFrom}`
+        )
 }
 
 export function logE(message: any, calledFrom: string = "") {
@@ -24,6 +25,10 @@ export function logE(message: any, calledFrom: string = "") {
 export function assert(condition: boolean, message: string) {
     if (!electron.app.isPackaged)
         console.assert(condition, message)
+}
+
+export function json(value: any, space: number = 2): string {
+    return JSON.stringify(value, null, space)
 }
 
 export function abs(x: number): number {
@@ -48,4 +53,69 @@ export function pow(x: number, y: number): number {
 
 export function random(): number {
     return Math.random()
+}
+
+export class NumberRangeIterator implements Iterator<number> {
+
+    private current: number = 0
+
+    constructor(public fromInclusive: number, public toExclusive: number, public step: number) {
+        this.current = fromInclusive
+    }
+
+    next(...args: [] | [undefined]): IteratorResult<number> {
+        const value = this.current
+        const done = this.current === this.toExclusive
+        const result = {value: value, done: done}
+        this.current += this.step
+        return result
+    }
+
+    return(value?: any): IteratorResult<number> {
+        const done = this.current === this.toExclusive
+        return {value: value, done: done}
+    }
+
+    throw(e?: any): IteratorResult<number> {
+        const done = this.current === this.toExclusive
+        return {value: this.current, done: done}
+    }
+
+}
+
+export class NumberRange implements Iterable<number> {
+
+    constructor(public fromInclusive: number, public toExclusive: number, public stepBy: number = 1) {
+    }
+
+    [Symbol.iterator](): Iterator<number> {
+        return new NumberRangeIterator(this.fromInclusive, this.toExclusive, this.stepBy)
+    }
+
+    step(step: number): NumberRange {
+        this.stepBy = step
+        return this
+    }
+
+    forEach(callback: (number: number) => void): void {
+        for (let i of this) callback(i)
+    }
+
+    map<T>(callback: (number: number) => T): Array<T> {
+        const result: Array<T> = []
+        for (let i of this) result[i] = callback(i)
+        return result
+    }
+}
+
+export function range(fromInclusive: number, toExclusive: number, step: number = 1): NumberRange {
+    return new NumberRange(fromInclusive, toExclusive, step)
+}
+
+export function from(from: number) {
+    return {
+        to: function (to: number): NumberRange {
+            return range(from, to)
+        }
+    }
 }
