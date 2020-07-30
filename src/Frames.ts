@@ -1,6 +1,6 @@
 import {logD, now} from "./Utils";
 import {mkdirpSync} from "fs-extra";
-import ffmpeg from "./ffmpeg";
+import ffmpeg from "./Ffmpeg";
 
 export async function extractFrames(options: {
     videoFilePath: string,

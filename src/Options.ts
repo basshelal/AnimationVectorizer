@@ -8,11 +8,7 @@ export type Options = {
     mincolorratio?: number,
     colorquantcycles?: number,
 
-    // Layering method
-    layering?: number,
-
     // SVG rendering
-    strokeWidth?: number,
     lineFilter?: boolean,
     scale?: number, // TODO delete this we don't need it!
     roundcoords?: number,
@@ -31,8 +27,6 @@ export const optionDefault: Options = {
     colorsNumber: 16,
     mincolorratio: 0,
     colorquantcycles: 3,
-    layering: 0,
-    strokeWidth: 1,
     lineFilter: false,
     scale: 1,
     roundcoords: 1,
@@ -61,7 +55,6 @@ export const optionPosterized3: Options = {
     colorquantcycles: 3,
     blurRadius: 3,
     blurDelta: 20,
-    strokeWidth: 0,
     lineFilter: false,
     roundcoords: 1,
 }
@@ -107,14 +100,12 @@ export const optionArtistic1: Options = {
     lineThreshold: 0.01,
     lineFilter: true,
     colorsNumber: 16,
-    strokeWidth: 2
 }
 
 export const optionArtistic2: Options = {
     qSplineThreshold: 0.01,
     colorquantcycles: 1,
     colorsNumber: 4,
-    strokeWidth: 0
 }
 
 export const optionArtistic3: Options = {
@@ -129,7 +120,6 @@ export const optionArtistic4: Options = {
     colorsNumber: 64,
     blurRadius: 5,
     blurDelta: 256,
-    strokeWidth: 2
 }
 
 export const optionPresets = {

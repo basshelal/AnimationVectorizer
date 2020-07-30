@@ -2,7 +2,7 @@
   "name": "animation_vectorizer",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
+  "main": "src/Main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"

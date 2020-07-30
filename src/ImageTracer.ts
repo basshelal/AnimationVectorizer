@@ -37,12 +37,6 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
     return getSvgString(traceData, options)
 }
 
-////////////////////////////////////////////////////////////
-//
-//  Vectorizing functions
-//
-////////////////////////////////////////////////////////////
-
 // 1. Color quantization
 
 // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
@@ -52,62 +46,35 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     // 1. Color quantization
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
-    let traceData: TraceData
+    let traceData = new TraceData({
+        layers: [],
+        palette: indexedImage.palette,
+        width: indexedImage.array[0].length - 2,
+        height: indexedImage.array.length - 2
+    })
 
-    if (options.layering === 0) {// Sequential layering
+    // Loop to trace each color layer
+    for (let colornum = 0; colornum < indexedImage.palette.length; colornum++) {
 
-        // create tracedata object
-        traceData = new TraceData({
-            layers: [],
-            palette: indexedImage.palette,
-            width: indexedImage.array[0].length - 2,
-            height: indexedImage.array.length - 2
-        })
-
-        // Loop to trace each color layer
-        for (let colornum = 0; colornum < indexedImage.palette.length; colornum++) {
-
-            // layeringStep -> pathscan -> internodes -> batchtracepaths
-            let tracedlayer =
-                batchtracepaths(
-                    internodes(
-                        pathscan(
-                            layeringStep(indexedImage, colornum),
-                            options.pathomit
-                        ),
-                        options
+        // layeringStep -> pathscan -> internodes -> batchtracepaths
+        let tracedlayer =
+            batchtracepaths(
+                internodes(
+                    pathscan(
+                        layeringStep(indexedImage, colornum),
+                        options.pathomit
                     ),
-                    options.lineThreshold,
-                    options.qSplineThreshold
-                );
+                    options
+                ),
+                options.lineThreshold,
+                options.qSplineThreshold
+            );
 
-            // adding traced layer
-            traceData.layers.push(tracedlayer);
+        // adding traced layer
+        traceData.layers.push(tracedlayer);
 
-        }// End of color loop
-
-    } else {// Parallel layering // TODO probably delete this and stick with sequential
-        // 2. Layer separation and edge detection
-        const ls = layering(indexedImage);
-
-        // 3. Batch pathscan
-        const bps = batchpathscan(ls, options.pathomit);
-
-        // 4. Batch interpollation
-        const bis = batchinternodes(bps, options);
-
-        // 5. Batch tracing and creating tracedata object
-        traceData = new TraceData({
-            layers: batchtracelayers(bis, options.lineThreshold, options.qSplineThreshold),
-            palette: indexedImage.palette,
-            width: imageData.width,
-            height: imageData.height
-        })
-
-    }// End of parallel layering
-
-    return traceData;
-
+    }// End of color loop
+    return traceData
 }
 
 /**
@@ -290,60 +257,6 @@ function generatePalette(colorsNumber: number, imageData: ImageData): Palette {
     return palette
 }
 
-// Lookup tables for pathscan
-
-//     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layering(ii: IndexedImage): NumberArray3D {
-    // Creating layers for each indexed color in arr
-    let layers = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
-        i, j, k;
-
-    // Create layers
-    for (k = 0; k < ii.palette.length; k++) {
-        layers[k] = [];
-        for (j = 0; j < ah; j++) {
-            layers[k][j] = [];
-            for (i = 0; i < aw; i++) {
-                layers[k][j][i] = 0;
-            }
-        }
-    }
-
-    // Looping through all pixels and calculating edge node type
-    for (j = 1; j < ah - 1; j++) {
-        for (i = 1; i < aw - 1; i++) {
-
-            // This pixel's indexed color
-            val = ii.array[j][i];
-
-            // Are neighbor pixel colors the same?
-            n1 = ii.array[j - 1][i - 1] === val ? 1 : 0;
-            n2 = ii.array[j - 1][i] === val ? 1 : 0;
-            n3 = ii.array[j - 1][i + 1] === val ? 1 : 0;
-            n4 = ii.array[j][i - 1] === val ? 1 : 0;
-            n5 = ii.array[j][i + 1] === val ? 1 : 0;
-            n6 = ii.array[j + 1][i - 1] === val ? 1 : 0;
-            n7 = ii.array[j + 1][i] === val ? 1 : 0;
-            n8 = ii.array[j + 1][i + 1] === val ? 1 : 0;
-
-            // this pixel's type and looking back on previous pixels
-            layers[val][j + 1][i + 1] = 1 + n5 * 2 + n8 * 4 + n7 * 8;
-            if (!n4) {
-                layers[val][j + 1][i] = 2 + n7 * 4 + n6 * 8;
-            }
-            if (!n2) {
-                layers[val][j][i + 1] = n3 * 2 + n5 * 4 + 8;
-            }
-            if (!n1) {
-                layers[val][j][i] = n2 * 2 + 4 + n4 * 8;
-            }
-
-        }// End of i loop
-    }// End of j loop
-
-    return layers;
-}
-
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
@@ -492,18 +405,6 @@ function boundingboxincludes(parentbbox, childbbox) {
     return ((parentbbox[0] < childbbox[0]) && (parentbbox[1] < childbbox[1]) && (parentbbox[2] > childbbox[2]) && (parentbbox[3] > childbbox[3]));
 }// End of boundingboxincludes()
 
-// 3. Batch pathscan
-function batchpathscan(layers, pathomit) {
-    let bpaths = [];
-    for (let k in layers) {
-        if (!layers.hasOwnProperty(k)) {
-            continue;
-        }
-        bpaths[k] = pathscan(layers[k], pathomit);
-    }
-    return bpaths;
-}
-
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function internodes(paths, options) {
     let ins = [], palen = 0, nextidx = 0, nextidx2 = 0, previdx = 0, previdx2 = 0, pacnt, pcnt;
@@ -633,18 +534,6 @@ function getdirection(x1, y1, x2, y2) {
 }// End of getdirection()
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
-
-// 4. Batch interpollation
-function batchinternodes(bpaths, options) {
-    let binternodes = [];
-    for (let k in bpaths) {
-        if (!bpaths.hasOwnProperty(k)) {
-            continue;
-        }
-        binternodes[k] = internodes(bpaths[k], options);
-    }
-    return binternodes;
-}
 
 function tracepath(path, ltres, qtres) {
     let pcnt = 0, segtype1, segtype2, seqend;
@@ -788,12 +677,6 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
 
 }
 
-////////////////////////////////////////////////////////////
-//
-//  SVG Drawing functions
-//
-////////////////////////////////////////////////////////////
-
 // 5. Batch tracing paths
 function batchtracepaths(internodepaths, ltres, qtres) {
     let btracedpaths = [];
@@ -804,18 +687,6 @@ function batchtracepaths(internodepaths, ltres, qtres) {
         btracedpaths.push(tracepath(internodepaths[k], ltres, qtres));
     }
     return btracedpaths;
-}
-
-// 5. Batch tracing layers
-function batchtracelayers(binternodes, ltres, qtres) {
-    let btbis = [];
-    for (let k in binternodes) {
-        if (!binternodes.hasOwnProperty(k)) {
-            continue;
-        }
-        btbis[k] = batchtracepaths(binternodes[k], ltres, qtres);
-    }
-    return btbis;
 }
 
 // Rounding to given decimals https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
@@ -834,7 +705,7 @@ function svgpathstring(tracedata: TraceData, lnum: number, pathnum: number, opti
     }
 
     // Starting path element, desc contains layer and path number
-    str = `<path ${tosvgcolorstr(tracedata.palette[lnum], options)}d="`
+    str = `<path ${tracedata.palette[lnum].toSVGString()} d="`
 
     // Creating non-hole path string
     if (options.roundcoords === -1) {
@@ -967,16 +838,6 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
 }
 
-// Convert color object to rgba stringfunction
-function toRGBA(c: Color): string {
-    return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + c.a + ')';
-}
-
-// Convert color object to SVG color string
-function tosvgcolorstr(c: Color, options: Options): string {
-    return 'fill="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke="rgb(' + c.r + ',' + c.g + ',' + c.b + ')" stroke-width="' + options.strokeWidth + '" opacity="' + c.a / 255.0 + '" ';
-}
-
 export class ImageData {
     public height: number
     public width: number
@@ -1069,6 +930,10 @@ export class Color {
 
     toHex(ignoreAlpha: boolean = false): string {
         return `${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${ignoreAlpha ? Color.hex(this.r) : ""}`
+    }
+
+    toSVGString(): string {
+        return `fill="${this.toRGB()}" stroke="${this.toRGB()}" stroke-width="1" opacity="${this.a / 255.0}"`
     }
 }
 

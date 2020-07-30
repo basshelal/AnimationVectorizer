@@ -38,5 +38,5 @@ export async function writePNG(path: string, pngImageData: PNGImageData): Promis
 }
 
 export function PNGImageDataToImageData(pngImageData: PNGImageData): ImageData {
-    return {width: pngImageData.width, height: pngImageData.height, data: pngImageData.data}
+    return new ImageData({width: pngImageData.width, height: pngImageData.height, data: pngImageData.data})
 }
