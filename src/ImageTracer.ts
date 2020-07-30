@@ -1,7 +1,8 @@
 // Original Library https://github.com/jankovicsandras/imagetracerjs
 
 import {optionPresets, Options} from "./Options";
-import {abs, floor, from, logD, random} from "./Utils";
+import {floor, from, logD, random} from "./Utils";
+import {writeImage} from "./PNG";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -56,11 +57,11 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     // Loop to trace each color layer
     for (let colornum = 0; colornum < indexedImage.palette.length; colornum++) {
 
-        // layeringStep -> pathscan -> internodes -> batchtracepaths
+        // layeringStep -> pathScan -> interNodes -> batchTracePaths
         let tracedlayer =
-            batchtracepaths(
-                internodes(
-                    pathscan(
+            batchTracePaths(
+                interNodes(
+                    pathScan(
                         layeringStep(indexedImage, colornum),
                         options.pathomit
                     ),
@@ -98,45 +99,34 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     const colorArray: NumberArray2D = []
 
+    // Filling colorArray (color index array) with -1
+    // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
+    //  for a 1 px border perhaps??
+    imageData.ensureRGBA()
+    from(0).to(imageData.height + 2).forEach(y => {
+        colorArray[y] = []
+        from(0).to(imageData.width + 2).forEach(x => {
+            colorArray[y][x] = -1
+        })
+    })
+
     const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
     // TODO what is n??? This is a function scoped object so we can easily deduce this :P
     //  n is some kind of index
 
-    let palette: Palette
+    // TODO why are we generating a palette?? We end up changing it later anyway
+    //  what it is originally matters though!
+    let palette: Palette = generatePalette(options.colorsNumber, imageData)
 
-    // imageData.data must be RGBA, not just RGB
-    if (imageData.data.length < totalPixels * 4) {
-        const newImgData = Buffer.alloc(totalPixels * 4)
-        for (let pixelCount = 0; pixelCount < totalPixels; pixelCount++) {
-            newImgData[pixelCount * 4] = imageData.data[pixelCount * 3]; // r
-            newImgData[pixelCount * 4 + 1] = imageData.data[pixelCount * 3 + 1]; // g
-            newImgData[pixelCount * 4 + 2] = imageData.data[pixelCount * 3 + 2]; // b
-            newImgData[pixelCount * 4 + 3] = 255; // a
-        }
-        imageData.data = newImgData;
-    }
-
-    // Filling colorArray (color index array) with -1
-    // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathscan
-    //  for a border perhaps??
-    for (let y = 0; y < imageData.height + 2; y++) {
-        colorArray[y] = []
-        for (let x = 0; x < imageData.width + 2; x++) {
-            colorArray[y][x] = -1
-        }
-    }
-
-    // TODO why are we generating a palette??
-    palette = generatePalette(options.colorsNumber, imageData)
+    writeImage("./palette.png", ImageData.fromPixels(palette))
 
     // Repeat clustering step options.colorquantcycles times
-    for (let cnt = 0; cnt < options.colorquantcycles; cnt++) {
+    from(0).to(options.colorquantcycles).forEach((quantCycle: number) => {
 
         // Average colors from the second iteration
-        if (cnt > 0) {
+        if (quantCycle > 0) {
             // averaging accumulatorPalette for palette
-            for (let k = 0; k < palette.length; k++) {
-
+            from(0).to(palette.length).forEach(k => {
                 // averaging
                 if (accumulatorPalette[k].n > 0) {
                     palette[k] = new Color({
@@ -148,7 +138,8 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
-                if ((accumulatorPalette[k].n / totalPixels < options.mincolorratio) && (cnt < options.colorquantcycles - 1)) {
+                if ((accumulatorPalette[k].n / totalPixels < options.mincolorratio) &&
+                    (quantCycle < options.colorquantcycles - 1)) {
                     palette[k] = new Color({
                         r: floor(random() * 255),
                         g: floor(random() * 255),
@@ -156,18 +147,16 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                         a: floor(random() * 255)
                     })
                 }
-
-            }// End of palette loop
-        }// End of Average colors from the second iteration
-
-        // Reseting palette accumulator for averaging
-        for (let i = 0; i < palette.length; i++) {
-            accumulatorPalette[i] = {r: 0, g: 0, b: 0, a: 0, n: 0};
+            })
         }
 
+        // Reseting palette accumulator for averaging
+        from(0).to(palette.length)
+            .forEach(i => accumulatorPalette[i] = {r: 0, g: 0, b: 0, a: 0, n: 0})
+
         // loop through all pixels
-        for (let y = 0; y < imageData.height; y++) {
-            for (let x = 0; x < imageData.width; x++) {
+        from(0).to(imageData.height).forEach(y => {
+            from(0).to(imageData.width).forEach(x => {
 
                 // pixel index within imageData.data
                 let idx = (y * imageData.width + x) * 4
@@ -175,21 +164,19 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
                 let ci = 0;
                 let cdl = 1024; // 4 * 256 is the maximum RGBA distance
-                for (let k = 0; k < palette.length; k++) {
-
+                from(0).to(palette.length).forEach(k => {
                     // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
-                    let cd = abs(palette[k].r - imageData.data[idx]) +
-                        abs(palette[k].g - imageData.data[idx + 1]) +
-                        abs(palette[k].b - imageData.data[idx + 2]) +
-                        abs(palette[k].a - imageData.data[idx + 3])
+                    let cd = (palette[k].r - imageData.data[idx]).abs() +
+                        (palette[k].g - imageData.data[idx + 1]).abs() +
+                        (palette[k].b - imageData.data[idx + 2]).abs() +
+                        (palette[k].a - imageData.data[idx + 3]).abs()
 
                     // Remember this color if this is the closest yet
                     if (cd < cdl) {
-                        cdl = cd;
-                        ci = k;
+                        cdl = cd
+                        ci = k
                     }
-
-                }// End of palette loop
+                })
 
                 // add to palettacc
                 accumulatorPalette[ci].r += imageData.data[idx];
@@ -200,15 +187,15 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
                 // update the indexed color array
                 colorArray[y + 1][x + 1] = ci;
-
-            }
-        }
-    }// End of Repeat clustering step options.colorquantcycles times
+            })
+        })
+    })
 
     palette.forEach(color => logD(color.toRGBA()))
 
-    return {array: colorArray, palette: palette};
+    writeImage("./palette-1.png", ImageData.fromPixels(palette))
 
+    return {array: colorArray, palette: palette};
 }
 
 // 2. Layer separation and edge detection
@@ -217,6 +204,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
 // Deterministic sampling a palette from imagedata: rectangular grid
+// TODO we need a better palette generation method! Look into the article https://en.wikipedia.org/wiki/Color_quantization
 function generatePalette(colorsNumber: number, imageData: ImageData): Palette {
     let palette: Palette = []
 
@@ -238,7 +226,8 @@ function generatePalette(colorsNumber: number, imageData: ImageData): Palette {
         from(0).to(horizontalBlocks).forEach(xBlock => {
             if (palette.length === colorsNumber) return palette
             else {
-                let idx = 4 * (((yBlock + 1) * blockHeight) * imageData.width + ((xBlock + 1) * blockWidth)).floor()
+                const idx = 4 * (((yBlock + 1) * blockHeight) *
+                    imageData.width + ((xBlock + 1) * blockWidth)).floor()
                 palette.push(new Color({
                     r: imageData.data[idx],
                     g: imageData.data[idx + 1],
@@ -254,16 +243,21 @@ function generatePalette(colorsNumber: number, imageData: ImageData): Palette {
     })
     palette.forEach(color => logD(color.toRGBA()))
     logD(`paletteSize: ${palette.length}`)
+    logD("")
     return palette
 }
 
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layeringStep(ii: IndexedImage, cnum: number): NumberArray2D {
+function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberArray2D {
     // Creating layers for each indexed color in arr
-    let layer = [], val = 0, ah = ii.array.length, aw = ii.array[0].length, n1, n2, n3, n4, n5, n6, n7, n8,
-        i, j, k;
+    let layer = [],
+        ah = indexedImage.array.length,
+        aw = indexedImage.array[0].length,
+        i,
+        j,
+        k;
 
     // Create layer
     for (j = 0; j < ah; j++) {
@@ -277,10 +271,10 @@ function layeringStep(ii: IndexedImage, cnum: number): NumberArray2D {
     for (j = 1; j < ah; j++) {
         for (i = 1; i < aw; i++) {
             layer[j][i] =
-                (ii.array[j - 1][i - 1] === cnum ? 1 : 0) +
-                (ii.array[j - 1][i] === cnum ? 2 : 0) +
-                (ii.array[j][i - 1] === cnum ? 8 : 0) +
-                (ii.array[j][i] === cnum ? 4 : 0)
+                (indexedImage.array[j - 1][i - 1] === colorNumber ? 1 : 0) +
+                (indexedImage.array[j - 1][i] === colorNumber ? 2 : 0) +
+                (indexedImage.array[j][i - 1] === colorNumber ? 8 : 0) +
+                (indexedImage.array[j][i] === colorNumber ? 4 : 0)
             ;
         }// End of i loop
     }// End of j loop
@@ -303,7 +297,7 @@ function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathscan(arr, pathomit) {
+function pathScan(arr, pathomit) {
     let paths = [], pacnt = 0, pcnt = 0, px = 0, py = 0, w = arr[0].length, h = arr.length,
         dir = 0, pathfinished = true, holepath = false, lookuprow;
 
@@ -370,8 +364,8 @@ function pathscan(arr, pathomit) {
                                 let parentidx = 0, parentbbox = [-1, -1, w + 1, h + 1];
                                 for (let parentcnt = 0; parentcnt < pacnt; parentcnt++) {
                                     if ((!paths[parentcnt].isholepath) &&
-                                        boundingboxincludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
-                                        boundingboxincludes(parentbbox, paths[parentcnt].boundingbox) &&
+                                        boundingBoxIncludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
+                                        boundingBoxIncludes(parentbbox, paths[parentcnt].boundingbox) &&
                                         isPointInPointsList(paths[pacnt].points[0], paths[parentcnt].points)
                                     ) {
                                         parentidx = parentcnt;
@@ -399,14 +393,14 @@ function pathscan(arr, pathomit) {
     }// End of j loop
 
     return paths;
-}// End of pathscan()
+}// End of pathScan()
 
-function boundingboxincludes(parentbbox, childbbox) {
+function boundingBoxIncludes(parentbbox, childbbox) {
     return ((parentbbox[0] < childbbox[0]) && (parentbbox[1] < childbbox[1]) && (parentbbox[2] > childbbox[2]) && (parentbbox[3] > childbbox[3]));
-}// End of boundingboxincludes()
+}// End of boundingBoxIncludes()
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
-function internodes(paths, options) {
+function interNodes(paths, options) {
     let ins = [], palen = 0, nextidx = 0, nextidx2 = 0, previdx = 0, previdx2 = 0, pacnt, pcnt;
 
     // paths loop
@@ -429,11 +423,11 @@ function internodes(paths, options) {
             previdx2 = (pcnt - 2 + palen) % palen;
 
             // right angle enhance
-            if (options.rightangleenhance && testrightangle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
+            if (options.rightangleenhance && testRightAngle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
 
                 // Fix previous direction
                 if (ins[pacnt].points.length > 0) {
-                    ins[pacnt].points[ins[pacnt].points.length - 1].linesegment = getdirection(
+                    ins[pacnt].points[ins[pacnt].points.length - 1].linesegment = getDirection(
                         ins[pacnt].points[ins[pacnt].points.length - 1].x,
                         ins[pacnt].points[ins[pacnt].points.length - 1].y,
                         paths[pacnt].points[pcnt].x,
@@ -445,7 +439,7 @@ function internodes(paths, options) {
                 ins[pacnt].points.push({
                     x: paths[pacnt].points[pcnt].x,
                     y: paths[pacnt].points[pcnt].y,
-                    linesegment: getdirection(
+                    linesegment: getDirection(
                         paths[pacnt].points[pcnt].x,
                         paths[pacnt].points[pcnt].y,
                         ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
@@ -459,7 +453,7 @@ function internodes(paths, options) {
             ins[pacnt].points.push({
                 x: ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                 y: ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
-                linesegment: getdirection(
+                linesegment: getDirection(
                     ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                     ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
                     ((paths[pacnt].points[nextidx].x + paths[pacnt].points[nextidx2].x) / 2),
@@ -472,9 +466,9 @@ function internodes(paths, options) {
     }// End of paths loop
 
     return ins;
-}// End of internodes()
+}// End of interNodes()
 
-function testrightangle(path, idx1, idx2, idx3, idx4, idx5) {
+function testRightAngle(path, idx1, idx2, idx3, idx4, idx5) {
     return (((path.points[idx3].x === path.points[idx1].x) &&
             (path.points[idx3].x === path.points[idx2].x) &&
             (path.points[idx3].y === path.points[idx4].y) &&
@@ -486,9 +480,9 @@ function testrightangle(path, idx1, idx2, idx3, idx4, idx5) {
             (path.points[idx3].x === path.points[idx5].x)
         )
     );
-}// End of testrightangle()
+}// End of testRightAngle()
 
-// 5. tracepath() : recursively trying to fit straight and quadratic spline segments on the 8 direction internode path
+// 5. tracePath() : recursively trying to fit straight and quadratic spline segments on the 8 direction internode path
 
 // 5.1. Find sequences of points with only 2 segment types
 // 5.2. Fit a straight line on the sequence
@@ -497,7 +491,7 @@ function testrightangle(path, idx1, idx2, idx3, idx4, idx5) {
 // 5.5. If the spline fails (distance error > qtres), find the point with the biggest error, set splitpoint = fitting point
 // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
 
-function getdirection(x1, y1, x2, y2) {
+function getDirection(x1, y1, x2, y2) {
     let val = 8;
     if (x1 < x2) {
         if (y1 < y2) {
@@ -531,11 +525,11 @@ function getdirection(x1, y1, x2, y2) {
         }// center, this should not happen
     }
     return val;
-}// End of getdirection()
+}// End of getDirection()
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
-function tracepath(path, ltres, qtres) {
+function tracePath(path, ltres, qtres) {
     let pcnt = 0, segtype1, segtype2, seqend;
 
     const smp = {
@@ -565,7 +559,7 @@ function tracepath(path, ltres, qtres) {
         }
 
         // 5.2. - 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-        smp.segments = smp.segments.concat(fitseq(path, ltres, qtres, pcnt, seqend));
+        smp.segments = smp.segments.concat(fitSeq(path, ltres, qtres, pcnt, seqend));
 
         // forward pcnt;
         if (seqend > 0) {
@@ -579,8 +573,8 @@ function tracepath(path, ltres, qtres) {
     return smp;
 }
 
-// called from tracepath()
-function fitseq(path, ltres, qtres, seqstart, seqend) {
+// called from tracePath()
+function fitSeq(path, ltres, qtres, seqstart, seqend) {
     // return if invalid seqend
     if ((seqend > path.points.length) || (seqend < 0)) {
         return [];
@@ -672,30 +666,30 @@ function fitseq(path, ltres, qtres, seqstart, seqend) {
     let splitpoint = fitpoint; // Earlier: floor((fitpoint + errorpoint)/2);
 
     // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-    return fitseq(path, ltres, qtres, seqstart, splitpoint).concat(
-        fitseq(path, ltres, qtres, splitpoint, seqend));
+    return fitSeq(path, ltres, qtres, seqstart, splitpoint).concat(
+        fitSeq(path, ltres, qtres, splitpoint, seqend));
 
 }
 
 // 5. Batch tracing paths
-function batchtracepaths(internodepaths, ltres, qtres) {
+function batchTracePaths(internodepaths, ltres, qtres) {
     let btracedpaths = [];
     for (let k in internodepaths) {
         if (!internodepaths.hasOwnProperty(k)) {
             continue;
         }
-        btracedpaths.push(tracepath(internodepaths[k], ltres, qtres));
+        btracedpaths.push(tracePath(internodepaths[k], ltres, qtres));
     }
     return btracedpaths;
 }
 
 // Rounding to given decimals https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-function roundtodec(val: number, places: number = 0) {
+function roundToDec(val: number, places: number = 0) {
     return +val.toFixed(places)
 }
 
 // Getting SVG path element string from a traced path
-function svgpathstring(tracedata: TraceData, lnum: number, pathnum: number, options: Options): string {
+function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, options: Options): string {
 
     let layer = tracedata.layers[lnum], smp = layer[pathnum], str = '', pcnt
 
@@ -718,11 +712,11 @@ function svgpathstring(tracedata: TraceData, lnum: number, pathnum: number, opti
         }
         str += 'Z ';
     } else {
-        str += 'M ' + roundtodec(smp.segments[0].x1 * options.scale, options.roundcoords) + ' ' + roundtodec(smp.segments[0].y1 * options.scale, options.roundcoords) + ' ';
+        str += 'M ' + roundToDec(smp.segments[0].x1 * options.scale, options.roundcoords) + ' ' + roundToDec(smp.segments[0].y1 * options.scale, options.roundcoords) + ' ';
         for (pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            str += smp.segments[pcnt].type + ' ' + roundtodec(smp.segments[pcnt].x2 * options.scale, options.roundcoords) + ' ' + roundtodec(smp.segments[pcnt].y2 * options.scale, options.roundcoords) + ' ';
+            str += smp.segments[pcnt].type + ' ' + roundToDec(smp.segments[pcnt].x2 * options.scale, options.roundcoords) + ' ' + roundToDec(smp.segments[pcnt].y2 * options.scale, options.roundcoords) + ' ';
             if (smp.segments[pcnt].hasOwnProperty('x3')) {
-                str += roundtodec(smp.segments[pcnt].x3 * options.scale, options.roundcoords) + ' ' + roundtodec(smp.segments[pcnt].y3 * options.scale, options.roundcoords) + ' ';
+                str += roundToDec(smp.segments[pcnt].x3 * options.scale, options.roundcoords) + ' ' + roundToDec(smp.segments[pcnt].y3 * options.scale, options.roundcoords) + ' ';
             }
         }
         str += 'Z ';
@@ -752,17 +746,17 @@ function svgpathstring(tracedata: TraceData, lnum: number, pathnum: number, opti
         } else {
 
             if (hsmp.segments[hsmp.segments.length - 1].hasOwnProperty('x3')) {
-                str += 'M ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].x3 * options.scale) + ' ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].y3 * options.scale) + ' ';
+                str += 'M ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].x3 * options.scale) + ' ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].y3 * options.scale) + ' ';
             } else {
-                str += 'M ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].x2 * options.scale) + ' ' + roundtodec(hsmp.segments[hsmp.segments.length - 1].y2 * options.scale) + ' ';
+                str += 'M ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].x2 * options.scale) + ' ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].y2 * options.scale) + ' ';
             }
 
             for (pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
                 str += hsmp.segments[pcnt].type + ' ';
                 if (hsmp.segments[pcnt].hasOwnProperty('x3')) {
-                    str += roundtodec(hsmp.segments[pcnt].x2 * options.scale) + ' ' + roundtodec(hsmp.segments[pcnt].y2 * options.scale) + ' ';
+                    str += roundToDec(hsmp.segments[pcnt].x2 * options.scale) + ' ' + roundToDec(hsmp.segments[pcnt].y2 * options.scale) + ' ';
                 }
-                str += roundtodec(hsmp.segments[pcnt].x1 * options.scale) + ' ' + roundtodec(hsmp.segments[pcnt].y1 * options.scale) + ' ';
+                str += roundToDec(hsmp.segments[pcnt].x1 * options.scale) + ' ' + roundToDec(hsmp.segments[pcnt].y1 * options.scale) + ' ';
             }
 
 
@@ -825,7 +819,7 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
             // Adding SVG <path> string
             if (!traceData.layers[lcnt][pcnt].isholepath) {
-                svgString += svgpathstring(traceData, lcnt, pcnt, options);
+                svgString += svgPathString(traceData, lcnt, pcnt, options);
             }
 
         }// End of paths loop
@@ -865,7 +859,22 @@ export class ImageData {
         return this
     }
 
-    colorPixels(): Array<Color> {
+    static fromPixels(pixels: Array<Color>): ImageData {
+        const buffer = Buffer.alloc(pixels.length * 4)
+        pixels.forEach((color: Color, index: number) => {
+            buffer[index] = color.r
+            buffer[index + 1] = color.g
+            buffer[index + 2] = color.b
+            buffer[index + 3] = color.a
+        })
+        return new ImageData({
+            data: buffer,
+            width: pixels.length,
+            height: 1
+        })
+    }
+
+    pixels(): Array<Color> {
         this.ensureRGBA()
         const result: Array<Color> = []
         let pxIndex = 0

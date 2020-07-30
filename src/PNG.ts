@@ -37,6 +37,16 @@ export async function writePNG(path: string, pngImageData: PNGImageData): Promis
     })
 }
 
+export async function writeImage(path: string, imageData: ImageData): Promise<void> {
+    return new Promise((resolve, reject) => {
+        try {
+            resolve(writeFileSync(path, lib.sync.write(imageData)))
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
+
 export function PNGImageDataToImageData(pngImageData: PNGImageData): ImageData {
     return new ImageData({width: pngImageData.width, height: pngImageData.height, data: pngImageData.data})
 }
