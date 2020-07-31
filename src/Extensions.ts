@@ -1,4 +1,4 @@
-import {abs, ceil, floor, pow, sqrt} from "./Utils";
+import {abs, ceil, floor, pow, round, sqrt} from "./Utils";
 
 declare global {
     interface Array<T> {
@@ -35,6 +35,8 @@ declare global {
         ceil(): number
 
         sqrt(): number
+
+        round(): number
 
         pow(exponent: number): number
     }
@@ -119,6 +121,11 @@ function _number() {
     if (!Number.prototype.sqrt)
         Number.prototype.sqrt = function (this: number): number {
             return sqrt(this)
+        }
+
+    if (!Number.prototype.round)
+        Number.prototype.round = function (this: number): number {
+            return round(this)
         }
 
     if (!Number.prototype.pow)

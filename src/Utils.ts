@@ -47,6 +47,10 @@ export function pow(x: number, y: number): number {
     return Math.pow(x, y)
 }
 
+export function round(x: number): number {
+    return Math.round(x)
+}
+
 export function random(): number {
     return Math.random()
 }

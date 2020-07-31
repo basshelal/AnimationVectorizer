@@ -4,8 +4,7 @@
     "target": "ESNext",
     "sourceMap": false,
     "watch": true,
-    "alwaysStrict": true,
-    "strict": true
+    "alwaysStrict": true
   },
   "exclude": [
     "node_modules"

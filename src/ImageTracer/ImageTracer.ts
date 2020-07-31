@@ -32,10 +32,7 @@ const pathScanCombinedLookup: NumberArray3D = [
  * Converts the passed in `imageData` with the desired `options` into an SVG `string`
  */
 export function imageDataToSVG(imageData: ImageData, options: Options): string {
-    options = checkOptions(options)
-    // tracing imagedata
-    const traceData: TraceData = imageDataToTraceData(imageData, options)
-    // returning SVG string
+    const traceData: TraceData = imageDataToTraceData(imageData, checkOptions(options))
     return getSvgString(traceData, options)
 }
 
@@ -43,7 +40,7 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 
 // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
-    options = checkOptions(options);
+    options = checkOptions(options)
 
     // 1. Color quantization
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
@@ -116,7 +113,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     //  what it is originally matters though!
     // let palette: Palette = generatePalette(256, imageData)
 
-    let palette: Palette = new ColorQuantizer(imageData.uniqueColors).makePalette(64)
+    let palette: Palette = generatePaletteNew(imageData, 128)
 
     palette.forEach(color => logD(color.toRGBA()))
     logD(`palette: ${palette.length}`)
@@ -203,9 +200,14 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 // 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
-// Deterministic sampling a palette from imagedata: rectangular grid
-// TODO we need a better palette generation method! Look into the article https://en.wikipedia.org/wiki/Color_quantization
-function generatePalette(colorsNumber: number, imageData: ImageData): Palette {
+function generatePaletteNew(imageData: ImageData, colorsNumber: number): Palette {
+    return new ColorQuantizer(imageData.uniqueColors).makePalette(colorsNumber)
+}
+
+/**
+ * Old {@link Palette} generation method, for the better method see {@link generatePaletteNew}
+ */
+function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
     let palette: Palette = []
 
     logD(`width: ${imageData.width}`)
@@ -256,14 +258,13 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberAr
         ah = indexedImage.array.length,
         aw = indexedImage.array[0].length,
         i,
-        j,
-        k;
+        j
 
     // Create layer
     for (j = 0; j < ah; j++) {
-        layer[j] = [];
+        layer[j] = []
         for (i = 0; i < aw; i++) {
-            layer[j][i] = 0;
+            layer[j][i] = 0
         }
     }
 
@@ -275,9 +276,8 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberAr
                 (indexedImage.array[j - 1][i] === colorNumber ? 2 : 0) +
                 (indexedImage.array[j][i - 1] === colorNumber ? 8 : 0) +
                 (indexedImage.array[j][i] === colorNumber ? 4 : 0)
-            ;
-        }// End of i loop
-    }// End of j loop
+        }
+    }
 
     return layer;
 }
@@ -859,6 +859,19 @@ export class ImageData {
         return this
     }
 
+    ensureRGB(): ImageData {
+        if (this.data.length > this.totalPixels * 3) {
+            const newImgData = Buffer.alloc(this.totalPixels * 3)
+            from(0).to(this.totalPixels).forEach((pxIndex: number) => {
+                newImgData[pxIndex * 3] = this.data[pxIndex * 4] // r
+                newImgData[pxIndex * 3 + 1] = this.data[pxIndex * 4 + 1] // g
+                newImgData[pxIndex * 3 + 2] = this.data[pxIndex * 4 + 2] // b
+            })
+            this.data = newImgData
+        }
+        return this
+    }
+
     static fromPixels(pixels: Array<Color>): ImageData {
         const buffer = Buffer.alloc(pixels.length * 4)
         pixels.forEach((color: Color, index: number) => {
@@ -956,7 +969,6 @@ export class Color {
         return `fill="${this.toRGB()}" stroke="${this.toRGB()}" stroke-width="1" opacity="${this.a / 255.0}"`
     }
 
-    // The final element, a RGB sum, is used to do a rough color sort.
     get array(): Array<number> {
         return [this.r, this.g, this.b, this.r + this.g + this.b]
     }
@@ -966,8 +978,6 @@ export class Color {
             .map(n => Math.floor(n))
             .join(",")})`
     }
-
-    // We use this to shuttle the color into a canvas element.
 
     clone(): Color {
         return new Color({r: this.r, g: this.g, b: this.b, a: this.a})
@@ -981,8 +991,7 @@ export class Color {
         return new Color({
             r: this.r / pixelCount,
             g: this.g / pixelCount,
-            b: this.b / pixelCount,
-            a: this.a / pixelCount
+            b: this.b / pixelCount
         })
     }
 
@@ -990,7 +999,13 @@ export class Color {
         this.r += color.r
         this.g += color.g
         this.b += color.b
-        this.a += color.a
+    }
+
+    round() {
+        this.r = this.r.round()
+        this.g = this.g.round()
+        this.b = this.b.round()
+        this.a = this.a.round()
     }
 }
 

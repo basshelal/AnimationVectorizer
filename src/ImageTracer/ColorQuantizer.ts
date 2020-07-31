@@ -42,6 +42,7 @@ export class ColorQuantizer {
             node.paletteIndex = paletteIndex
             paletteIndex++
         }
+        for (let color of palette) color.round()
         return palette
     }
 
@@ -60,7 +61,7 @@ export class Node {
     children: Array<Node>
 
     constructor(level: number, parent: ColorQuantizer) {
-        this._color = new Color({r: 0, g: 0, b: 0, a: 0})
+        this._color = new Color({r: 0, g: 0, b: 0})
         this.pixelCount = 0
         this.paletteIndex = 0
         this.children = []
@@ -136,6 +137,5 @@ function getColorIndex(color: Color, level: number): number {
     if ((color.r & mask) !== 0) index |= 0b1000
     if ((color.g & mask) !== 0) index |= 0b0100
     if ((color.b & mask) !== 0) index |= 0b0010
-    if ((color.a & mask) !== 0) index |= 0b0001
     return index
 }
