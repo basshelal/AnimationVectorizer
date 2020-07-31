@@ -1,30 +1,26 @@
-import * as electron from "electron";
 import * as moment from "moment";
 
-
 export const momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
+export const momentFormatShorter = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
 
 export function now(): string {
     return moment().format(momentFormat)
 }
 
 export function logD(message: any, calledFrom: string = "") {
-    if (!electron.app.isPackaged)
-        console.log(
-            `${message.toString()} ${calledFrom}`
-        )
+    console.log(
+        `${message.toString()} ${calledFrom} : ${now()}`
+    )
 }
 
 export function logE(message: any, calledFrom: string = "") {
-    if (!electron.app.isPackaged)
-        console.error(
-            `${message.toString()}
-    ${calledFrom}`)
+    console.error(
+        `${message.toString()} ${calledFrom}`
+    )
 }
 
 export function assert(condition: boolean, message: string) {
-    if (!electron.app.isPackaged)
-        console.assert(condition, message)
+    console.assert(condition, message)
 }
 
 export function json(value: any, space: number = 2): string {

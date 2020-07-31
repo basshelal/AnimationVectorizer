@@ -3,6 +3,7 @@
 import {optionPresets, Options} from "./Options";
 import {floor, from, logD, random} from "../Utils";
 import {writeImage} from "../PNG";
+import {ColorQuantizer} from "./ColorQuantizer";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -113,9 +114,13 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     // TODO why are we generating a palette?? We end up changing it later anyway
     //  what it is originally matters though!
-    let palette: Palette = generatePalette(options.colorsNumber, imageData)
+    // let palette: Palette = generatePalette(256, imageData)
 
-    writeImage("./palette.png", ImageData.fromPixels(palette))
+    let palette: Palette = new ColorQuantizer(imageData.uniqueColors).makePalette(64)
+
+    palette.forEach(color => logD(color.toRGBA()))
+    logD(`palette: ${palette.length}`)
+    logD(`original: ${imageData.uniqueColors.length}`)
 
     // Repeat clustering step options.colorquantcycles times
     from(0).to(options.colorquantcycles).forEach((quantCycle: number) => {
@@ -187,8 +192,6 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             })
         })
     })
-
-    palette.forEach(color => logD(color.toRGBA()))
 
     writeImage("./palette-1.png", ImageData.fromPixels(palette))
 
@@ -886,8 +889,8 @@ export class ImageData {
         return result
     }
 
-    get uniqueColors(): Set<Color> {
-        return new Set(this.pixels)
+    get uniqueColors(): Array<Color> {
+        return Array.from(new Set(this.pixels))
     }
 }
 
@@ -917,11 +920,18 @@ export class Color {
     public b: number
     public a: number
 
-    constructor(color: { r: number, g: number, b: number, a?: number }) {
-        this.r = color.r
-        this.g = color.g
-        this.b = color.b
-        if (color.a) this.a = color.a; else this.a = 255
+    constructor(color?: { r: number, g: number, b: number, a?: number }) {
+        if (color) {
+            this.r = color.r
+            this.g = color.g
+            this.b = color.b
+            if (color.a) this.a = color.a; else this.a = 255
+        } else {
+            this.r = 0
+            this.g = 0
+            this.b = 0
+            this.a = 0
+        }
     }
 
     private static hex(channelValue: number): string {
@@ -952,7 +962,7 @@ export class Color {
     }
 
     toCSSString(): string {
-        return `rgb(${[this.r, this.g, this.b]
+        return `rgb(${[this.r, this.g, this.b, this.a]
             .map(n => Math.floor(n))
             .join(",")})`
     }
