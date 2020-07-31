@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/Main.js",
   "scripts": {
-    "start": "electron .",
+    "main": "node src/Main.js",
+    "electron": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

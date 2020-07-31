@@ -1,8 +1,7 @@
 // Original Library https://github.com/jankovicsandras/imagetracerjs
 
-import {optionPresets, Options} from "./Options";
+import {Options} from "./Options";
 import {floor, from, logD, random} from "../Utils";
-import {writeImage} from "../PNG";
 import {ColorQuantizer} from "./ColorQuantizer";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
@@ -32,7 +31,7 @@ const pathScanCombinedLookup: NumberArray3D = [
  * Converts the passed in `imageData` with the desired `options` into an SVG `string`
  */
 export function imageDataToSVG(imageData: ImageData, options: Options): string {
-    const traceData: TraceData = imageDataToTraceData(imageData, checkOptions(options))
+    const traceData: TraceData = imageDataToTraceData(imageData, options)
     return getSvgString(traceData, options)
 }
 
@@ -40,8 +39,6 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 
 // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
-    options = checkOptions(options)
-
     // 1. Color quantization
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
@@ -70,21 +67,10 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
             );
 
         // adding traced layer
-        traceData.layers.push(tracedlayer);
+        traceData.layers.push(tracedlayer)
 
     }// End of color loop
     return traceData
-}
-
-/**
- * Ensures the passed in `options` is initialized correctly with default values if any are missing
- */
-function checkOptions(options: Options): Options {
-    Object.keys(optionPresets.default).forEach((key: string) => {
-        // @ts-ignore
-        if (!options.hasOwnProperty(key)) options[key] = optionPresets.default[key]
-    })
-    return options
 }
 
 // Using a form of k-means clustering repeatead options.colorquantcycles times. http://en.wikipedia.org/wiki/Color_quantization
@@ -92,28 +78,20 @@ function checkOptions(options: Options): Options {
 // will not be helpful in this so we have to lose data, or more accurately, regain the data that rasterization loses
 // because of pixels etc
 function colorQuantization(imageData: ImageData, options: Options): IndexedImage {
-    // TODO 28-July-2020: simplify and understand this function!
 
-    const totalPixels = imageData.width * imageData.height
-
-    // Filling colorArray (color index array) with -1
-    // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
-    //  for a 1 px border perhaps??
     imageData.ensureRGBA()
 
+    // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
+    //  for a 1 px border perhaps??
     const colorArray: NumberArray2D = Array.init(imageData.height + 2, () =>
         Array.init(imageData.width + 2, -1)
     )
 
-    const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
     // TODO what is n??? This is a function scoped object so we can easily deduce this :P
     //  n is some kind of index
+    const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
 
-    // TODO why are we generating a palette?? We end up changing it later anyway
-    //  what it is originally matters though!
-    // let palette: Palette = generatePalette(256, imageData)
-
-    let palette: Palette = generatePaletteNew(imageData, 128)
+    let palette: Palette = colorQuantizedPalette(imageData, 128)
 
     palette.forEach(color => logD(color.toRGBA()))
     logD(`palette: ${palette.length}`)
@@ -137,7 +115,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
-                if ((accumulatorPalette[k].n / totalPixels < options.mincolorratio) &&
+                if ((accumulatorPalette[k].n / imageData.totalPixels < options.mincolorratio) &&
                     (quantCycle < options.colorquantcycles - 1)) {
                     palette[k] = new Color({
                         r: floor(random() * 255),
@@ -190,8 +168,6 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         })
     })
 
-    writeImage("./palette-1.png", ImageData.fromPixels(palette))
-
     return {array: colorArray, palette: palette};
 }
 
@@ -200,12 +176,12 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 // 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
 
-function generatePaletteNew(imageData: ImageData, colorsNumber: number): Palette {
+function colorQuantizedPalette(imageData: ImageData, colorsNumber: number): Palette {
     return new ColorQuantizer(imageData.uniqueColors).makePalette(colorsNumber)
 }
 
 /**
- * Old {@link Palette} generation method, for the better method see {@link generatePaletteNew}
+ * Old {@link Palette} generation method, for the better method see {@link colorQuantizedPalette}
  */
 function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
     let palette: Palette = []
@@ -809,8 +785,6 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
  */
 function getSvgString(traceData: TraceData, options: Options): string {
 
-    options = checkOptions(options)
-
     let svgString = `<svg width="${traceData.width}" height="${traceData.height}" xmlns="http://www.w3.org/2000/svg" >`
 
     // Drawing: Layers and Paths loops
@@ -872,26 +846,10 @@ export class ImageData {
         return this
     }
 
-    static fromPixels(pixels: Array<Color>): ImageData {
-        const buffer = Buffer.alloc(pixels.length * 4)
-        pixels.forEach((color: Color, index: number) => {
-            buffer[index] = color.r
-            buffer[index + 1] = color.g
-            buffer[index + 2] = color.b
-            buffer[index + 3] = color.a
-        })
-        return new ImageData({
-            data: buffer,
-            width: pixels.length,
-            height: 1
-        })
-    }
-
     get pixels(): Array<Color> {
         this.ensureRGBA()
         const result: Array<Color> = []
-        let pxIndex = 0
-        for (let dataIndex = 0; dataIndex < this.data.length; dataIndex += 4, pxIndex++) {
+        for (let dataIndex = 0, pxIndex = 0; dataIndex < this.data.length; dataIndex += 4, pxIndex++) {
             result[pxIndex] = new Color({
                 r: this.data[dataIndex],
                 g: this.data[dataIndex + 1],
@@ -902,8 +860,38 @@ export class ImageData {
         return result
     }
 
+    static fromPixels(pixels: Array<Color>, width?: number, height?: number): ImageData {
+        const buffer = Buffer.alloc(pixels.length * 4)
+        pixels.forEach((color: Color, index: number) => {
+            buffer[index * 4] = color.r
+            buffer[index * 4 + 1] = color.g
+            buffer[index * 4 + 2] = color.b
+            buffer[index * 4 + 3] = color.a
+        })
+        return new ImageData({
+            data: buffer,
+            width: (width ? width : pixels.length / 2),
+            height: (height ? height : pixels.length / 2)
+        })
+    }
+
     get uniqueColors(): Array<Color> {
         return Array.from(new Set(this.pixels))
+    }
+
+    forEachPixel(func: (y: number, x: number, color: Color) => void): ImageData {
+        from(0).to(this.height).forEach(y => {
+            from(0).to(this.width).forEach(x => {
+                const index = 4 * (y * this.width + x)
+                func(y, x, new Color({
+                    r: this.data[index],
+                    g: this.data[index + 1],
+                    b: this.data[index + 2],
+                    a: this.data[index + 3],
+                }))
+            })
+        })
+        return this
     }
 }
 
@@ -932,6 +920,8 @@ export class Color {
     public g: number
     public b: number
     public a: number
+
+    // TODO we should remove alpha at some point when we understand how everything works because we don't need it
 
     constructor(color?: { r: number, g: number, b: number, a?: number }) {
         if (color) {

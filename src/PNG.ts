@@ -6,15 +6,15 @@ const lib = require("pngjs").PNG
 export type PNGImageData = {
     width: number,
     height: number,
-    depth: number,
-    interlace: boolean,
-    palette: boolean,
-    color: boolean,
-    alpha: boolean,
-    bpp: number,
-    colorType: number,
     data: Buffer,
-    gamma: number
+    depth?: number,
+    interlace?: boolean,
+    palette?: boolean,
+    color?: boolean,
+    alpha?: boolean,
+    bpp?: number,
+    colorType?: number,
+    gamma?: number
 }
 
 export async function readPNG(path: string): Promise<PNGImageData> {

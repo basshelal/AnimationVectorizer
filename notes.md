@@ -31,6 +31,9 @@
 
 * Figure out a decent way to quantitatively measure results (quality and compression)
 
+* Look into using hardware acceleration ie GPU based execution, the speedups may be marginal for the effort but, 
+it's a super cool thing to explore and write about on the report
+
 ### Region Detection
 
 How do we differentiate between fills (single color areas or polygons) and gradients (function based shifting color 

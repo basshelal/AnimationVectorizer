@@ -25,6 +25,8 @@ declare global {
         toJson(space: number): string
 
         properties(): Array<{ key: string, value: any, type: any }>
+
+        also(block: (it: this) => any): Object
     }
 
     interface Number {
@@ -99,6 +101,12 @@ function _object() {
                 // @ts-ignore
                 return {key: key, value: this[key], type: typeof this[key]}
             })
+        }
+
+    if (!Object.prototype.also)
+        Object.prototype.also = function (this: Object, block: (it: Object) => void): Object {
+            block(this)
+            return this
         }
 }
 
