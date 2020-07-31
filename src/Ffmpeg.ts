@@ -24,7 +24,7 @@ export default async function (...args: Array<string>): Promise<void> {
             }
         })
 
-        ffmpeg.stdout.on("data", (data) => logD(`ffmpeg stdout: ${data}`))
-        ffmpeg.stderr.on("data", (data) => logE(`ffmpeg stderr: ${data}`))
+        if (ffmpeg.stdout) ffmpeg.stdout.on("data", (data) => logD(`ffmpeg stdout: ${data}`))
+        if (ffmpeg.stderr) ffmpeg.stderr.on("data", (data) => logE(`ffmpeg stderr: ${data}`))
     });
 }

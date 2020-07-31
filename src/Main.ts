@@ -1,8 +1,8 @@
 import extensions from "./Extensions";
 import {writeFileSync} from "fs";
 import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG";
-import {ImageData, imageDataToSVG} from "./ImageTracer";
-import {optionDetailed} from "./Options";
+import {ImageData, imageDataToSVG} from "./ImageTracer/ImageTracer";
+import {optionDetailed} from "./ImageTracer/Options";
 import {logD} from "./Utils";
 
 extensions()
@@ -23,7 +23,7 @@ async function test() {
     logD("Writing output svg file...")
     writeFileSync("./out/test.svg", svg)
 
-    console.log("Finished!")
+    logD("Finished!")
 
     process.exit(0)
 

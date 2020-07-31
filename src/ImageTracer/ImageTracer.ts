@@ -1,8 +1,8 @@
 // Original Library https://github.com/jankovicsandras/imagetracerjs
 
 import {optionPresets, Options} from "./Options";
-import {floor, from, logD, random} from "./Utils";
-import {writeImage} from "./PNG";
+import {floor, from, logD, random} from "../Utils";
+import {writeImage} from "../PNG";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -83,6 +83,7 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
  */
 function checkOptions(options: Options): Options {
     Object.keys(optionPresets.default).forEach((key: string) => {
+        // @ts-ignore
         if (!options.hasOwnProperty(key)) options[key] = optionPresets.default[key]
     })
     return options
@@ -97,18 +98,14 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     const totalPixels = imageData.width * imageData.height
 
-    const colorArray: NumberArray2D = []
-
     // Filling colorArray (color index array) with -1
     // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
     //  for a 1 px border perhaps??
     imageData.ensureRGBA()
-    from(0).to(imageData.height + 2).forEach(y => {
-        colorArray[y] = []
-        from(0).to(imageData.width + 2).forEach(x => {
-            colorArray[y][x] = -1
-        })
-    })
+
+    const colorArray: NumberArray2D = Array.init(imageData.height + 2, () =>
+        Array.init(imageData.width + 2, -1)
+    )
 
     const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
     // TODO what is n??? This is a function scoped object so we can easily deduce this :P
@@ -874,7 +871,7 @@ export class ImageData {
         })
     }
 
-    pixels(): Array<Color> {
+    get pixels(): Array<Color> {
         this.ensureRGBA()
         const result: Array<Color> = []
         let pxIndex = 0
@@ -887,6 +884,10 @@ export class ImageData {
             })
         }
         return result
+    }
+
+    get uniqueColors(): Set<Color> {
+        return new Set(this.pixels)
     }
 }
 
@@ -916,11 +917,11 @@ export class Color {
     public b: number
     public a: number
 
-    constructor(color: { r: number, g: number, b: number, a: number }) {
+    constructor(color: { r: number, g: number, b: number, a?: number }) {
         this.r = color.r
         this.g = color.g
         this.b = color.b
-        this.a = color.a
+        if (color.a) this.a = color.a; else this.a = 255
     }
 
     private static hex(channelValue: number): string {
@@ -943,6 +944,43 @@ export class Color {
 
     toSVGString(): string {
         return `fill="${this.toRGB()}" stroke="${this.toRGB()}" stroke-width="1" opacity="${this.a / 255.0}"`
+    }
+
+    // The final element, a RGB sum, is used to do a rough color sort.
+    get array(): Array<number> {
+        return [this.r, this.g, this.b, this.r + this.g + this.b]
+    }
+
+    toCSSString(): string {
+        return `rgb(${[this.r, this.g, this.b]
+            .map(n => Math.floor(n))
+            .join(",")})`
+    }
+
+    // We use this to shuttle the color into a canvas element.
+
+    clone(): Color {
+        return new Color({r: this.r, g: this.g, b: this.b, a: this.a})
+    }
+
+    toString(): string {
+        return [this.r, this.g, this.b, this.a].join(",")
+    }
+
+    normalized(pixelCount: number): Color {
+        return new Color({
+            r: this.r / pixelCount,
+            g: this.g / pixelCount,
+            b: this.b / pixelCount,
+            a: this.a / pixelCount
+        })
+    }
+
+    add(color: Color) {
+        this.r += color.r
+        this.g += color.g
+        this.b += color.b
+        this.a += color.a
     }
 }
 

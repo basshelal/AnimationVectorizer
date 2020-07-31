@@ -8,9 +8,13 @@ declare global {
 
         lastIndex(): number
 
-        remove(element: T)
+        remove(element: T): void
 
         isEmpty(): boolean
+    }
+
+    interface ArrayConstructor {
+        init<T>(length: number, initializer: ((index: number) => T) | T): Array<T>
     }
 
     interface Object {
@@ -35,7 +39,8 @@ declare global {
         pow(exponent: number): number
     }
 }
-export default function () {
+
+function _array() {
     if (!Array.prototype.contains)
         Array.prototype.contains = function <T>(this: Array<T>, element: T): boolean {
             return this.indexOf(element) >= 0
@@ -62,6 +67,15 @@ export default function () {
             return this.length === 0
         }
 
+    if (!Array.init)
+        Array.init = function <T>(length: number, initializer: ((index: number) => T) | T): Array<T> {
+            return Array.from({length: length}, (_, i) =>
+                initializer instanceof Function ? initializer(i) : initializer
+            )
+        }
+}
+
+function _object() {
     if (!Object.prototype.in)
         Object.prototype.in = function (this: Object, array: Array<any>): boolean {
             return array.contains(this)
@@ -80,10 +94,13 @@ export default function () {
     if (!Object.prototype.properties)
         Object.prototype.properties = function (this: Object): Array<{ key: string, value: any, type: any }> {
             return Object.keys(this).map((key, index) => {
+                // @ts-ignore
                 return {key: key, value: this[key], type: typeof this[key]}
             })
         }
+}
 
+function _number() {
     if (!Number.prototype.abs)
         Number.prototype.abs = function (this: number): number {
             return abs(this)
@@ -108,5 +125,10 @@ export default function () {
         Number.prototype.pow = function (this: number, exponent: number): number {
             return pow(this, exponent)
         }
+}
 
+export default function () {
+    _array()
+    _object()
+    _number()
 }

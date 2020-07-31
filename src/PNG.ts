@@ -1,5 +1,5 @@
 import {readFileSync, writeFileSync} from "fs";
-import {ImageData} from "./ImageTracer";
+import {ImageData} from "./ImageTracer/ImageTracer";
 
 const lib = require("pngjs").PNG
 
