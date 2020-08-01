@@ -39,7 +39,6 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 
 // Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
-    // 1. Color quantization
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
     let traceData = new TraceData({
@@ -91,7 +90,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     //  n is some kind of index
     const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
 
-    let palette: Palette = colorQuantizedPalette(imageData, 128)
+    const palette: Palette = colorQuantizedPalette(imageData, 128)
 
     palette.forEach(color => logD(color.toRGBA()))
     logD(`palette: ${palette.length}`)
@@ -132,43 +131,39 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             .forEach(i => accumulatorPalette[i] = {r: 0, g: 0, b: 0, a: 0, n: 0})
 
         // loop through all pixels
-        from(0).to(imageData.height).forEach(y => {
-            from(0).to(imageData.width).forEach(x => {
+        imageData.forEachPixel((y, x, color) => {
 
-                // pixel index within imageData.data
-                let idx = (y * imageData.width + x) * 4
+            // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
+            let ci = 0
+            let cdl = 1024 // 4 * 256 is the maximum RGBA distance
 
-                // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
-                let ci = 0;
-                let cdl = 1024; // 4 * 256 is the maximum RGBA distance
-                from(0).to(palette.length).forEach(k => {
-                    // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
-                    let cd = (palette[k].r - imageData.data[idx]).abs() +
-                        (palette[k].g - imageData.data[idx + 1]).abs() +
-                        (palette[k].b - imageData.data[idx + 2]).abs() +
-                        (palette[k].a - imageData.data[idx + 3]).abs()
+            palette.forEach((paletteColor: Color, index: number) => {
+                // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
+                const cd = (paletteColor.r - color.r).abs() +
+                    (paletteColor.g - color.g).abs() +
+                    (paletteColor.b - color.b).abs() +
+                    (paletteColor.a - color.a).abs()
 
-                    // Remember this color if this is the closest yet
-                    if (cd < cdl) {
-                        cdl = cd
-                        ci = k
-                    }
-                })
-
-                // add to palettacc
-                accumulatorPalette[ci].r += imageData.data[idx];
-                accumulatorPalette[ci].g += imageData.data[idx + 1];
-                accumulatorPalette[ci].b += imageData.data[idx + 2];
-                accumulatorPalette[ci].a += imageData.data[idx + 3];
-                accumulatorPalette[ci].n++;
-
-                // update the indexed color array
-                colorArray[y + 1][x + 1] = ci;
+                // Remember this color if this is the closest yet
+                if (cd < cdl) {
+                    cdl = cd
+                    ci = index
+                }
             })
+
+            // add to palettacc
+            accumulatorPalette[ci].r += color.r
+            accumulatorPalette[ci].g += color.g
+            accumulatorPalette[ci].b += color.b
+            accumulatorPalette[ci].a += color.a
+            accumulatorPalette[ci].n++;
+
+            // update the indexed color array
+            colorArray[y + 1][x + 1] = ci
         })
     })
 
-    return {array: colorArray, palette: palette};
+    return {array: colorArray, palette: palette}
 }
 
 // 2. Layer separation and edge detection
@@ -914,6 +909,7 @@ export class TraceData {
     }
 }
 
+// TODO Technically this is also a representation of Pixel, should we change its name to that?
 export class Color {
 
     public r: number

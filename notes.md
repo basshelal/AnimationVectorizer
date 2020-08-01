@@ -32,7 +32,8 @@
 * Figure out a decent way to quantitatively measure results (quality and compression)
 
 * Look into using hardware acceleration ie GPU based execution, the speedups may be marginal for the effort but, 
-it's a super cool thing to explore and write about on the report
+it's a super cool thing to explore and write about on the report. This is much harder than it should be, leave it 
+for much later if we have any time to play around with it.
 
 ### Region Detection
 
