@@ -214,47 +214,38 @@ function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberArray2D {
-    // Creating layers for each indexed color in arr
-    let layer = [],
-        ah = indexedImage.array.length,
-        aw = indexedImage.array[0].length,
-        i,
-        j
+    const height = indexedImage.array.length
+    const width = indexedImage.array[0].length
 
-    // Create layer
-    for (j = 0; j < ah; j++) {
-        layer[j] = []
-        for (i = 0; i < aw; i++) {
-            layer[j][i] = 0
-        }
-    }
+    // Creating layers for each indexed color in indexedImage.array
+    const layers: NumberArray2D = Array.init(height, () => Array.init(width, () => 0))
 
     // Looping through all pixels and calculating edge node type
-    for (j = 1; j < ah; j++) {
-        for (i = 1; i < aw; i++) {
-            layer[j][i] =
-                (indexedImage.array[j - 1][i - 1] === colorNumber ? 1 : 0) +
-                (indexedImage.array[j - 1][i] === colorNumber ? 2 : 0) +
-                (indexedImage.array[j][i - 1] === colorNumber ? 8 : 0) +
-                (indexedImage.array[j][i] === colorNumber ? 4 : 0)
-        }
-    }
-
-    return layer;
+    // TODO why are we starting from 1?? Anything else breaks :/
+    from(1).to(height).forEach(y => {
+        from(1).to(width).forEach(x => {
+            layers[y][x] =
+                (indexedImage.array[y - 1][x - 1] === colorNumber ? 1 : 0) +
+                (indexedImage.array[y - 1][x] === colorNumber ? 2 : 0) +
+                (indexedImage.array[y][x - 1] === colorNumber ? 8 : 0) +
+                (indexedImage.array[y][x] === colorNumber ? 4 : 0)
+        })
+    })
+    return layers
 }
 
 // Point in polygon test
 function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean {
-    let isin = false;
+    let isin = false
 
     for (let i = 0, j = pointsList.length - 1; i < pointsList.length; j = i++) {
         isin =
             (((pointsList[i].y > point.y) !== (pointsList[j].y > point.y)) &&
                 (point.x < (pointsList[j].x - pointsList[i].x) * (point.y - pointsList[i].y) / (pointsList[j].y - pointsList[i].y) + pointsList[i].x))
-                ? !isin : isin;
+                ? !isin : isin
     }
 
-    return isin;
+    return isin
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
@@ -975,6 +966,12 @@ export class Color {
     }
 }
 
+export type SMP = {
+    segments: Array<any>,
+    boundingbox: any,
+    holechildren: any,
+    isholepath: any
+}
 
 export type Palette = Array<Color>
 
