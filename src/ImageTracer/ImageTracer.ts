@@ -1,9 +1,9 @@
 // Original Library https://github.com/jankovicsandras/imagetracerjs
 
 import {Options} from "./Options";
-import {floor, from, logD, random} from "../Utils";
+import {floor, from, logD, logW, random, writeLog, writePixels} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {Color, ImageData, IndexedImage, NumberArray2D, NumberArray3D, Palette, TraceData} from "./Types";
+import {Color, ImageData, IndexedImage, NumberArray2D, NumberArray3D, Palette, Point, TraceData} from "./Types";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -64,48 +64,49 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     })
 }
 
-// Using a form of k-means clustering repeatead options.colorquantcycles times. http://en.wikipedia.org/wiki/Color_quantization
-// BH: We should be doing this because we need to reduce the number of "color regions" as much as possible but pixels
-// will not be helpful in this so we have to lose data, or more accurately, regain the data that rasterization loses
-// because of pixels etc
+// Using a form of k-means clustering repeated `options.colorquantcycles` times. http://en.wikipedia.org/wiki/Color_quantization
 function colorQuantization(imageData: ImageData, options: Options): IndexedImage {
+    logD("Beginning Color Quantization...")
 
     imageData.ensureRGBA()
 
     // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
     //  for a 1 px border perhaps??
-    const colorArray: NumberArray2D = Array.init(imageData.height + 2, () =>
+    const array: NumberArray2D = Array.init(imageData.height + 2, () =>
         Array.init(imageData.width + 2, -1)
     )
 
-    // n is some kind of index or counter
-    const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
+    const paletteSum: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
 
-    const palette: Palette = colorQuantizedPalette(imageData, 128)
+    const palette: Palette = new ColorQuantizer(imageData.uniqueColors).makePalette(options.colorsNumber)
 
-    logD(`original image unique colors: ${imageData.uniqueColors.length}`)
-    logD(`palette colors: ${palette.length}`)
+    logD(`Original image unique colors: ${imageData.uniqueColors.length}`)
+    logD(`New Palette colors: ${palette.length}`)
+
+    writeLog(palette, "palette")
+    writePixels(palette, "./palette.png")
 
     // Repeat clustering step options.colorquantcycles times
-    from(0).to(options.colorquantcycles).forEach((quantCycle: number) => {
+    from(0).to(options.colorquantcycles).forEach((cycle: number) => {
 
-        // Average colors from the second iteration
-        if (quantCycle > 0) {
-            // averaging accumulatorPalette for palette
+        // Average colors from the second iteration onwards
+        if (cycle > 0) {
+            // averaging paletteSum for palette
             from(0).to(palette.length).forEach(k => {
                 // averaging
-                if (accumulatorPalette[k].n > 0) {
+                if (paletteSum[k].n > 0) {
                     palette[k] = new Color({
-                        r: floor(accumulatorPalette[k].r / accumulatorPalette[k].n),
-                        g: floor(accumulatorPalette[k].g / accumulatorPalette[k].n),
-                        b: floor(accumulatorPalette[k].b / accumulatorPalette[k].n),
-                        a: floor(accumulatorPalette[k].a / accumulatorPalette[k].n)
+                        r: floor(paletteSum[k].r / paletteSum[k].n),
+                        g: floor(paletteSum[k].g / paletteSum[k].n),
+                        b: floor(paletteSum[k].b / paletteSum[k].n),
+                        a: floor(paletteSum[k].a / paletteSum[k].n)
                     })
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
-                if ((accumulatorPalette[k].n / imageData.totalPixels < options.mincolorratio) &&
-                    (quantCycle < options.colorquantcycles - 1)) {
+                if ((paletteSum[k].n / imageData.totalPixels < options.mincolorratio) &&
+                    (cycle < options.colorquantcycles - 1)) {
+                    logW("Randomizing a palette color!")
                     palette[k] = new Color({
                         r: floor(random() * 255),
                         g: floor(random() * 255),
@@ -118,84 +119,56 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
         // Reseting palette accumulator for averaging
         from(0).to(palette.length)
-            .forEach(i => accumulatorPalette[i] = {r: 0, g: 0, b: 0, a: 0, n: 0})
+            .forEach(i => paletteSum[i] = {r: 0, g: 0, b: 0, a: 0, n: 0})
 
         // loop through all pixels
-        imageData.forEachPixel((y, x, color) => {
+        imageData.forEachPixel((y, x, imageColor) => {
 
             // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
-            let ci = 0
-            let cdl = 1024 // 4 * 256 is the maximum RGBA distance
+            let colorIndex = 0
+            let lastMinDistance = imageData.isRGBA ? (256 * 4) : (256 * 3) // 4 * 256 is the maximum RGBA distance
 
             palette.forEach((paletteColor: Color, index: number) => {
                 // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
-                const cd = (paletteColor.r - color.r).abs() +
-                    (paletteColor.g - color.g).abs() +
-                    (paletteColor.b - color.b).abs() +
-                    (paletteColor.a - color.a).abs()
+                const distance = (paletteColor.r - imageColor.r).abs() +
+                    (paletteColor.g - imageColor.g).abs() +
+                    (paletteColor.b - imageColor.b).abs() +
+                    (paletteColor.a - imageColor.a).abs()
 
                 // Remember this color if this is the closest yet
-                if (cd < cdl) {
-                    cdl = cd
-                    ci = index
+                if (distance < lastMinDistance) {
+                    lastMinDistance = distance
+                    colorIndex = index
                 }
             })
 
-            // add to palettacc
-            accumulatorPalette[ci].r += color.r
-            accumulatorPalette[ci].g += color.g
-            accumulatorPalette[ci].b += color.b
-            accumulatorPalette[ci].a += color.a
-            accumulatorPalette[ci].n++
+            // add to paletteSum
+            paletteSum[colorIndex].r += imageColor.r
+            paletteSum[colorIndex].g += imageColor.g
+            paletteSum[colorIndex].b += imageColor.b
+            paletteSum[colorIndex].a += imageColor.a
+            paletteSum[colorIndex].n++
 
             // update the indexed color array
-            colorArray[y + 1][x + 1] = ci
+            array[y + 1][x + 1] = colorIndex
         })
     })
 
-    return {array: colorArray, palette: palette}
+    writeLog(paletteSum, "accPalette")
+    writeLog(array, "indexedArray")
+
+    writePixels(palette, "./palette-1.png")
+
+    logD("Finished Color Quantization...")
+    logD(`Indexed image is ${array.length} x ${array[0].length} and has ${palette.length} colors in palette`)
+
+    return {array: array, palette: palette}
 }
 
 // 2. Layer separation and edge detection
 // Edge node types ( ▓: this layer or 1; ░: not this layer or 0 )
 // 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
 // 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
-
-function colorQuantizedPalette(imageData: ImageData, colorsNumber: number): Palette {
-    return new ColorQuantizer(imageData.uniqueColors).makePalette(colorsNumber)
-}
-
-/**
- * Old {@link Palette} generation method, for the better method see {@link colorQuantizedPalette}
- * @deprecated use {@link colorQuantizedPalette}
- */
-function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
-    let palette: Palette = []
-
-    // Divide the image into blocks depending on the given colorsNumber
-    let horizontalBlocks = colorsNumber.sqrt().ceil()
-    let verticalBlocks = (colorsNumber / horizontalBlocks).ceil()
-    let blockWidth = imageData.width / (horizontalBlocks + 1)
-    let blockHeight = imageData.height / (verticalBlocks + 1)
-
-    from(0).to(verticalBlocks).forEach(yBlock => {
-        from(0).to(horizontalBlocks).forEach(xBlock => {
-            if (palette.length === colorsNumber) return palette
-            else {
-                const idx = 4 * (((yBlock + 1) * blockHeight) *
-                    imageData.width + ((xBlock + 1) * blockWidth)).floor()
-                palette.push(new Color({
-                    r: imageData.data[idx],
-                    g: imageData.data[idx + 1],
-                    b: imageData.data[idx + 2],
-                    a: imageData.data[idx + 3]
-                }))
-            }
-        })
-    })
-    palette.forEach(color => logD(color.toRGBA()))
-    return palette
-}
 
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
@@ -222,7 +195,7 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberAr
     return layers
 }
 
-function isPointInPolygon(point: { x: number, y: number }, polygon: Array<{ x: number, y: number }>): boolean {
+function isPointInPolygon(point: Point, polygon: Array<Point>): boolean {
     let isIn = false
 
     // 2 pointer for loop r being 1 greater than l, and l being max when r == 0
@@ -239,7 +212,7 @@ function isPointInPolygon(point: { x: number, y: number }, polygon: Array<{ x: n
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
 function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
-    let paths = [],
+    let paths: Array<any> = [],
         pacnt = 0,
         pcnt = 0,
         px = 0,
@@ -249,7 +222,7 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
         dir = 0,
         pathfinished = true,
         holepath = false,
-        lookuprow;
+        lookuprow: Array<number>;
 
     for (let j = 0; j < h; j++) {
         for (let i = 0; i < w; i++) {

@@ -4,6 +4,8 @@ export type Palette = Array<Color>
 export type NumberArray2D = Array<Array<number>>
 export type NumberArray3D = Array<Array<Array<number>>>
 
+export type Point = { x: number, y: number }
+
 export type SMP = {
     segments: Array<any>,
     boundingbox: any,
@@ -69,6 +71,13 @@ export class Color {
         return hex
     }
 
+    set data(color: { r: number, g: number, b: number, a: number }) {
+        this.r = color.r
+        this.g = color.g
+        this.b = color.b
+        this.a = color.a
+    }
+
     toRGB(): string {
         return `rgb(${this.r},${this.g},${this.b})`
     }
@@ -93,10 +102,6 @@ export class Color {
 
     clone(): Color {
         return new Color({r: this.r, g: this.g, b: this.b, a: this.a})
-    }
-
-    toString(): string {
-        return [this.r, this.g, this.b, this.a].join(",")
     }
 
     normalized(pixelCount: number): Color {
@@ -170,8 +175,8 @@ export class ImageData {
         })
         return new ImageData({
             data: buffer,
-            width: (width ? width : pixels.length / 2),
-            height: (height ? height : pixels.length / 2)
+            width: (width ? width : pixels.length.sqrt().ceil()),
+            height: (height ? height : pixels.length.sqrt().ceil())
         })
     }
 

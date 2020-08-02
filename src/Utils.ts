@@ -1,4 +1,8 @@
 import * as moment from "moment";
+import {Color, ImageData} from "./ImageTracer/Types";
+import {writeImage} from "./PNG";
+import {writeFileSync} from "fs";
+import * as chalk from "chalk";
 
 export const momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
 export const momentFormatShorter = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
@@ -8,12 +12,26 @@ export function now(): string {
 }
 
 export function logD(message: any) {
-    console.log(`${now()}\n${message.toString()}\n`)
+    console.debug(
+        chalk.blueBright(`${now()}\n${message.toString()}\n`)
+    )
+}
+
+export function logW(message: any) {
+    console.warn(
+        chalk.yellowBright(`${now()}\n${message.toString()}\n`)
+    )
+}
+
+export function logI(message: any) {
+    console.info(
+        chalk.whiteBright(`${now()}\n${message.toString()}\n`)
+    )
 }
 
 export function logE(message: any, calledFrom: string = "") {
     console.error(
-        `${message.toString()} ${calledFrom}`
+        chalk.red(`${now()}\n${message.toString()}\n`)
     )
 }
 
@@ -116,4 +134,12 @@ export function from(from: number) {
             return range(from, to)
         }
     }
+}
+
+export async function writePixels(pixels: Array<Color>, path: string) {
+    await writeImage(path, ImageData.fromPixels(pixels))
+}
+
+export async function writeLog(data: any, fileName: string) {
+    writeFileSync(`./logs/${fileName}.json`, json(data))
 }
