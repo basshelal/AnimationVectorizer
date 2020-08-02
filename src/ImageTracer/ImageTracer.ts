@@ -3,6 +3,7 @@
 import {Options} from "./Options";
 import {floor, from, logD, random} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
+import {Color, ImageData, IndexedImage, NumberArray2D, NumberArray3D, Palette, TraceData} from "./Types";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -171,19 +172,11 @@ function colorQuantizedPalette(imageData: ImageData, colorsNumber: number): Pale
 function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
     let palette: Palette = []
 
-    logD(`width: ${imageData.width}`)
-    logD(`height: ${imageData.height}`)
-
     // Divide the image into blocks depending on the given colorsNumber
-    logD(`colorsNumber: ${colorsNumber}`)
     let horizontalBlocks = colorsNumber.sqrt().ceil()
-    logD(`horizontalBlocks: ${horizontalBlocks}`)
     let verticalBlocks = (colorsNumber / horizontalBlocks).ceil()
-    logD(`verticalBlocks: ${verticalBlocks}`)
     let blockWidth = imageData.width / (horizontalBlocks + 1)
-    logD(`blockWidth: ${blockWidth}`)
     let blockHeight = imageData.height / (verticalBlocks + 1)
-    logD(`blockHeight: ${blockHeight}`)
 
     from(0).to(verticalBlocks).forEach(yBlock => {
         from(0).to(horizontalBlocks).forEach(xBlock => {
@@ -197,16 +190,10 @@ function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
                     b: imageData.data[idx + 2],
                     a: imageData.data[idx + 3]
                 }))
-
-                logD(`yBlock: ${yBlock}`)
-                logD(`xBlock: ${xBlock}`)
-                logD(`idx: ${idx}`)
             }
         })
     })
     palette.forEach(color => logD(color.toRGBA()))
-    logD(`paletteSize: ${palette.length}`)
-    logD("")
     return palette
 }
 
@@ -222,6 +209,7 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberAr
 
     // Looping through all pixels and calculating edge node type
     // TODO why are we starting from 1?? Anything else breaks :/
+    //  probably has to do with the +2 we saw earlier
     from(1).to(height).forEach(y => {
         from(1).to(width).forEach(x => {
             layers[y][x] =
@@ -234,24 +222,34 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberAr
     return layers
 }
 
-// Point in polygon test
-function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean {
-    let isin = false
+function isPointInPolygon(point: { x: number, y: number }, polygon: Array<{ x: number, y: number }>): boolean {
+    let isIn = false
 
-    for (let i = 0, j = pointsList.length - 1; i < pointsList.length; j = i++) {
-        isin =
-            (((pointsList[i].y > point.y) !== (pointsList[j].y > point.y)) &&
-                (point.x < (pointsList[j].x - pointsList[i].x) * (point.y - pointsList[i].y) / (pointsList[j].y - pointsList[i].y) + pointsList[i].x))
-                ? !isin : isin
+    // 2 pointer for loop r being 1 greater than l, and l being max when r == 0
+    for (let r = 0, l = polygon.length - 1; r < polygon.length; l = r++) {
+        isIn =
+            (((polygon[r].y > point.y) !== (polygon[l].y > point.y)) &&
+                (point.x <
+                    ((polygon[l].x - polygon[r].x) * (point.y - polygon[r].y) / (polygon[l].y - polygon[r].y) + polygon[r].x)
+                )) ? !isIn : isIn
     }
 
-    return isin
+    return isIn
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
 function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
-    let paths = [], pacnt = 0, pcnt = 0, px = 0, py = 0, w = arr[0].length, h = arr.length,
-        dir = 0, pathfinished = true, holepath = false, lookuprow;
+    let paths = [],
+        pacnt = 0,
+        pcnt = 0,
+        px = 0,
+        py = 0,
+        w = arr[0].length,
+        h = arr.length,
+        dir = 0,
+        pathfinished = true,
+        holepath = false,
+        lookuprow;
 
     for (let j = 0; j < h; j++) {
         for (let i = 0; i < w; i++) {
@@ -318,7 +316,7 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
                                     if ((!paths[parentcnt].isholepath) &&
                                         boundingBoxIncludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
                                         boundingBoxIncludes(parentbbox, paths[parentcnt].boundingbox) &&
-                                        isPointInPointsList(paths[pacnt].points[0], paths[parentcnt].points)
+                                        isPointInPolygon(paths[pacnt].points[0], paths[parentcnt].points)
                                     ) {
                                         parentidx = parentcnt;
                                         parentbbox = paths[parentcnt].boundingbox;
@@ -353,7 +351,14 @@ function boundingBoxIncludes(parentbbox, childbbox) {
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function interNodes(paths) {
-    let ins = [], palen = 0, nextidx = 0, nextidx2 = 0, previdx = 0, previdx2 = 0, pacnt, pcnt;
+    let ins = [],
+        palen = 0,
+        nextidx = 0,
+        nextidx2 = 0,
+        previdx = 0,
+        previdx2 = 0,
+        pacnt,
+        pcnt;
 
     // paths loop
     for (pacnt = 0; pacnt < paths.length; pacnt++) {
@@ -464,7 +469,10 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): number {
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
 function tracePath(path, ltres, qtres) {
-    let pcnt = 0, segtype1, segtype2, seqend;
+    let pcnt = 0,
+        segtype1,
+        segtype2,
+        seqend;
 
     const smp = {
         segments: [],
@@ -625,7 +633,10 @@ function roundToDec(val: number, places: number = 0) {
 // Getting SVG path element string from a traced path
 function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, options: Options): string {
 
-    let layer = tracedata.layers[lnum], smp = layer[pathnum], str = '', pcnt
+    let layer = tracedata.layers[lnum],
+        smp = layer[pathnum],
+        str = '',
+        pcnt
 
     // Line filter
     if (options.lineFilter && (smp.segments.length < 3)) {
@@ -748,14 +759,12 @@ function getSvgString(traceData: TraceData, options: Options): string {
     // Drawing: Layers and Paths loops
     for (let lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
         for (let pcnt = 0; pcnt < traceData.layers[lcnt].length; pcnt++) {
-
             // Adding SVG <path> string
             if (!traceData.layers[lcnt][pcnt].isholepath) {
                 svgString += svgPathString(traceData, lcnt, pcnt, options);
             }
-
-        }// End of paths loop
-    }// End of layers loop
+        }
+    }
 
     // SVG End
     svgString += '</svg>'
@@ -764,221 +773,3 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
 }
 
-export class ImageData {
-    public height: number
-    public width: number
-    public data: Buffer
-    public totalPixels: number
-
-    constructor(imageData: { height: number, width: number, data: Buffer }) {
-        this.height = imageData.height
-        this.width = imageData.width
-        this.data = imageData.data
-        this.totalPixels = this.width * this.height
-    }
-
-    get isRGBA(): boolean {
-        return this.data.length > this.totalPixels * 3
-    }
-
-    get isRGB(): boolean {
-        return this.data.length < this.totalPixels * 4
-    }
-
-    ensureRGBA(): ImageData {
-        if (this.isRGB) {
-            const newImgData = Buffer.alloc(this.totalPixels * 4)
-            from(0).to(this.totalPixels).forEach((pxIndex: number) => {
-                newImgData[pxIndex * 4] = this.data[pxIndex * 3] // r
-                newImgData[pxIndex * 4 + 1] = this.data[pxIndex * 3 + 1] // g
-                newImgData[pxIndex * 4 + 2] = this.data[pxIndex * 3 + 2] // b
-                newImgData[pxIndex * 4 + 3] = 255; // a
-            })
-            this.data = newImgData
-        }
-        return this
-    }
-
-    ensureRGB(): ImageData {
-        if (this.isRGBA) {
-            const newImgData = Buffer.alloc(this.totalPixels * 3)
-            from(0).to(this.totalPixels).forEach((pxIndex: number) => {
-                newImgData[pxIndex * 3] = this.data[pxIndex * 4] // r
-                newImgData[pxIndex * 3 + 1] = this.data[pxIndex * 4 + 1] // g
-                newImgData[pxIndex * 3 + 2] = this.data[pxIndex * 4 + 2] // b
-            })
-            this.data = newImgData
-        }
-        return this
-    }
-
-    get pixels(): Array<Color> {
-        this.ensureRGBA()
-        const result: Array<Color> = []
-        for (let dataIndex = 0, pxIndex = 0; dataIndex < this.data.length; dataIndex += 4, pxIndex++) {
-            result[pxIndex] = new Color({
-                r: this.data[dataIndex],
-                g: this.data[dataIndex + 1],
-                b: this.data[dataIndex + 2],
-                a: this.data[dataIndex + 3]
-            })
-        }
-        return result
-    }
-
-    static fromPixels(pixels: Array<Color>, width?: number, height?: number): ImageData {
-        const buffer = Buffer.alloc(pixels.length * 4)
-        pixels.forEach((color: Color, index: number) => {
-            buffer[index * 4] = color.r
-            buffer[index * 4 + 1] = color.g
-            buffer[index * 4 + 2] = color.b
-            buffer[index * 4 + 3] = color.a
-        })
-        return new ImageData({
-            data: buffer,
-            width: (width ? width : pixels.length / 2),
-            height: (height ? height : pixels.length / 2)
-        })
-    }
-
-    get uniqueColors(): Array<Color> {
-        return Array.from(new Set(this.pixels))
-    }
-
-    forEachPixel(func: (y: number, x: number, color: Color) => void): ImageData {
-        from(0).to(this.height).forEach(y => {
-            from(0).to(this.width).forEach(x => {
-                const index = 4 * (y * this.width + x)
-                func(y, x, new Color({
-                    r: this.data[index],
-                    g: this.data[index + 1],
-                    b: this.data[index + 2],
-                    a: this.data[index + 3],
-                }))
-            })
-        })
-        return this
-    }
-}
-
-export class TraceData {
-    public layers: Array<any>
-    public palette: Palette
-    public width: number
-    public height: number
-
-    constructor(traceData: {
-        layers: Array<any>,
-        palette: Palette,
-        width: number,
-        height: number
-    }) {
-        this.layers = traceData.layers
-        this.palette = traceData.palette
-        this.width = traceData.width
-        this.height = traceData.height
-    }
-}
-
-// TODO Technically this is also a representation of Pixel, should we change its name to that?
-export class Color {
-
-    public r: number
-    public g: number
-    public b: number
-    public a: number
-
-    // TODO we should remove alpha at some point when we understand how everything works because we don't need it
-
-    constructor(color?: { r: number, g: number, b: number, a?: number }) {
-        if (color) {
-            this.r = color.r
-            this.g = color.g
-            this.b = color.b
-            if (color.a) this.a = color.a; else this.a = 255
-        } else {
-            this.r = 0
-            this.g = 0
-            this.b = 0
-            this.a = 0
-        }
-    }
-
-    private static hex(channelValue: number): string {
-        let hex = Number(channelValue).toString(16)
-        if (hex.length < 2) hex = "0" + hex
-        return hex
-    }
-
-    toRGB(): string {
-        return `rgb(${this.r},${this.g},${this.b})`
-    }
-
-    toRGBA(): string {
-        return `rgba(${this.r},${this.g},${this.b},${this.a})`
-    }
-
-    toHex(ignoreAlpha: boolean = false): string {
-        return `${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${ignoreAlpha ? Color.hex(this.r) : ""}`
-    }
-
-    toSVGString(): string {
-        return `fill="${this.toRGB()}" stroke="${this.toRGB()}" stroke-width="1" opacity="${this.a / 255.0}"`
-    }
-
-    get array(): Array<number> {
-        return [this.r, this.g, this.b, this.r + this.g + this.b]
-    }
-
-    toCSSString(): string {
-        return `rgb(${[this.r, this.g, this.b, this.a]
-            .map(n => Math.floor(n))
-            .join(",")})`
-    }
-
-    clone(): Color {
-        return new Color({r: this.r, g: this.g, b: this.b, a: this.a})
-    }
-
-    toString(): string {
-        return [this.r, this.g, this.b, this.a].join(",")
-    }
-
-    normalized(pixelCount: number): Color {
-        return new Color({
-            r: this.r / pixelCount,
-            g: this.g / pixelCount,
-            b: this.b / pixelCount
-        })
-    }
-
-    add(color: Color) {
-        this.r += color.r
-        this.g += color.g
-        this.b += color.b
-    }
-
-    round() {
-        this.r = this.r.round()
-        this.g = this.g.round()
-        this.b = this.b.round()
-        this.a = this.a.round()
-    }
-}
-
-export type SMP = {
-    segments: Array<any>,
-    boundingbox: any,
-    holechildren: any,
-    isholepath: any
-}
-
-export type Palette = Array<Color>
-
-export type IndexedImage = {
-    array: NumberArray2D,
-    palette: Palette
-}
-
-export type NumberArray2D = Array<Array<number>>
-export type NumberArray3D = Array<Array<Array<number>>>

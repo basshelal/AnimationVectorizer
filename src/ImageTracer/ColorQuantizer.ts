@@ -1,6 +1,6 @@
 // Octree Color Quantization from this excellent article https://observablehq.com/@tmcw/octree-color-quantization
 
-import {Color, Palette} from "./ImageTracer";
+import {Color, Palette} from "./Types";
 
 const MAX_DEPTH = 8
 
