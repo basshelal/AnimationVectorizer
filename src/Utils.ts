@@ -7,10 +7,8 @@ export function now(): string {
     return moment().format(momentFormat)
 }
 
-export function logD(message: any, calledFrom: string = "") {
-    console.log(
-        `${message.toString()} ${calledFrom} : ${now()}`
-    )
+export function logD(message: any) {
+    console.log(`${now()}\n${message.toString()}\n`)
 }
 
 export function logE(message: any, calledFrom: string = "") {

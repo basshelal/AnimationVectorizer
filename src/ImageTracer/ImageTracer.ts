@@ -41,35 +41,26 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
-    let traceData = new TraceData({
-        layers: [],
+    // Loop to trace each color layer
+    const layers = indexedImage.palette.map((_, colorIndex: number) =>
+        // layeringStep -> pathScan -> interNodes -> batchTracePaths
+        batchTracePaths(
+            interNodes(
+                pathScan(
+                    layeringStep(indexedImage, colorIndex),
+                    options.pathomit
+                )
+            ),
+            options.lineThreshold,
+            options.qSplineThreshold
+        )
+    )
+    return new TraceData({
+        layers: layers,
         palette: indexedImage.palette,
         width: indexedImage.array[0].length - 2,
         height: indexedImage.array.length - 2
     })
-
-    // Loop to trace each color layer
-    for (let colornum = 0; colornum < indexedImage.palette.length; colornum++) {
-
-        // layeringStep -> pathScan -> interNodes -> batchTracePaths
-        let tracedlayer =
-            batchTracePaths(
-                interNodes(
-                    pathScan(
-                        layeringStep(indexedImage, colornum),
-                        options.pathomit
-                    ),
-                    options
-                ),
-                options.lineThreshold,
-                options.qSplineThreshold
-            );
-
-        // adding traced layer
-        traceData.layers.push(tracedlayer)
-
-    }// End of color loop
-    return traceData
 }
 
 // Using a form of k-means clustering repeatead options.colorquantcycles times. http://en.wikipedia.org/wiki/Color_quantization
@@ -86,15 +77,13 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         Array.init(imageData.width + 2, -1)
     )
 
-    // TODO what is n??? This is a function scoped object so we can easily deduce this :P
-    //  n is some kind of index
+    // n is some kind of index or counter
     const accumulatorPalette: Array<{ r: number, g: number, b: number, a: number, n: number }> = []
 
     const palette: Palette = colorQuantizedPalette(imageData, 128)
 
-    palette.forEach(color => logD(color.toRGBA()))
-    logD(`palette: ${palette.length}`)
-    logD(`original: ${imageData.uniqueColors.length}`)
+    logD(`original image unique colors: ${imageData.uniqueColors.length}`)
+    logD(`palette colors: ${palette.length}`)
 
     // Repeat clustering step options.colorquantcycles times
     from(0).to(options.colorquantcycles).forEach((quantCycle: number) => {
@@ -156,7 +145,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             accumulatorPalette[ci].g += color.g
             accumulatorPalette[ci].b += color.b
             accumulatorPalette[ci].a += color.a
-            accumulatorPalette[ci].n++;
+            accumulatorPalette[ci].n++
 
             // update the indexed color array
             colorArray[y + 1][x + 1] = ci
@@ -177,6 +166,7 @@ function colorQuantizedPalette(imageData: ImageData, colorsNumber: number): Pale
 
 /**
  * Old {@link Palette} generation method, for the better method see {@link colorQuantizedPalette}
+ * @deprecated use {@link colorQuantizedPalette}
  */
 function generatePalette(imageData: ImageData, colorsNumber: number): Palette {
     let palette: Palette = []
@@ -268,7 +258,7 @@ function isPointInPointsList(point: SVGPoint, pointsList: SVGPointList): boolean
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(arr, pathomit) {
+function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
     let paths = [], pacnt = 0, pcnt = 0, px = 0, py = 0, w = arr[0].length, h = arr.length,
         dir = 0, pathfinished = true, holepath = false, lookuprow;
 
@@ -371,7 +361,7 @@ function boundingBoxIncludes(parentbbox, childbbox) {
 }// End of boundingBoxIncludes()
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
-function interNodes(paths, options) {
+function interNodes(paths) {
     let ins = [], palen = 0, nextidx = 0, nextidx2 = 0, previdx = 0, previdx2 = 0, pacnt, pcnt;
 
     // paths loop
@@ -394,7 +384,7 @@ function interNodes(paths, options) {
             previdx2 = (pcnt - 2 + palen) % palen;
 
             // right angle enhance
-            if (options.rightangleenhance && testRightAngle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
+            if (testRightAngle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
 
                 // Fix previous direction
                 if (ins[pacnt].points.length > 0) {
@@ -437,9 +427,9 @@ function interNodes(paths, options) {
     }// End of paths loop
 
     return ins;
-}// End of interNodes()
+}
 
-function testRightAngle(path, idx1, idx2, idx3, idx4, idx5) {
+function testRightAngle(path, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
     return (((path.points[idx3].x === path.points[idx1].x) &&
             (path.points[idx3].x === path.points[idx2].x) &&
             (path.points[idx3].y === path.points[idx4].y) &&
@@ -462,40 +452,22 @@ function testRightAngle(path, idx1, idx2, idx3, idx4, idx5) {
 // 5.5. If the spline fails (distance error > qtres), find the point with the biggest error, set splitpoint = fitting point
 // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
 
-function getDirection(x1, y1, x2, y2) {
-    let val = 8;
+function getDirection(x1: number, y1: number, x2: number, y2: number): number {
+    let val: number
     if (x1 < x2) {
-        if (y1 < y2) {
-            val = 1;
-        }// SouthEast
-        else if (y1 > y2) {
-            val = 7;
-        }// NE
-        else {
-            val = 0;
-        }// E
+        if (y1 < y2) val = 1 // SouthEast
+        else if (y1 > y2) val = 7 // NE
+        else val = 0 // E
     } else if (x1 > x2) {
-        if (y1 < y2) {
-            val = 3;
-        }// SW
-        else if (y1 > y2) {
-            val = 5;
-        }// NW
-        else {
-            val = 4;
-        }// W
+        if (y1 < y2) val = 3 // SW
+        else if (y1 > y2) val = 5 // NW
+        else val = 4 // W
     } else {
-        if (y1 < y2) {
-            val = 2;
-        }// S
-        else if (y1 > y2) {
-            val = 6;
-        }// N
-        else {
-            val = 8;
-        }// center, this should not happen
+        if (y1 < y2) val = 2 // S
+        else if (y1 > y2) val = 6 // N
+        else val = 8 // center, this should not happen
     }
-    return val;
+    return val
 }// End of getDirection()
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
@@ -814,8 +786,16 @@ export class ImageData {
         this.totalPixels = this.width * this.height
     }
 
+    get isRGBA(): boolean {
+        return this.data.length > this.totalPixels * 3
+    }
+
+    get isRGB(): boolean {
+        return this.data.length < this.totalPixels * 4
+    }
+
     ensureRGBA(): ImageData {
-        if (this.data.length < this.totalPixels * 4) {
+        if (this.isRGB) {
             const newImgData = Buffer.alloc(this.totalPixels * 4)
             from(0).to(this.totalPixels).forEach((pxIndex: number) => {
                 newImgData[pxIndex * 4] = this.data[pxIndex * 3] // r
@@ -829,7 +809,7 @@ export class ImageData {
     }
 
     ensureRGB(): ImageData {
-        if (this.data.length > this.totalPixels * 3) {
+        if (this.isRGBA) {
             const newImgData = Buffer.alloc(this.totalPixels * 3)
             from(0).to(this.totalPixels).forEach((pxIndex: number) => {
                 newImgData[pxIndex * 3] = this.data[pxIndex * 4] // r
