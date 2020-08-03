@@ -322,17 +322,10 @@ function boundingBoxIncludes(parentbbox: Array<any>, childbbox: Array<any>): boo
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function interNodes(paths: Array<Path>): Array<Path> {
-    let ins: Array<Path> = [],
-        palen = 0,
-        nextidx = 0,
-        nextidx2 = 0,
-        previdx = 0,
-        previdx2 = 0,
-        pacnt,
-        pcnt;
+    const ins: Array<Path> = []
 
     // paths loop
-    for (pacnt = 0; pacnt < paths.length; pacnt++) {
+    for (let pacnt = 0; pacnt < paths.length; pacnt++) {
 
         ins[pacnt] = {
             points: [],
@@ -340,16 +333,16 @@ function interNodes(paths: Array<Path>): Array<Path> {
             holeChildren: paths[pacnt].holeChildren,
             isHolePath: paths[pacnt].isHolePath
         }
-        palen = paths[pacnt].points.length;
+        let palen = paths[pacnt].points.length;
 
         // pathpoints loop
-        for (pcnt = 0; pcnt < palen; pcnt++) {
+        for (let pcnt = 0; pcnt < palen; pcnt++) {
 
             // next and previous point indexes
-            nextidx = (pcnt + 1) % palen;
-            nextidx2 = (pcnt + 2) % palen;
-            previdx = (pcnt - 1 + palen) % palen;
-            previdx2 = (pcnt - 2 + palen) % palen;
+            let nextidx = (pcnt + 1) % palen;
+            let nextidx2 = (pcnt + 2) % palen;
+            let previdx = (pcnt - 1 + palen) % palen;
+            let previdx2 = (pcnt - 2 + palen) % palen;
 
             // right angle enhance
             if (testRightAngle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
@@ -389,11 +382,8 @@ function interNodes(paths: Array<Path>): Array<Path> {
                     ((paths[pacnt].points[nextidx].y + paths[pacnt].points[nextidx2].y) / 2)
                 )
             }))
-
-        }// End of pathpoints loop
-
-    }// End of paths loop
-
+        }
+    }
     return ins
 }
 
@@ -409,7 +399,7 @@ function testRightAngle(path: Path, idx1: number, idx2: number, idx3: number, id
             (path.points[idx3].x === path.points[idx5].x)
         )
     );
-}// End of testRightAngle()
+}
 
 // 5. tracePath() : recursively trying to fit straight and quadratic spline segments on the 8 direction internode path
 
