@@ -3,7 +3,7 @@
 import {Options} from "./Options";
 import {floor, from, logD, logW, random, writeLog, writePixels} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {Color, ImageData, IndexedImage, NumberArray2D, NumberArray3D, Palette, Point, TraceData} from "./Types";
+import {Color, ImageData, IndexedImage, NumberArray2D, NumberArray3D, Palette, Path, Point, TraceData} from "./Types";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -44,7 +44,6 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 
     // Loop to trace each color layer
     const layers = indexedImage.palette.map((_, colorIndex: number) =>
-        // layeringStep -> pathScan -> interNodes -> batchTracePaths
         batchTracePaths(
             interNodes(
                 pathScan(
@@ -162,7 +161,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     logD("Finished Color Quantization...")
     logD(`Indexed image is ${array.length} x ${array[0].length} and has ${palette.length} colors in palette`)
 
-    return {array: array, palette: palette}
+    return new IndexedImage({array: array, palette: palette})
 }
 
 // 2. Layer separation and edge detection
@@ -177,7 +176,7 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberAr
     const height = indexedImage.array.length
     const width = indexedImage.array[0].length
 
-    // Creating layers for each indexed color in indexedImage.array
+    // Creating a layer for each indexed color in indexedImage.array
     const layers: NumberArray2D = Array.init(height, () => Array.init(width, () => 0))
 
     // Looping through all pixels and calculating edge node type
@@ -211,8 +210,8 @@ function isPointInPolygon(point: Point, polygon: Array<Point>): boolean {
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
-    let paths: Array<any> = [],
+function pathScan(arr: NumberArray2D, pathomit: number): Array<Path> {
+    let paths: Array<Path> = [],
         pacnt = 0,
         pcnt = 0,
         px = 0,
@@ -231,10 +230,12 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
                 // Init
                 px = i;
                 py = j;
-                paths[pacnt] = {};
-                paths[pacnt].points = [];
-                paths[pacnt].boundingbox = [px, py, px, py];
-                paths[pacnt].holechildren = [];
+                paths[pacnt] = {
+                    points: [],
+                    boundingBox: [px, py, px, py],
+                    holeChildren: [],
+                    isHolePath: false
+                };
                 pathfinished = false;
                 pcnt = 0;
                 holepath = (arr[j][i] == 11);
@@ -250,17 +251,17 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
                     paths[pacnt].points[pcnt].t = arr[py][px];
 
                     // Bounding box
-                    if ((px - 1) < paths[pacnt].boundingbox[0]) {
-                        paths[pacnt].boundingbox[0] = px - 1;
+                    if ((px - 1) < paths[pacnt].boundingBox[0]) {
+                        paths[pacnt].boundingBox[0] = px - 1;
                     }
-                    if ((px - 1) > paths[pacnt].boundingbox[2]) {
-                        paths[pacnt].boundingbox[2] = px - 1;
+                    if ((px - 1) > paths[pacnt].boundingBox[2]) {
+                        paths[pacnt].boundingBox[2] = px - 1;
                     }
-                    if ((py - 1) < paths[pacnt].boundingbox[1]) {
-                        paths[pacnt].boundingbox[1] = py - 1;
+                    if ((py - 1) < paths[pacnt].boundingBox[1]) {
+                        paths[pacnt].boundingBox[1] = py - 1;
                     }
-                    if ((py - 1) > paths[pacnt].boundingbox[3]) {
-                        paths[pacnt].boundingbox[3] = py - 1;
+                    if ((py - 1) > paths[pacnt].boundingBox[3]) {
+                        paths[pacnt].boundingBox[3] = py - 1;
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
@@ -279,24 +280,24 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
                             paths.pop();
                         } else {
 
-                            paths[pacnt].isholepath = holepath;
+                            paths[pacnt].isHolePath = holepath;
 
                             // Finding the parent shape for this hole
                             if (holepath) {
 
                                 let parentidx = 0, parentbbox = [-1, -1, w + 1, h + 1];
                                 for (let parentcnt = 0; parentcnt < pacnt; parentcnt++) {
-                                    if ((!paths[parentcnt].isholepath) &&
-                                        boundingBoxIncludes(paths[parentcnt].boundingbox, paths[pacnt].boundingbox) &&
-                                        boundingBoxIncludes(parentbbox, paths[parentcnt].boundingbox) &&
+                                    if ((!paths[parentcnt].isHolePath) &&
+                                        boundingBoxIncludes(paths[parentcnt].boundingBox, paths[pacnt].boundingBox) &&
+                                        boundingBoxIncludes(parentbbox, paths[parentcnt].boundingBox) &&
                                         isPointInPolygon(paths[pacnt].points[0], paths[parentcnt].points)
                                     ) {
                                         parentidx = parentcnt;
-                                        parentbbox = paths[parentcnt].boundingbox;
+                                        parentbbox = paths[parentcnt].boundingBox;
                                     }
                                 }
 
-                                paths[parentidx].holechildren.push(pacnt);
+                                paths[parentidx].holeChildren.push(pacnt);
 
                             }// End of holepath parent finding
 
@@ -315,16 +316,16 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<any> {
         }// End of i loop
     }// End of j loop
 
-    return paths;
-}// End of pathScan()
+    return paths
+}
 
 function boundingBoxIncludes(parentbbox, childbbox) {
     return ((parentbbox[0] < childbbox[0]) && (parentbbox[1] < childbbox[1]) && (parentbbox[2] > childbbox[2]) && (parentbbox[3] > childbbox[3]));
 }// End of boundingBoxIncludes()
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
-function interNodes(paths) {
-    let ins = [],
+function interNodes(paths: Array<Path>): Array<Path> {
+    let ins: Array<Path> = [],
         palen = 0,
         nextidx = 0,
         nextidx2 = 0,
@@ -336,11 +337,12 @@ function interNodes(paths) {
     // paths loop
     for (pacnt = 0; pacnt < paths.length; pacnt++) {
 
-        ins[pacnt] = {};
-        ins[pacnt].points = [];
-        ins[pacnt].boundingbox = paths[pacnt].boundingbox;
-        ins[pacnt].holechildren = paths[pacnt].holechildren;
-        ins[pacnt].isholepath = paths[pacnt].isholepath;
+        ins[pacnt] = {
+            points: [],
+            boundingBox: paths[pacnt].boundingBox,
+            holeChildren: paths[pacnt].holeChildren,
+            isHolePath: paths[pacnt].isHolePath
+        }
         palen = paths[pacnt].points.length;
 
         // pathpoints loop
@@ -395,7 +397,7 @@ function interNodes(paths) {
 
     }// End of paths loop
 
-    return ins;
+    return ins
 }
 
 function testRightAngle(path, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
@@ -449,9 +451,9 @@ function tracePath(path, ltres, qtres) {
 
     const smp = {
         segments: [],
-        boundingbox: path.boundingbox,
-        holechildren: path.holechildren,
-        isholepath: path.isholepath
+        boundingBox: path.boundingBox,
+        holeChildren: path.holeChildren,
+        isHolePath: path.isHolePath
     }
 
     while (pcnt < path.points.length) {
@@ -587,7 +589,7 @@ function fitSeq(path, ltres, qtres, seqstart, seqend) {
 }
 
 // 5. Batch tracing paths
-function batchTracePaths(internodepaths, ltres, qtres) {
+function batchTracePaths(internodepaths: Array<Path>, ltres, qtres) {
     let btracedpaths = [];
     for (let k in internodepaths) {
         if (!internodepaths.hasOwnProperty(k)) {
@@ -641,8 +643,8 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
     }// End of creating non-hole path string
 
     // Hole children
-    for (let hcnt = 0; hcnt < smp.holechildren.length; hcnt++) {
-        let hsmp = layer[smp.holechildren[hcnt]];
+    for (let hcnt = 0; hcnt < smp.holeChildren.length; hcnt++) {
+        let hsmp = layer[smp.holeChildren[hcnt]];
         // Creating hole path string
         if (options.roundcoords === -1) {
 
@@ -702,8 +704,8 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
         }
 
         // Hole children control points
-        for (let hcnt = 0; hcnt < smp.holechildren.length; hcnt++) {
-            let hsmp = layer[smp.holechildren[hcnt]];
+        for (let hcnt = 0; hcnt < smp.holeChildren.length; hcnt++) {
+            let hsmp = layer[smp.holeChildren[hcnt]];
             for (pcnt = 0; pcnt < hsmp.segments.length; pcnt++) {
                 if (hsmp.segments[pcnt].hasOwnProperty('x3') && options.qcpr) {
                     str += '<circle cx="' + hsmp.segments[pcnt].x2 * options.scale + '" cy="' + hsmp.segments[pcnt].y2 * options.scale + '" r="' + options.qcpr + '" fill="cyan" stroke-width="' + options.qcpr * 0.2 + '" stroke="black" />';
@@ -733,7 +735,7 @@ function getSvgString(traceData: TraceData, options: Options): string {
     for (let lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
         for (let pcnt = 0; pcnt < traceData.layers[lcnt].length; pcnt++) {
             // Adding SVG <path> string
-            if (!traceData.layers[lcnt][pcnt].isholepath) {
+            if (!traceData.layers[lcnt][pcnt].isHolePath) {
                 svgString += svgPathString(traceData, lcnt, pcnt, options);
             }
         }
@@ -741,6 +743,8 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
     // SVG End
     svgString += '</svg>'
+
+    logD(`SVG size is ${svgString.length} bytes`)
 
     return svgString;
 

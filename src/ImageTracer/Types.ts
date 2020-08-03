@@ -4,8 +4,39 @@ export type Palette = Array<Color>
 export type NumberArray2D = Array<Array<number>>
 export type NumberArray3D = Array<Array<Array<number>>>
 
-export type Point = { x: number, y: number }
+export class Point {
+    x: number
+    y: number
 
+    constructor({x, y}: { x: number, y: number }) {
+        this.x = x
+        this.y = y
+    }
+
+    isInPolygon(polygon: Array<Point>): boolean {
+        let isIn = false
+
+        // 2 pointer for loop r being 1 greater than l, and l being max when r == 0
+        for (let r = 0, l = polygon.length - 1; r < polygon.length; l = r++) {
+            isIn =
+                (((polygon[r].y > this.y) !== (polygon[l].y > this.y)) &&
+                    (this.x <
+                        ((polygon[l].x - polygon[r].x) * (this.y - polygon[r].y) / (polygon[l].y - polygon[r].y) + polygon[r].x)
+                    )) ? !isIn : isIn
+        }
+
+        return isIn
+    }
+}
+
+export class Path {
+    points: Array<any>
+    boundingBox: Array<any>
+    holeChildren: Array<any>
+    isHolePath: boolean
+}
+
+// TODO don't know what this is yet
 export type SMP = {
     segments: Array<any>,
     boundingbox: any,
@@ -13,9 +44,14 @@ export type SMP = {
     isholepath: any
 }
 
-export type IndexedImage = {
-    array: NumberArray2D,
+export class IndexedImage {
+    array: NumberArray2D
     palette: Palette
+
+    constructor({array, palette}: { array: NumberArray2D, palette: Palette }) {
+        this.array = array
+        this.palette = palette
+    }
 }
 
 export class TraceData {
@@ -24,16 +60,16 @@ export class TraceData {
     public width: number
     public height: number
 
-    constructor(traceData: {
+    constructor({layers, palette, width, height}: {
         layers: Array<any>,
         palette: Palette,
         width: number,
         height: number
     }) {
-        this.layers = traceData.layers
-        this.palette = traceData.palette
-        this.width = traceData.width
-        this.height = traceData.height
+        this.layers = layers
+        this.palette = palette
+        this.width = width
+        this.height = height
     }
 }
 
@@ -132,10 +168,10 @@ export class ImageData {
     public data: Buffer
     public totalPixels: number
 
-    constructor(imageData: { height: number, width: number, data: Buffer }) {
-        this.height = imageData.height
-        this.width = imageData.width
-        this.data = imageData.data
+    constructor({height, width, data}: { height: number, width: number, data: Buffer }) {
+        this.height = height
+        this.width = width
+        this.data = data
         this.totalPixels = this.width * this.height
     }
 
