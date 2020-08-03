@@ -3,22 +3,11 @@
 import {Options} from "./Options";
 import {floor, from, random} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {
-    Color,
-    ImageData,
-    IndexedImage,
-    NumberArray2D,
-    NumberArray3D,
-    Palette,
-    Path,
-    Point,
-    SMP,
-    TraceData
-} from "./Types";
+import {Color, Grid, ImageData, IndexedImage, Palette, Path, Point, SMP, TraceData} from "./Types";
 import {logD, logW, writeLog, writePixels} from "../Log";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
-const pathScanCombinedLookup: NumberArray3D = [
+const pathScanCombinedLookup: Array<Grid<number>> = [
     [[-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [-1, -1, -1, -1]],// arr[py][px]===0 is invalid
     [[0, 1, 0, -1], [-1, -1, -1, -1], [-1, -1, -1, -1], [0, 2, -1, 0]],
     [[-1, -1, -1, -1], [-1, -1, -1, -1], [0, 1, 0, -1], [0, 0, 1, 0]],
@@ -55,17 +44,11 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
     // Loop to trace each color layer
-    const layers = indexedImage.palette.map((_, colorIndex: number) =>
-        batchTracePaths(
-            interNodes(
-                pathScan(
-                    layeringStep(indexedImage, colorIndex),
-                    options.pathomit
-                )
-            ),
-            options.lineThreshold,
-            options.qSplineThreshold
-        )
+    const layers = indexedImage.palette.map((_, colorIndex: number) => {
+            const layers: Grid<number> = layeringStep(indexedImage, colorIndex)
+            const paths: Array<Path> = pathScan(layers, options.pathomit)
+            return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
+        }
     )
     return new TraceData({
         layers: layers,
@@ -83,7 +66,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
     //  for a 1 px border perhaps??
-    const array: NumberArray2D = Array.init(imageData.height + 2, () =>
+    const array: Grid<number> = Array.init(imageData.height + 2, () =>
         Array.init(imageData.width + 2, -1)
     )
 
@@ -165,9 +148,10 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         })
     })
 
-    writeLog(paletteSum, "accPalette")
+    writeLog(paletteSum, "paletteSum")
     writeLog(array, "indexedArray")
 
+    writeLog(palette, "palette-1")
     writePixels(palette, "palette-1")
 
     logD("Finished Color Quantization...")
@@ -184,12 +168,12 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layeringStep(indexedImage: IndexedImage, colorNumber: number): NumberArray2D {
+function layeringStep(indexedImage: IndexedImage, colorNumber: number): Grid<number> {
     const height = indexedImage.array.length
     const width = indexedImage.array[0].length
 
     // Creating a layer for each indexed color in indexedImage.array
-    const layers: NumberArray2D = Array.init(height, () => Array.init(width, () => 0))
+    const layers: Grid<number> = Array.init(height, () => Array.init(width, () => 0))
 
     // Looping through all pixels and calculating edge node type
     // TODO why are we starting from 1?? Anything else breaks :/
@@ -222,7 +206,7 @@ function isPointInPolygon(point: Point, polygon: Array<Point>): boolean {
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(arr: NumberArray2D, pathomit: number): Array<Path> {
+function pathScan(arr: Grid<number>, pathomit: number): Array<Path> {
     let paths: Array<Path> = [],
         pacnt = 0,
         pcnt = 0,
@@ -257,10 +241,11 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<Path> {
                 while (!pathfinished) {
 
                     // New path point
-                    paths[pacnt].points[pcnt] = {};
-                    paths[pacnt].points[pcnt].x = px - 1;
-                    paths[pacnt].points[pcnt].y = py - 1;
-                    paths[pacnt].points[pcnt].t = arr[py][px];
+                    paths[pacnt].points[pcnt] = new Point({
+                        x: px - 1,
+                        y: py - 1,
+                        linesegment: 0
+                    })
 
                     // Bounding box
                     if ((px - 1) < paths[pacnt].boundingBox[0]) {
@@ -380,7 +365,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
                 }
 
                 // This corner point
-                ins[pacnt].points.push({
+                ins[pacnt].points.push(new Point({
                     x: paths[pacnt].points[pcnt].x,
                     y: paths[pacnt].points[pcnt].y,
                     linesegment: getDirection(
@@ -389,12 +374,12 @@ function interNodes(paths: Array<Path>): Array<Path> {
                         ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                         ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2)
                     )
-                });
+                }))
 
             }// End of right angle enhance
 
             // interpolate between two path points
-            ins[pacnt].points.push({
+            ins[pacnt].points.push(new Point({
                 x: ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                 y: ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
                 linesegment: getDirection(
@@ -403,7 +388,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
                     ((paths[pacnt].points[nextidx].x + paths[pacnt].points[nextidx2].x) / 2),
                     ((paths[pacnt].points[nextidx].y + paths[pacnt].points[nextidx2].y) / 2)
                 )
-            });
+            }))
 
         }// End of pathpoints loop
 
@@ -455,7 +440,7 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): number {
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
-function tracePath(path: Path, ltres: number, qtres: number) {
+function tracePath(path: Path, ltres: number, qtres: number): SMP {
     let pcnt = 0,
         segtype1,
         segtype2,
@@ -497,9 +482,9 @@ function tracePath(path: Path, ltres: number, qtres: number) {
             pcnt = path.points.length;
         }
 
-    }// End of pcnt loop
+    }
 
-    return smp;
+    return smp
 }
 
 // called from tracePath()
@@ -601,20 +586,8 @@ function fitSeq(path: Path, ltres: number, qtres: number, seqstart: number, seqe
 }
 
 // 5. Batch tracing paths
-function batchTracePaths(internodepaths: Array<Path>, ltres: number, qtres: number) {
-    let btracedpaths = [];
-    for (let k in internodepaths) {
-        if (!internodepaths.hasOwnProperty(k)) {
-            continue;
-        }
-        btracedpaths.push(tracePath(internodepaths[k], ltres, qtres));
-    }
-    return btracedpaths;
-}
-
-// Rounding to given decimals https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-function roundToDec(val: number, places: number = 0): number {
-    return +val.toFixed(places)
+function batchTracePaths(interNodePaths: Array<Path>, ltres: number, qtres: number): Array<SMP> {
+    return interNodePaths.map(path => tracePath(path, ltres, qtres))
 }
 
 // Getting SVG path element string from a traced path
@@ -622,7 +595,7 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
 
     let layer = tracedata.layers[lnum],
         smp = layer[pathnum],
-        str = '',
+        str = "",
         pcnt
 
     // Line filter
@@ -736,6 +709,10 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
 
 }
 
+function roundToDec(val: number, places: number = 0): number {
+    return +val.toFixed(places)
+}
+
 /**
  * Converts the passed in `traceData` with the desired `options` into an SVG `string`
  */
@@ -743,22 +720,23 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
     let svgString = `<svg width="${traceData.width}" height="${traceData.height}" xmlns="http://www.w3.org/2000/svg" >`
 
-    // Drawing: Layers and Paths loops
-    for (let lcnt = 0; lcnt < traceData.layers.length; lcnt++) {
-        for (let pcnt = 0; pcnt < traceData.layers[lcnt].length; pcnt++) {
-            // Adding SVG <path> string
-            if (!traceData.layers[lcnt][pcnt].isHolePath) {
-                svgString += svgPathString(traceData, lcnt, pcnt, options);
-            }
-        }
-    }
+    logD("Converting TraceData to SVG String")
 
-    // SVG End
+    // Drawing: Layers and Paths loops
+    from(0).to(traceData.layers.length).forEach(layerIndex => {
+        from(0).to(traceData.layers[layerIndex].length).forEach(pathIndex => {
+            // Adding SVG <path> string
+            if (!traceData.layers[layerIndex][pathIndex].isHolePath) {
+                svgString += svgPathString(traceData, layerIndex, pathIndex, options);
+            }
+        })
+    })
+
     svgString += '</svg>'
 
-    logD(`SVG size is ${svgString.length} bytes`)
+    logD(`Finished conversion SVG size is ${svgString.length} bytes`)
 
-    return svgString;
+    return svgString
 
 }
 

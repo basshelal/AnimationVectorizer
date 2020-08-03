@@ -1,16 +1,17 @@
 import {from} from "../Utils";
 
+export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
-export type NumberArray2D = Array<Array<number>>
-export type NumberArray3D = Array<Array<Array<number>>>
 
 export class Point {
     x: number
     y: number
+    linesegment: number
 
-    constructor({x, y}: { x: number, y: number }) {
+    constructor({x, y, linesegment}: { x: number, y: number, linesegment: any }) {
         this.x = x
         this.y = y
+        this.linesegment = linesegment
     }
 
     isInPolygon(polygon: Array<Point>): boolean {
@@ -30,13 +31,14 @@ export class Point {
 }
 
 export class Path {
-    points: Array<any> = []
+    points: Array<Point> = []
     boundingBox: Array<any> = []
     holeChildren: Array<any> = []
     isHolePath: boolean = false
 }
 
 // TODO don't know what this is yet
+//  likely a Path Segment or Segments of paths something like that
 export type SMP = {
     segments: Array<any>,
     boundingBox: any,
@@ -45,10 +47,10 @@ export type SMP = {
 }
 
 export class IndexedImage {
-    array: NumberArray2D
+    array: Grid<number>
     palette: Palette
 
-    constructor({array, palette}: { array: NumberArray2D, palette: Palette }) {
+    constructor({array, palette}: { array: Grid<number>, palette: Palette }) {
         this.array = array
         this.palette = palette
     }
