@@ -30,18 +30,18 @@ export class Point {
 }
 
 export class Path {
-    points: Array<any>
-    boundingBox: Array<any>
-    holeChildren: Array<any>
-    isHolePath: boolean
+    points: Array<any> = []
+    boundingBox: Array<any> = []
+    holeChildren: Array<any> = []
+    isHolePath: boolean = false
 }
 
 // TODO don't know what this is yet
 export type SMP = {
     segments: Array<any>,
-    boundingbox: any,
-    holechildren: any,
-    isholepath: any
+    boundingBox: any,
+    holeChildren: any,
+    isHolePath: any
 }
 
 export class IndexedImage {

@@ -3,7 +3,18 @@
 import {Options} from "./Options";
 import {floor, from, logD, logW, random, writeLog, writePixels} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {Color, ImageData, IndexedImage, NumberArray2D, NumberArray3D, Palette, Path, Point, TraceData} from "./Types";
+import {
+    Color,
+    ImageData,
+    IndexedImage,
+    NumberArray2D,
+    NumberArray3D,
+    Palette,
+    Path,
+    Point,
+    SMP,
+    TraceData
+} from "./Types";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -319,9 +330,9 @@ function pathScan(arr: NumberArray2D, pathomit: number): Array<Path> {
     return paths
 }
 
-function boundingBoxIncludes(parentbbox, childbbox) {
+function boundingBoxIncludes(parentbbox: Array<any>, childbbox: Array<any>): boolean {
     return ((parentbbox[0] < childbbox[0]) && (parentbbox[1] < childbbox[1]) && (parentbbox[2] > childbbox[2]) && (parentbbox[3] > childbbox[3]));
-}// End of boundingBoxIncludes()
+}
 
 // 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function interNodes(paths: Array<Path>): Array<Path> {
@@ -400,7 +411,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
     return ins
 }
 
-function testRightAngle(path, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
+function testRightAngle(path: Path, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
     return (((path.points[idx3].x === path.points[idx1].x) &&
             (path.points[idx3].x === path.points[idx2].x) &&
             (path.points[idx3].y === path.points[idx4].y) &&
@@ -439,17 +450,17 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): number {
         else val = 8 // center, this should not happen
     }
     return val
-}// End of getDirection()
+}
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
-function tracePath(path, ltres, qtres) {
+function tracePath(path: Path, ltres: number, qtres: number) {
     let pcnt = 0,
         segtype1,
         segtype2,
         seqend;
 
-    const smp = {
+    const smp: SMP = {
         segments: [],
         boundingBox: path.boundingBox,
         holeChildren: path.holeChildren,
@@ -491,7 +502,7 @@ function tracePath(path, ltres, qtres) {
 }
 
 // called from tracePath()
-function fitSeq(path, ltres, qtres, seqstart, seqend) {
+function fitSeq(path: Path, ltres: number, qtres: number, seqstart: number, seqend: number): Array<any> {
     // return if invalid seqend
     if ((seqend > path.points.length) || (seqend < 0)) {
         return [];
@@ -589,7 +600,7 @@ function fitSeq(path, ltres, qtres, seqstart, seqend) {
 }
 
 // 5. Batch tracing paths
-function batchTracePaths(internodepaths: Array<Path>, ltres, qtres) {
+function batchTracePaths(internodepaths: Array<Path>, ltres: number, qtres: number) {
     let btracedpaths = [];
     for (let k in internodepaths) {
         if (!internodepaths.hasOwnProperty(k)) {
@@ -601,7 +612,7 @@ function batchTracePaths(internodepaths: Array<Path>, ltres, qtres) {
 }
 
 // Rounding to given decimals https://stackoverflow.com/questions/11832914/round-to-at-most-2-decimal-places-in-javascript
-function roundToDec(val: number, places: number = 0) {
+function roundToDec(val: number, places: number = 0): number {
     return +val.toFixed(places)
 }
 
