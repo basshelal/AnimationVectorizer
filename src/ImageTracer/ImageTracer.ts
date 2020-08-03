@@ -1,7 +1,7 @@
 // Original Library https://github.com/jankovicsandras/imagetracerjs
 
 import {Options} from "./Options";
-import {floor, from, logD, logW, random, writeLog, writePixels} from "../Utils";
+import {floor, from, random} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
 import {
     Color,
@@ -15,6 +15,7 @@ import {
     SMP,
     TraceData
 } from "./Types";
+import {logD, logW, writeLog, writePixels} from "../Log";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: NumberArray3D = [
@@ -94,7 +95,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     logD(`New Palette colors: ${palette.length}`)
 
     writeLog(palette, "palette")
-    writePixels(palette, "./palette.png")
+    writePixels(palette, "palette")
 
     // Repeat clustering step options.colorquantcycles times
     from(0).to(options.colorquantcycles).forEach((cycle: number) => {
@@ -167,7 +168,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     writeLog(paletteSum, "accPalette")
     writeLog(array, "indexedArray")
 
-    writePixels(palette, "./palette-1.png")
+    writePixels(palette, "palette-1")
 
     logD("Finished Color Quantization...")
     logD(`Indexed image is ${array.length} x ${array[0].length} and has ${palette.length} colors in palette`)

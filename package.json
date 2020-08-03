@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/Main.js",
   "scripts": {
-    "main": "node src/Main.js",
+    "main": "ts-node src/Main.ts",
     "electron": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,7 +21,9 @@
     "morgan": "~1.9.1",
     "nedb": "^1.8.0",
     "p-queue": "^6.2.1",
-    "pngjs": "^5.0.0"
+    "pngjs": "^5.0.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

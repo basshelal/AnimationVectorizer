@@ -3,8 +3,8 @@ import {writeFileSync} from "fs";
 import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG";
 import {imageDataToSVG} from "./ImageTracer/ImageTracer";
 import {optionDetailed} from "./ImageTracer/Options";
-import {logD} from "./Utils";
 import {ImageData} from "./ImageTracer/Types";
+import {logD} from "./Log";
 
 extensions()
 

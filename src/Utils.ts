@@ -1,8 +1,4 @@
 import * as moment from "moment";
-import {Color, ImageData} from "./ImageTracer/Types";
-import {writeImage} from "./PNG";
-import {writeFileSync} from "fs";
-import * as chalk from "chalk";
 
 export const momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
 export const momentFormatShorter = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
@@ -11,33 +7,6 @@ export function now(): string {
     return moment().format(momentFormat)
 }
 
-export function logD(message: any) {
-    console.debug(
-        chalk.blueBright(`${now()}\n${message.toString()}\n`)
-    )
-}
-
-export function logW(message: any) {
-    console.warn(
-        chalk.yellowBright(`${now()}\n${message.toString()}\n`)
-    )
-}
-
-export function logI(message: any) {
-    console.info(
-        chalk.whiteBright(`${now()}\n${message.toString()}\n`)
-    )
-}
-
-export function logE(message: any, calledFrom: string = "") {
-    console.error(
-        chalk.red(`${now()}\n${message.toString()}\n`)
-    )
-}
-
-export function assert(condition: boolean, message: string) {
-    console.assert(condition, message)
-}
 
 export function json(value: any, space: number = 2): string {
     return JSON.stringify(value, null, space)
@@ -122,6 +91,10 @@ export class NumberRange implements Iterable<number> {
         for (let i of this) result[i] = callback(i)
         return result
     }
+
+    get toArray(): Array<number> {
+        return Array.from(this)
+    }
 }
 
 export function range(fromInclusive: number, toExclusive: number, step: number = 1): NumberRange {
@@ -136,10 +109,3 @@ export function from(from: number) {
     }
 }
 
-export async function writePixels(pixels: Array<Color>, path: string) {
-    await writeImage(path, ImageData.fromPixels(pixels))
-}
-
-export async function writeLog(data: any, fileName: string) {
-    writeFileSync(`./logs/${fileName}.json`, json(data))
-}

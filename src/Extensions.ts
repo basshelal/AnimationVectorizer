@@ -41,6 +41,8 @@ declare global {
         round(): number
 
         pow(exponent: number): number
+
+        roundToDec(places: number): number
     }
 }
 
@@ -139,6 +141,11 @@ function _number() {
     if (!Number.prototype.pow)
         Number.prototype.pow = function (this: number, exponent: number): number {
             return pow(this, exponent)
+        }
+
+    if (!Number.prototype.roundToDec)
+        Number.prototype.roundToDec = function (this: number, places: number = 0): number {
+            return +this.toFixed(places)
         }
 }
 

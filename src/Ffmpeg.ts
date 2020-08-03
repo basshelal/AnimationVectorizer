@@ -1,8 +1,8 @@
 import * as cp from "child_process";
 import {ChildProcess} from "child_process";
 import * as electron from "electron";
-import {logD, logE} from "./Utils";
 import * as path from "path";
+import {logD, logE} from "./Log";
 
 export default async function (...args: Array<string>): Promise<void> {
     return new Promise((resolve, reject) => {
