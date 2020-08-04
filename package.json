@@ -2,10 +2,10 @@
   "name": "animation_vectorizer",
   "version": "1.0.0",
   "description": "",
-  "main": "src/Main.js",
+  "private": true,
   "scripts": {
     "main": "ts-node src/Main.ts",
-    "electron": "electron .",
+    "electron": "electron src/Application.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
