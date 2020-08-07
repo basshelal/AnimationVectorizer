@@ -6,7 +6,13 @@
   "scripts": {
     "main": "ts-node src/Main.ts",
     "electron": "electron src/Application.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "serve": "serve -l 6969 build",
+    "remind": "echo \"DON'T FORGET TO CHANGE tsconfig.json to have noemit: false and module: CommonJS\"",
+    "ass": "run-p start electron remind"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -20,8 +26,12 @@
     "moment": "^2.24.0",
     "morgan": "~1.9.1",
     "nedb": "^1.8.0",
+    "npm-run-all": "^4.1.5",
     "p-queue": "^6.2.1",
     "pngjs": "^5.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
@@ -31,7 +41,24 @@
     "@types/materialize-css": "^1.0.7",
     "@types/nedb": "^1.8.9",
     "@types/node": "^13.11.0",
+    "@types/react": "^16.9.44",
+    "@types/react-dom": "^16.9.8",
     "electron": "^8.4.1"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "keywords": [],
   "author": "Bassam Helal",

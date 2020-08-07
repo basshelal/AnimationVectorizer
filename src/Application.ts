@@ -18,5 +18,5 @@ async function onReady() {
             nodeIntegration: true
         }
     })
-    await browserWindow.loadFile("./frontend/Player.html")
+    await browserWindow.loadURL("http://localhost:3000/")
 }

@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 
 export const momentFormat = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
 export const momentFormatShorter = "dddd Do MMMM YYYY, HH:mm:ss:SSS"
