@@ -1,13 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const newElement = document.createElement("h1")
 
-    newElement.textContent = "New Element!"
+    const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement
 
-    const svgContainer: HTMLDivElement = document.getElementById("svgContainer") as HTMLDivElement
+    const context2D: CanvasRenderingContext2D = canvas.getContext("2d")!!
 
-    svgContainer.textContent = "Changed SVG Container"
+    const img = new Image()
+    img.onload = () => context2D.drawImage(img, 0, 0)
 
-    svgContainer.appendChild(newElement)
+    let idx = 0
 
-    console.log("Hello World!")
+    setInterval(() => {
+        img.src = `../../out/test/${idx}.svg`
+        if (idx !== 1799) idx++; else idx = 0
+    }, 17)
 })
