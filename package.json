@@ -1,16 +1,26 @@
 {
   "name": "animation_vectorizer",
+  "private": true,
   "version": "1.0.0",
   "description": "",
-  "private": true,
+  "keywords": [],
+  "author": "Bassam Helal",
+  "license": "MIT",
+  "main": "./dist/main.js",
   "scripts": {
-    "main": "ts-node src/Main.ts",
-    "electron": "electron src/Application.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "react-start": "react-scripts start",
-    "react-build": "react-scripts build",
-    "react-eject": "react-scripts eject",
-    "react-serve": "serve -l 6969 build"
+    "cli": "ts-node src/Main.ts",
+    "react-serve": "serve -l 6969 build",
+    "dev": "npm-run-all -p dev:react electron:serve",
+    "dev:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.js --mode development && npm run start:electron",
+    "dev:react": "cross-env NODE_ENV=development webpack-dev-server --config webpack/react.webpack.js --mode development",
+    "electron:serve": "wait-on http-get://localhost:4000/ && npm run dev:electron",
+    "start:electron": "electron .",
+    "build": "npm-run-all build:electron build:react",
+    "build:run": "npm-run-all build start:electron",
+    "build:electron": "webpack --config webpack/electron.webpack.js",
+    "build:react": "webpack --config webpack/react.webpack.js",
+    "package": "npm-run-all build package:dist",
+    "package:dist": "electron-builder --dir"
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -29,11 +39,19 @@
     "pngjs": "^5.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "styled-components": "^5.1.1",
     "react-scripts": "3.4.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.11.0",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/electron-devtools-installer": "^2.2.0",
     "@types/fs-extra": "^8.0.1",
     "@types/jquery": "^3.3.35",
     "@types/materialize-css": "^1.0.7",
@@ -41,24 +59,18 @@
     "@types/node": "^13.11.0",
     "@types/react": "^16.9.44",
     "@types/react-dom": "^16.9.8",
-    "electron": "^8.4.1"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "keywords": [],
-  "author": "Bassam Helal",
-  "license": "MIT"
+    "@types/styled-components": "^5.1.0",
+    "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
+    "electron": "^8.4.1",
+    "electron-builder": "^22.7.0",
+    "electron-devtools-installer": "^3.1.0",
+    "html-webpack-plugin": "^4.2.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^3.9.5",
+    "wait-on": "^5.0.1",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
 }

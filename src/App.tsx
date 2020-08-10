@@ -1,24 +1,20 @@
-import React from 'react';
-import {from} from "./Utils";
+import React from 'react'
+import {render} from 'react-dom'
+import {GlobalStyle} from './styles/GlobalStyle'
 
-export default function App() {
+import Greetings from './components/Greetings'
+
+const mainElement = document.createElement('div')
+mainElement.setAttribute('id', 'root')
+document.body.appendChild(mainElement)
+
+const App = () => {
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src="" className="App-logo" alt="logo"/>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                {from(0).to(100).map(i => `${i}, `)}
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
-    );
+        <>
+            <GlobalStyle/>
+            <Greetings/>
+        </>
+    )
 }
+
+render(<App/>, mainElement)
