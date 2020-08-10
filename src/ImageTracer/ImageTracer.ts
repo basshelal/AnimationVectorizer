@@ -244,7 +244,7 @@ function pathScan(arr: Grid<number>, pathomit: number): Array<Path> {
                     paths[pacnt].points[pcnt] = new Point({
                         x: px - 1,
                         y: py - 1,
-                        linesegment: 0
+                        lineSegment: 0
                     })
 
                     // Bounding box
@@ -349,7 +349,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
 
                 // Fix previous direction
                 if (ins[pacnt].points.length > 0) {
-                    ins[pacnt].points[ins[pacnt].points.length - 1].linesegment = getDirection(
+                    ins[pacnt].points[ins[pacnt].points.length - 1].lineSegment = getDirection(
                         ins[pacnt].points[ins[pacnt].points.length - 1].x,
                         ins[pacnt].points[ins[pacnt].points.length - 1].y,
                         paths[pacnt].points[pcnt].x,
@@ -361,7 +361,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
                 ins[pacnt].points.push(new Point({
                     x: paths[pacnt].points[pcnt].x,
                     y: paths[pacnt].points[pcnt].y,
-                    linesegment: getDirection(
+                    lineSegment: getDirection(
                         paths[pacnt].points[pcnt].x,
                         paths[pacnt].points[pcnt].y,
                         ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
@@ -375,7 +375,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
             ins[pacnt].points.push(new Point({
                 x: ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                 y: ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
-                linesegment: getDirection(
+                lineSegment: getDirection(
                     ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
                     ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
                     ((paths[pacnt].points[nextidx].x + paths[pacnt].points[nextidx2].x) / 2),
@@ -445,15 +445,15 @@ function tracePath(path: Path, ltres: number, qtres: number): SMP {
 
     while (pcnt < path.points.length) {
         // 5.1. Find sequences of points with only 2 segment types
-        segtype1 = path.points[pcnt].linesegment;
+        segtype1 = path.points[pcnt].lineSegment;
         segtype2 = -1;
         seqend = pcnt + 1;
         while (
-            ((path.points[seqend].linesegment === segtype1) || (path.points[seqend].linesegment === segtype2) || (segtype2 === -1))
+            ((path.points[seqend].lineSegment === segtype1) || (path.points[seqend].lineSegment === segtype2) || (segtype2 === -1))
             && (seqend < path.points.length - 1)) {
 
-            if ((path.points[seqend].linesegment !== segtype1) && (segtype2 === -1)) {
-                segtype2 = path.points[seqend].linesegment;
+            if ((path.points[seqend].lineSegment !== segtype1) && (segtype2 === -1)) {
+                segtype2 = path.points[seqend].lineSegment;
             }
             seqend++;
 

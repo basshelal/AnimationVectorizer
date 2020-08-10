@@ -6,12 +6,12 @@ export type Palette = Array<Color>
 export class Point {
     x: number
     y: number
-    linesegment: number
+    lineSegment: number
 
-    constructor({x, y, linesegment}: { x: number, y: number, linesegment: any }) {
+    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: any }) {
         this.x = x
         this.y = y
-        this.linesegment = linesegment
+        this.lineSegment = lineSegment
     }
 
     isInPolygon(polygon: Array<Point>): boolean {

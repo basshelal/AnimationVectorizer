@@ -2,7 +2,7 @@ import {Color, ImageData} from "./ImageTracer/Types";
 import {writeImage} from "./PNG";
 import {writeFileSync} from "fs";
 import {json, now} from "./Utils";
-import * as chalk from "chalk";
+import chalk from "chalk";
 
 export function logD(message: any) {
     console.debug(
