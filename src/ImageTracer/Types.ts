@@ -8,7 +8,7 @@ export class Point {
     y: number
     lineSegment: number
 
-    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: any }) {
+    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: number }) {
         this.x = x
         this.y = y
         this.lineSegment = lineSegment
@@ -30,20 +30,31 @@ export class Point {
     }
 }
 
+// TODO notice how Path and SMP share a lot of attributes, I'm guessing Path is a points
+//  based Path wheras SMP is a segments based Path likely made of points
+
 export class Path {
     points: Array<Point> = []
-    boundingBox: Array<any> = []
-    holeChildren: Array<any> = []
+    boundingBox: Array<number> = []
+    holeChildren: Array<number> = []
     isHolePath: boolean = false
 }
 
-// TODO don't know what this is yet
-//  likely a Path Segment or Segments of paths something like that
-export type SMP = {
-    segments: Array<any>,
-    boundingBox: any,
-    holeChildren: any,
-    isHolePath: any
+type Segment = {
+    type: string,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x3: number,
+    y3: number
+}
+
+export class SMP {
+    segments: Array<Segment> = []
+    boundingBox: Array<number> = []
+    holeChildren: Array<number> = []
+    isHolePath: boolean = false
 }
 
 export class IndexedImage {
@@ -57,13 +68,13 @@ export class IndexedImage {
 }
 
 export class TraceData {
-    public layers: Array<Array<any>>
+    public layers: Grid<SMP>
     public palette: Palette
     public width: number
     public height: number
 
     constructor({layers, palette, width, height}: {
-        layers: Array<any>,
+        layers: Grid<SMP>,
         palette: Palette,
         width: number,
         height: number

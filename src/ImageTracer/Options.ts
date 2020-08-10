@@ -12,8 +12,6 @@ export type Options = {
     lineFilter: boolean,
     scale: number, // TODO delete this we don't need it!
     roundcoords: number,
-    lcpr: number,
-    qcpr: number,
 
     // Blur
     blurRadius: number,
@@ -30,8 +28,6 @@ export const optionDefault: Options = {
     lineFilter: false,
     scale: 1,
     roundcoords: 1,
-    lcpr: 0,
-    qcpr: 0,
     blurRadius: 0,
     blurDelta: 20
 }
@@ -46,8 +42,6 @@ export const optionDetailed: Options = {
     colorquantcycles: 3,
     lineFilter: false,
     scale: 1,
-    lcpr: 0,
-    qcpr: 0,
     blurRadius: 0,
     blurDelta: 20
 }

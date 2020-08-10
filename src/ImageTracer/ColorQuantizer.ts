@@ -1,11 +1,11 @@
 // Octree Color Quantization from this excellent article https://observablehq.com/@tmcw/octree-color-quantization
 
-import {Color, Palette} from "./Types";
+import {Color, Grid, Palette} from "./Types";
 
 const MAX_DEPTH = 8
 
 export class ColorQuantizer {
-    levels: Array<Array<Node>>
+    levels: Grid<Node>
     root: Node
 
     constructor(colors?: Array<Color>) {

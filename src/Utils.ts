@@ -46,6 +46,7 @@ export class NumberRangeIterator implements Iterator<number> {
 
     constructor(public fromInclusive: number, public toExclusive: number, public step: number) {
         this.current = fromInclusive
+        if (step === 0) throw new Error("Step cannot equal 0, must be positive or negative")
     }
 
     next(...args: [] | [undefined]): IteratorResult<number> {

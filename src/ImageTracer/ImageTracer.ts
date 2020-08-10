@@ -39,12 +39,12 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 
 // 1. Color quantization
 
-// Tracing imagedata, then returning tracedata (layers with paths, palette, image size)
+// Tracing imageData, then returning traceData (layers with paths, palette, image size)
 function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
     // Loop to trace each color layer
-    const layers = indexedImage.palette.map((_, colorIndex: number) => {
+    const layers: Grid<SMP> = indexedImage.palette.map((_, colorIndex: number) => {
             const layers: Grid<number> = layeringStep(indexedImage, colorIndex)
             const paths: Array<Path> = pathScan(layers, options.pathomit)
             return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
@@ -581,9 +581,9 @@ function batchTracePaths(interNodePaths: Array<Path>, ltres: number, qtres: numb
 }
 
 // Getting SVG path element string from a traced path
-function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, options: Options): string {
+function svgPathString(traceData: TraceData, lnum: number, pathnum: number, options: Options): string {
 
-    let layer = tracedata.layers[lnum],
+    let layer = traceData.layers[lnum],
         smp = layer[pathnum],
         str = "",
         pcnt
@@ -594,7 +594,7 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
     }
 
     // Starting path element, desc contains layer and path number
-    str = `<path ${tracedata.palette[lnum].toSVGString()} d="`
+    str = `<path ${traceData.palette[lnum].toSVGString()} d="`
 
     // Creating non-hole path string
     if (options.roundcoords === -1) {
@@ -664,37 +664,6 @@ function svgPathString(tracedata: TraceData, lnum: number, pathnum: number, opti
     // Closing path element
     str += '" />';
 
-    // Rendering control points
-    if (options.lcpr || options.qcpr) {
-        for (pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            if (smp.segments[pcnt].hasOwnProperty('x3') && options.qcpr) {
-                str += '<circle cx="' + smp.segments[pcnt].x2 * options.scale + '" cy="' + smp.segments[pcnt].y2 * options.scale + '" r="' + options.qcpr + '" fill="cyan" stroke-width="' + options.qcpr * 0.2 + '" stroke="black" />';
-                str += '<circle cx="' + smp.segments[pcnt].x3 * options.scale + '" cy="' + smp.segments[pcnt].y3 * options.scale + '" r="' + options.qcpr + '" fill="white" stroke-width="' + options.qcpr * 0.2 + '" stroke="black" />';
-                str += '<line x1="' + smp.segments[pcnt].x1 * options.scale + '" y1="' + smp.segments[pcnt].y1 * options.scale + '" x2="' + smp.segments[pcnt].x2 * options.scale + '" y2="' + smp.segments[pcnt].y2 * options.scale + '" stroke-width="' + options.qcpr * 0.2 + '" stroke="cyan" />';
-                str += '<line x1="' + smp.segments[pcnt].x2 * options.scale + '" y1="' + smp.segments[pcnt].y2 * options.scale + '" x2="' + smp.segments[pcnt].x3 * options.scale + '" y2="' + smp.segments[pcnt].y3 * options.scale + '" stroke-width="' + options.qcpr * 0.2 + '" stroke="cyan" />';
-            }
-            if ((!smp.segments[pcnt].hasOwnProperty('x3')) && options.lcpr) {
-                str += '<circle cx="' + smp.segments[pcnt].x2 * options.scale + '" cy="' + smp.segments[pcnt].y2 * options.scale + '" r="' + options.lcpr + '" fill="white" stroke-width="' + options.lcpr * 0.2 + '" stroke="black" />';
-            }
-        }
-
-        // Hole children control points
-        for (let hcnt = 0; hcnt < smp.holeChildren.length; hcnt++) {
-            let hsmp = layer[smp.holeChildren[hcnt]];
-            for (pcnt = 0; pcnt < hsmp.segments.length; pcnt++) {
-                if (hsmp.segments[pcnt].hasOwnProperty('x3') && options.qcpr) {
-                    str += '<circle cx="' + hsmp.segments[pcnt].x2 * options.scale + '" cy="' + hsmp.segments[pcnt].y2 * options.scale + '" r="' + options.qcpr + '" fill="cyan" stroke-width="' + options.qcpr * 0.2 + '" stroke="black" />';
-                    str += '<circle cx="' + hsmp.segments[pcnt].x3 * options.scale + '" cy="' + hsmp.segments[pcnt].y3 * options.scale + '" r="' + options.qcpr + '" fill="white" stroke-width="' + options.qcpr * 0.2 + '" stroke="black" />';
-                    str += '<line x1="' + hsmp.segments[pcnt].x1 * options.scale + '" y1="' + hsmp.segments[pcnt].y1 * options.scale + '" x2="' + hsmp.segments[pcnt].x2 * options.scale + '" y2="' + hsmp.segments[pcnt].y2 * options.scale + '" stroke-width="' + options.qcpr * 0.2 + '" stroke="cyan" />';
-                    str += '<line x1="' + hsmp.segments[pcnt].x2 * options.scale + '" y1="' + hsmp.segments[pcnt].y2 * options.scale + '" x2="' + hsmp.segments[pcnt].x3 * options.scale + '" y2="' + hsmp.segments[pcnt].y3 * options.scale + '" stroke-width="' + options.qcpr * 0.2 + '" stroke="cyan" />';
-                }
-                if ((!hsmp.segments[pcnt].hasOwnProperty('x3')) && options.lcpr) {
-                    str += '<circle cx="' + hsmp.segments[pcnt].x2 * options.scale + '" cy="' + hsmp.segments[pcnt].y2 * options.scale + '" r="' + options.lcpr + '" fill="white" stroke-width="' + options.lcpr * 0.2 + '" stroke="black" />';
-                }
-            }
-        }
-    }// End of Rendering control points
-
     return str;
 
 }
@@ -708,7 +677,7 @@ function roundToDec(val: number, places: number = 0): number {
  */
 function getSvgString(traceData: TraceData, options: Options): string {
 
-    let svgString = `<svg width="${traceData.width}" height="${traceData.height}" xmlns="http://www.w3.org/2000/svg" >`
+    let svg = `<svg width="${traceData.width}" height="${traceData.height}" xmlns="http://www.w3.org/2000/svg" >`
 
     logD("Converting TraceData to SVG String")
 
@@ -717,16 +686,15 @@ function getSvgString(traceData: TraceData, options: Options): string {
         from(0).to(traceData.layers[layerIndex].length).forEach(pathIndex => {
             // Adding SVG <path> string
             if (!traceData.layers[layerIndex][pathIndex].isHolePath) {
-                svgString += svgPathString(traceData, layerIndex, pathIndex, options);
+                svg += svgPathString(traceData, layerIndex, pathIndex, options);
             }
         })
     })
 
-    svgString += '</svg>'
+    svg += '</svg>'
 
-    logD(`Finished conversion SVG size is ${svgString.length} bytes`)
+    logD(`Finished conversion SVG size is ${svg.length} bytes`)
 
-    return svgString
-
+    return svg
 }
 
