@@ -8,8 +8,7 @@
   "license": "MIT",
   "main": "./dist/main.js",
   "scripts": {
-    "cli": "ts-node src/Main.ts",
-    "react-serve": "serve -l 6969 build",
+    "cli": "ts-node src/CLI.ts",
     "dev": "npm-run-all -p dev:react electron:serve",
     "dev:electron": "cross-env NODE_ENV=development webpack --config webpack/electron.webpack.js --mode development && npm run start:electron",
     "dev:react": "cross-env NODE_ENV=development webpack-dev-server --config webpack/react.webpack.js --mode development",
@@ -23,6 +22,9 @@
     "package:dist": "electron-builder --dir"
   },
   "dependencies": {
+    "@babel/plugin-proposal-export-default-from": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.11.0",
+    "@babel/runtime": "^7.11.2",
     "axios": "^0.19.2",
     "chalk": "^4.1.0",
     "commander": "^4.1.1",
@@ -39,8 +41,8 @@
     "pngjs": "^5.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "styled-components": "^5.1.1",
     "react-scripts": "3.4.1",
+    "styled-components": "^5.1.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
