@@ -31,7 +31,7 @@ export class Point {
 }
 
 // TODO notice how Path and SMP share a lot of attributes, I'm guessing Path is a points
-//  based Path wheras SMP is a segments based Path likely made of points
+//  based Path whereas SMP is a segments based Path likely made of points
 
 export class Path {
     points: Array<Point> = []
@@ -50,7 +50,7 @@ export type Segment = {
     y3: number
 }
 
-export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW"
+export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW" | null
 
 export class BoundingBox {
     x1: number
@@ -87,6 +87,14 @@ export class IndexedImage {
     constructor({array, palette}: { array: Grid<number>, palette: Palette }) {
         this.array = array
         this.palette = palette
+    }
+
+    get height(): number {
+        return this.array.length
+    }
+
+    get width(): number {
+        return this.array[0].length | 0
     }
 }
 

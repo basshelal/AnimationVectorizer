@@ -170,8 +170,8 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
 function layeringStep(indexedImage: IndexedImage, colorNumber: number): Grid<number> {
-    const height = indexedImage.array.length
-    const width = indexedImage.array[0].length
+    const height = indexedImage.height
+    const width = indexedImage.width
 
     // Creating a layer for each indexed color in indexedImage.array
     const layers: Grid<number> = Array.init(height, () => Array.init(width, () => 0))
@@ -192,14 +192,14 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): Grid<num
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(arr: Grid<number>, pathOmit: number): Array<Path> {
+function pathScan(grid: Grid<number>, pathOmit: number): Array<Path> {
     let paths: Array<Path> = []
     let pathCount = 0
     let pointCount = 0
     let px = 0
     let py = 0
-    let w = arr[0].length
-    let h = arr.length
+    let w = grid[0].length
+    let h = grid.length
     let dir = 0
     let pathFinished = true
     let holePath = false
@@ -207,7 +207,7 @@ function pathScan(arr: Grid<number>, pathOmit: number): Array<Path> {
 
     from(0).to(h).forEach(y => {
         from(0).to(w).forEach(x => {
-            if ((arr[y][x] == 4) || (arr[y][x] == 11)) { // Other values are not valid // TODO why????
+            if ((grid[y][x] == 4) || (grid[y][x] == 11)) { // Other values are not valid // TODO why????
 
                 // Init
                 px = x;
@@ -220,7 +220,7 @@ function pathScan(arr: Grid<number>, pathOmit: number): Array<Path> {
                 };
                 pathFinished = false;
                 pointCount = 0;
-                holePath = (arr[y][x] == 11);
+                holePath = (grid[y][x] == 11);
                 dir = 1;
 
                 // Path points loop
@@ -248,8 +248,8 @@ function pathScan(arr: Grid<number>, pathOmit: number): Array<Path> {
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
-                    lookupRow = pathScanCombinedLookup[arr[py][px]][dir]
-                    arr[py][px] = lookupRow[0]
+                    lookupRow = pathScanCombinedLookup[grid[py][px]][dir]
+                    grid[py][px] = lookupRow[0]
                     dir = lookupRow[1]
                     px += lookupRow[2]
                     py += lookupRow[3]
@@ -409,10 +409,10 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): number {
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
 function tracePath(path: Path, ltres: number, qtres: number): SMP {
-    let pcnt = 0,
-        segtype1,
-        segtype2,
-        seqend;
+    let pointCount = 0
+    let segtype1
+    let segtype2
+    let seqend
 
     const smp: SMP = {
         segments: [],
@@ -421,33 +421,32 @@ function tracePath(path: Path, ltres: number, qtres: number): SMP {
         isHolePath: path.isHolePath
     }
 
-    while (pcnt < path.points.length) {
+    while (pointCount < path.points.length) {
         // 5.1. Find sequences of points with only 2 segment types
-        segtype1 = path.points[pcnt].lineSegment;
-        segtype2 = -1;
-        seqend = pcnt + 1;
-        while (
-            ((path.points[seqend].lineSegment === segtype1) || (path.points[seqend].lineSegment === segtype2) || (segtype2 === -1))
-            && (seqend < path.points.length - 1)) {
+        segtype1 = path.points[pointCount].lineSegment
+        segtype2 = -1
+        seqend = pointCount + 1
+        while (((path.points[seqend].lineSegment === segtype1) ||
+            (path.points[seqend].lineSegment === segtype2) ||
+            (segtype2 === -1)) && (seqend < path.points.length - 1)) {
 
             if ((path.points[seqend].lineSegment !== segtype1) && (segtype2 === -1)) {
-                segtype2 = path.points[seqend].lineSegment;
+                segtype2 = path.points[seqend].lineSegment
             }
-            seqend++;
-
+            seqend++
         }
         if (seqend === path.points.length - 1) {
-            seqend = 0;
+            seqend = 0
         }
 
         // 5.2. - 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-        smp.segments = smp.segments.concat(fitSeq(path, ltres, qtres, pcnt, seqend));
+        smp.segments = smp.segments.concat(fitSeq(path, ltres, qtres, pointCount, seqend))
 
-        // forward pcnt;
+        // forward pointCount;
         if (seqend > 0) {
-            pcnt = seqend;
+            pointCount = seqend
         } else {
-            pcnt = path.points.length;
+            pointCount = path.points.length
         }
 
     }
