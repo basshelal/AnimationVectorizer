@@ -30,14 +30,28 @@ export class Point {
     }
 }
 
-// TODO notice how Path and SMP share a lot of attributes, I'm guessing Path is a points
-//  based Path whereas SMP is a segments based Path likely made of points
-
 export class Path {
-    points: Array<Point> = []
-    boundingBox: Array<number> = []
+    boundingBox: BoundingBox
     holeChildren: Array<number> = []
     isHolePath: boolean = false
+
+    constructor({boundingBox, holeChildren, isHolePath}: {
+        boundingBox: BoundingBox,
+        holeChildren: Array<number>,
+        isHolePath: boolean
+    }) {
+        this.boundingBox = boundingBox;
+        this.holeChildren = holeChildren;
+        this.isHolePath = isHolePath;
+    }
+}
+
+export class PointPath extends Path {
+    points: Array<Point> = []
+}
+
+export class SegmentPath extends Path {
+    segments: Array<Segment> = []
 }
 
 export type Segment = {
@@ -73,13 +87,6 @@ export class BoundingBox {
     }
 }
 
-export class SMP {
-    segments: Array<Segment> = []
-    boundingBox: Array<number> = []
-    holeChildren: Array<number> = []
-    isHolePath: boolean = false
-}
-
 export class IndexedImage {
     array: Grid<number>
     palette: Palette
@@ -99,13 +106,13 @@ export class IndexedImage {
 }
 
 export class TraceData {
-    public layers: Grid<SMP>
+    public layers: Grid<SegmentPath>
     public palette: Palette
     public width: number
     public height: number
 
     constructor({layers, palette, width, height}: {
-        layers: Grid<SMP>,
+        layers: Grid<SegmentPath>,
         palette: Palette,
         width: number,
         height: number
@@ -158,11 +165,11 @@ export class Color {
         this.a = color.a
     }
 
-    toRGB(): string {
+    get toRGB(): string {
         return `rgb(${this.r},${this.g},${this.b})`
     }
 
-    toRGBA(): string {
+    get toRGBA(): string {
         return `rgba(${this.r},${this.g},${this.b},${this.a})`
     }
 
@@ -170,14 +177,12 @@ export class Color {
         return `${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${ignoreAlpha ? Color.hex(this.r) : ""}`
     }
 
-    toSVGString(): string {
-        return `fill="${this.toRGB()}" stroke="${this.toRGB()}" stroke-width="1" opacity="${this.a / 255.0}"`
+    get toSVG(): string {
+        return `fill="${this.toRGB}" stroke="${this.toRGB}" stroke-width="1" opacity="${this.a / 255.0}"`
     }
 
-    toCSSString(): string {
-        return `rgb(${[this.r, this.g, this.b, this.a]
-            .map(n => Math.floor(n))
-            .join(",")})`
+    get toCSS(): string {
+        return `rgb(${this.r.floor()},${this.g.floor()},${this.b.floor()})`
     }
 
     clone(): Color {

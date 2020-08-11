@@ -3,7 +3,18 @@
 import {Options} from "./Options";
 import {floor, from, random} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {Color, Grid, ImageData, IndexedImage, Palette, Path, Point, SMP, TraceData} from "./Types";
+import {
+    BoundingBox,
+    Color,
+    Grid,
+    ImageData,
+    IndexedImage,
+    Palette,
+    Point,
+    PointPath,
+    SegmentPath,
+    TraceData
+} from "./Types";
 import {logD, logW, writeLog, writePixels} from "../Log";
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
@@ -44,9 +55,9 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
     // Loop to trace each color layer
-    const layers: Grid<SMP> = indexedImage.palette.map((_, colorIndex: number) => {
+    const layers: Grid<SegmentPath> = indexedImage.palette.map((_, colorIndex: number) => {
             const layers: Grid<number> = layeringStep(indexedImage, colorIndex)
-            const paths: Array<Path> = pathScan(layers, options.pathomit)
+            const paths: Array<PointPath> = pathScan(layers, options.pathomit)
             return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
         }
     )
@@ -192,36 +203,29 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): Grid<num
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(grid: Grid<number>, pathOmit: number): Array<Path> {
-    let paths: Array<Path> = []
-    let pathCount = 0
-    let pointCount = 0
-    let px = 0
-    let py = 0
-    let w = grid[0].length
-    let h = grid.length
-    let dir = 0
-    let pathFinished = true
-    let holePath = false
-    let lookupRow: Array<number>
+function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
+    let paths: Array<PointPath> = []
+    const width = grid[0].length
+    const height = grid.length
 
-    from(0).to(h).forEach(y => {
-        from(0).to(w).forEach(x => {
+    let pathCount = 0
+    from(0).to(height).forEach(y => {
+        from(0).to(width).forEach(x => {
             if ((grid[y][x] == 4) || (grid[y][x] == 11)) { // Other values are not valid // TODO why????
 
                 // Init
-                px = x;
-                py = y;
+                let px = x
+                let py = y
                 paths[pathCount] = {
                     points: [],
-                    boundingBox: [px, py, px, py],
+                    boundingBox: new BoundingBox({x1: px, y1: py, x2: px, y2: py}),
                     holeChildren: [],
                     isHolePath: false
                 };
-                pathFinished = false;
-                pointCount = 0;
-                holePath = (grid[y][x] == 11);
-                dir = 1;
+                let pathFinished = false
+                let pointCount = 0
+                let holePath = (grid[y][x] == 11)
+                let dir = 1
 
                 // Path points loop
                 while (!pathFinished) {
@@ -234,21 +238,21 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<Path> {
                     })
 
                     // Bounding box
-                    if ((px - 1) < paths[pathCount].boundingBox[0]) {
-                        paths[pathCount].boundingBox[0] = px - 1
+                    if ((px - 1) < paths[pathCount].boundingBox.x1) {
+                        paths[pathCount].boundingBox.x1 = px - 1
                     }
-                    if ((px - 1) > paths[pathCount].boundingBox[2]) {
-                        paths[pathCount].boundingBox[2] = px - 1
+                    if ((px - 1) > paths[pathCount].boundingBox.x2) {
+                        paths[pathCount].boundingBox.x2 = px - 1
                     }
-                    if ((py - 1) < paths[pathCount].boundingBox[1]) {
-                        paths[pathCount].boundingBox[1] = py - 1
+                    if ((py - 1) < paths[pathCount].boundingBox.y1) {
+                        paths[pathCount].boundingBox.y1 = py - 1
                     }
-                    if ((py - 1) > paths[pathCount].boundingBox[3]) {
-                        paths[pathCount].boundingBox[3] = py - 1
+                    if ((py - 1) > paths[pathCount].boundingBox.y2) {
+                        paths[pathCount].boundingBox.y2 = py - 1
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
-                    lookupRow = pathScanCombinedLookup[grid[py][px]][dir]
+                    const lookupRow = pathScanCombinedLookup[grid[py][px]][dir]
                     grid[py][px] = lookupRow[0]
                     dir = lookupRow[1]
                     px += lookupRow[2]
@@ -269,11 +273,11 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<Path> {
                             if (holePath) {
 
                                 let parentIndex = 0
-                                let parentbbox = [-1, -1, w + 1, h + 1]
+                                let parentbbox = new BoundingBox({x1: -1, y1: -1, x2: width + 1, y2: height + 1})
                                 from(0).to(pathCount).forEach(parent => {
                                     if ((!paths[parent].isHolePath) &&
-                                        boundingBoxIncludes(paths[parent].boundingBox, paths[pathCount].boundingBox) &&
-                                        boundingBoxIncludes(parentbbox, paths[parent].boundingBox) &&
+                                        paths[parent].boundingBox.includes(paths[pathCount].boundingBox) &&
+                                        parentbbox.includes(paths[parent].boundingBox) &&
                                         paths[pathCount].points[0].isInPolygon(paths[parent].points)
                                     ) {
                                         parentIndex = parent;
@@ -303,8 +307,8 @@ function boundingBoxIncludes(parentBox: Array<number>, childBox: Array<number>):
 }
 
 // 4. interpolating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
-function interNodes(paths: Array<Path>): Array<Path> {
-    const ins: Array<Path> = []
+function interNodes(paths: Array<PointPath>): Array<PointPath> {
+    const ins: Array<PointPath> = []
 
     from(0).to(paths.length).forEach(path => {
         ins[path] = {
@@ -365,7 +369,7 @@ function interNodes(paths: Array<Path>): Array<Path> {
     return ins
 }
 
-function testRightAngle(path: Path, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
+function testRightAngle(path: PointPath, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
     return (((path.points[idx3].x === path.points[idx1].x) &&
             (path.points[idx3].x === path.points[idx2].x) &&
             (path.points[idx3].y === path.points[idx4].y) &&
@@ -408,13 +412,13 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): number {
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
-function tracePath(path: Path, ltres: number, qtres: number): SMP {
+function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
     let pointCount = 0
     let segtype1
     let segtype2
     let seqend
 
-    const smp: SMP = {
+    const smp: SegmentPath = {
         segments: [],
         boundingBox: path.boundingBox,
         holeChildren: path.holeChildren,
@@ -455,7 +459,7 @@ function tracePath(path: Path, ltres: number, qtres: number): SMP {
 }
 
 // called from tracePath()
-function fitSeq(path: Path, ltres: number, qtres: number, seqstart: number, seqend: number): Array<any> {
+function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number, seqend: number): Array<any> {
     // return if invalid seqend
     if ((seqend > path.points.length) || (seqend < 0)) {
         return [];
@@ -553,7 +557,7 @@ function fitSeq(path: Path, ltres: number, qtres: number, seqstart: number, seqe
 }
 
 // 5. Batch tracing paths
-function batchTracePaths(interNodePaths: Array<Path>, ltres: number, qtres: number): Array<SMP> {
+function batchTracePaths(interNodePaths: Array<PointPath>, ltres: number, qtres: number): Array<SegmentPath> {
     return interNodePaths.map(path => tracePath(path, ltres, qtres))
 }
 
@@ -571,7 +575,7 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     }
 
     // Starting path element, desc contains layer and path number
-    str = `<path ${traceData.palette[lnum].toSVGString()} d="`
+    str = `<path ${traceData.palette[lnum].toSVG} d="`
 
     // Creating non-hole path string
     if (options.roundcoords === -1) {
