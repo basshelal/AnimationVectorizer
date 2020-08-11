@@ -98,6 +98,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 }
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
+                // TODO fix this! This is non deterministic!
                 if ((paletteSum[k].n / imageData.totalPixels < options.mincolorratio) &&
                     (cycle < options.colorquantcycles - 1)) {
                     logW("Randomizing a palette color!")
@@ -111,7 +112,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             })
         }
 
-        // Reseting palette accumulator for averaging
+        // Resetting palette accumulator for averaging
         from(0).to(palette.length)
             .forEach(i => paletteSum[i] = {r: 0, g: 0, b: 0, a: 0, n: 0})
 
@@ -190,200 +191,177 @@ function layeringStep(indexedImage: IndexedImage, colorNumber: number): Grid<num
     return layers
 }
 
-function isPointInPolygon(point: Point, polygon: Array<Point>): boolean {
-    let isIn = false
-
-    // 2 pointer for loop r being 1 greater than l, and l being max when r == 0
-    for (let r = 0, l = polygon.length - 1; r < polygon.length; l = r++) {
-        isIn =
-            (((polygon[r].y > point.y) !== (polygon[l].y > point.y)) &&
-                (point.x <
-                    ((polygon[l].x - polygon[r].x) * (point.y - polygon[r].y) / (polygon[l].y - polygon[r].y) + polygon[r].x)
-                )) ? !isIn : isIn
-    }
-
-    return isIn
-}
-
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(arr: Grid<number>, pathomit: number): Array<Path> {
-    let paths: Array<Path> = [],
-        pacnt = 0,
-        pcnt = 0,
-        px = 0,
-        py = 0,
-        w = arr[0].length,
-        h = arr.length,
-        dir = 0,
-        pathfinished = true,
-        holepath = false,
-        lookuprow: Array<number>;
+function pathScan(arr: Grid<number>, pathOmit: number): Array<Path> {
+    let paths: Array<Path> = []
+    let pathCount = 0
+    let pointCount = 0
+    let px = 0
+    let py = 0
+    let w = arr[0].length
+    let h = arr.length
+    let dir = 0
+    let pathFinished = true
+    let holePath = false
+    let lookupRow: Array<number>
 
-    for (let j = 0; j < h; j++) {
-        for (let i = 0; i < w; i++) {
-            if ((arr[j][i] == 4) || (arr[j][i] == 11)) { // Other values are not valid
+    from(0).to(h).forEach(y => {
+        from(0).to(w).forEach(x => {
+            if ((arr[y][x] == 4) || (arr[y][x] == 11)) { // Other values are not valid // TODO why????
 
                 // Init
-                px = i;
-                py = j;
-                paths[pacnt] = {
+                px = x;
+                py = y;
+                paths[pathCount] = {
                     points: [],
                     boundingBox: [px, py, px, py],
                     holeChildren: [],
                     isHolePath: false
                 };
-                pathfinished = false;
-                pcnt = 0;
-                holepath = (arr[j][i] == 11);
+                pathFinished = false;
+                pointCount = 0;
+                holePath = (arr[y][x] == 11);
                 dir = 1;
 
                 // Path points loop
-                while (!pathfinished) {
+                while (!pathFinished) {
 
                     // New path point
-                    paths[pacnt].points[pcnt] = new Point({
+                    paths[pathCount].points[pointCount] = new Point({
                         x: px - 1,
                         y: py - 1,
                         lineSegment: 0
                     })
 
                     // Bounding box
-                    if ((px - 1) < paths[pacnt].boundingBox[0]) {
-                        paths[pacnt].boundingBox[0] = px - 1;
+                    if ((px - 1) < paths[pathCount].boundingBox[0]) {
+                        paths[pathCount].boundingBox[0] = px - 1
                     }
-                    if ((px - 1) > paths[pacnt].boundingBox[2]) {
-                        paths[pacnt].boundingBox[2] = px - 1;
+                    if ((px - 1) > paths[pathCount].boundingBox[2]) {
+                        paths[pathCount].boundingBox[2] = px - 1
                     }
-                    if ((py - 1) < paths[pacnt].boundingBox[1]) {
-                        paths[pacnt].boundingBox[1] = py - 1;
+                    if ((py - 1) < paths[pathCount].boundingBox[1]) {
+                        paths[pathCount].boundingBox[1] = py - 1
                     }
-                    if ((py - 1) > paths[pacnt].boundingBox[3]) {
-                        paths[pacnt].boundingBox[3] = py - 1;
+                    if ((py - 1) > paths[pathCount].boundingBox[3]) {
+                        paths[pathCount].boundingBox[3] = py - 1
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
-                    lookuprow = pathScanCombinedLookup[arr[py][px]][dir];
-                    arr[py][px] = lookuprow[0];
-                    dir = lookuprow[1];
-                    px += lookuprow[2];
-                    py += lookuprow[3];
+                    lookupRow = pathScanCombinedLookup[arr[py][px]][dir]
+                    arr[py][px] = lookupRow[0]
+                    dir = lookupRow[1]
+                    px += lookupRow[2]
+                    py += lookupRow[3]
 
                     // Close path
-                    if ((px - 1 === paths[pacnt].points[0].x) && (py - 1 === paths[pacnt].points[0].y)) {
-                        pathfinished = true;
+                    if ((px - 1 === paths[pathCount].points[0].x) && (py - 1 === paths[pathCount].points[0].y)) {
+                        pathFinished = true
 
-                        // Discarding paths shorter than pathomit
-                        if (paths[pacnt].points.length < pathomit) {
-                            paths.pop();
+                        // Discarding paths shorter than pathOmit
+                        if (paths[pathCount].points.length < pathOmit) {
+                            paths.pop()
                         } else {
 
-                            paths[pacnt].isHolePath = holepath;
+                            paths[pathCount].isHolePath = holePath;
 
                             // Finding the parent shape for this hole
-                            if (holepath) {
+                            if (holePath) {
 
-                                let parentidx = 0, parentbbox = [-1, -1, w + 1, h + 1];
-                                for (let parentcnt = 0; parentcnt < pacnt; parentcnt++) {
-                                    if ((!paths[parentcnt].isHolePath) &&
-                                        boundingBoxIncludes(paths[parentcnt].boundingBox, paths[pacnt].boundingBox) &&
-                                        boundingBoxIncludes(parentbbox, paths[parentcnt].boundingBox) &&
-                                        isPointInPolygon(paths[pacnt].points[0], paths[parentcnt].points)
+                                let parentIndex = 0
+                                let parentbbox = [-1, -1, w + 1, h + 1]
+                                from(0).to(pathCount).forEach(parent => {
+                                    if ((!paths[parent].isHolePath) &&
+                                        boundingBoxIncludes(paths[parent].boundingBox, paths[pathCount].boundingBox) &&
+                                        boundingBoxIncludes(parentbbox, paths[parent].boundingBox) &&
+                                        paths[pathCount].points[0].isInPolygon(paths[parent].points)
                                     ) {
-                                        parentidx = parentcnt;
-                                        parentbbox = paths[parentcnt].boundingBox;
+                                        parentIndex = parent;
+                                        parentbbox = paths[parent].boundingBox
                                     }
-                                }
+                                })
 
-                                paths[parentidx].holeChildren.push(pacnt);
+                                paths[parentIndex].holeChildren.push(pathCount)
 
-                            }// End of holepath parent finding
-
-                            pacnt++;
-
+                            }// End of holePath parent finding
+                            pathCount++
                         }
-
                     }// End of Close path
-
-                    pcnt++;
-
+                    pointCount++
                 }// End of Path points loop
-
             }// End of Follow path
-
-        }// End of i loop
-    }// End of j loop
-
+        })
+    })
     return paths
 }
 
-function boundingBoxIncludes(parentbbox: Array<any>, childbbox: Array<any>): boolean {
-    return ((parentbbox[0] < childbbox[0]) && (parentbbox[1] < childbbox[1]) && (parentbbox[2] > childbbox[2]) && (parentbbox[3] > childbbox[3]));
+function boundingBoxIncludes(parentBox: Array<number>, childBox: Array<number>): boolean {
+    return ((parentBox[0] < childBox[0]) &&
+        (parentBox[1] < childBox[1]) &&
+        (parentBox[2] > childBox[2]) &&
+        (parentBox[3] > childBox[3]))
 }
 
-// 4. interpollating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
+// 4. interpolating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function interNodes(paths: Array<Path>): Array<Path> {
     const ins: Array<Path> = []
 
-    // paths loop
-    for (let pacnt = 0; pacnt < paths.length; pacnt++) {
-
-        ins[pacnt] = {
+    from(0).to(paths.length).forEach(path => {
+        ins[path] = {
             points: [],
-            boundingBox: paths[pacnt].boundingBox,
-            holeChildren: paths[pacnt].holeChildren,
-            isHolePath: paths[pacnt].isHolePath
+            boundingBox: paths[path].boundingBox,
+            holeChildren: paths[path].holeChildren,
+            isHolePath: paths[path].isHolePath
         }
-        let palen = paths[pacnt].points.length;
+        const pathLength = paths[path].points.length
 
-        // pathpoints loop
-        for (let pcnt = 0; pcnt < palen; pcnt++) {
-
+        from(0).to(pathLength).forEach(point => {
             // next and previous point indexes
-            let nextidx = (pcnt + 1) % palen;
-            let nextidx2 = (pcnt + 2) % palen;
-            let previdx = (pcnt - 1 + palen) % palen;
-            let previdx2 = (pcnt - 2 + palen) % palen;
+            let nextidx = (point + 1) % pathLength
+            let nextidx2 = (point + 2) % pathLength
+            let previdx = (point - 1 + pathLength) % pathLength
+            let previdx2 = (point - 2 + pathLength) % pathLength
 
             // right angle enhance
-            if (testRightAngle(paths[pacnt], previdx2, previdx, pcnt, nextidx, nextidx2)) {
+            if (testRightAngle(paths[path], previdx2, previdx, point, nextidx, nextidx2)) {
 
                 // Fix previous direction
-                if (ins[pacnt].points.length > 0) {
-                    ins[pacnt].points[ins[pacnt].points.length - 1].lineSegment = getDirection(
-                        ins[pacnt].points[ins[pacnt].points.length - 1].x,
-                        ins[pacnt].points[ins[pacnt].points.length - 1].y,
-                        paths[pacnt].points[pcnt].x,
-                        paths[pacnt].points[pcnt].y
+                if (ins[path].points.length > 0) {
+                    ins[path].points[ins[path].points.length - 1].lineSegment = getDirection(
+                        ins[path].points[ins[path].points.length - 1].x,
+                        ins[path].points[ins[path].points.length - 1].y,
+                        paths[path].points[point].x,
+                        paths[path].points[point].y
                     );
                 }
 
                 // This corner point
-                ins[pacnt].points.push(new Point({
-                    x: paths[pacnt].points[pcnt].x,
-                    y: paths[pacnt].points[pcnt].y,
+                ins[path].points.push(new Point({
+                    x: paths[path].points[point].x,
+                    y: paths[path].points[point].y,
                     lineSegment: getDirection(
-                        paths[pacnt].points[pcnt].x,
-                        paths[pacnt].points[pcnt].y,
-                        ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
-                        ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2)
+                        paths[path].points[point].x,
+                        paths[path].points[point].y,
+                        ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
+                        ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2)
                     )
                 }))
 
             }// End of right angle enhance
 
             // interpolate between two path points
-            ins[pacnt].points.push(new Point({
-                x: ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
-                y: ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
+            ins[path].points.push(new Point({
+                x: ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
+                y: ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2),
                 lineSegment: getDirection(
-                    ((paths[pacnt].points[pcnt].x + paths[pacnt].points[nextidx].x) / 2),
-                    ((paths[pacnt].points[pcnt].y + paths[pacnt].points[nextidx].y) / 2),
-                    ((paths[pacnt].points[nextidx].x + paths[pacnt].points[nextidx2].x) / 2),
-                    ((paths[pacnt].points[nextidx].y + paths[pacnt].points[nextidx2].y) / 2)
+                    ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
+                    ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2),
+                    ((paths[path].points[nextidx].x + paths[path].points[nextidx2].x) / 2),
+                    ((paths[path].points[nextidx].y + paths[path].points[nextidx2].y) / 2)
                 )
             }))
-        }
-    }
+        })
+    })
     return ins
 }
 

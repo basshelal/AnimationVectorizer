@@ -40,7 +40,7 @@ export class Path {
     isHolePath: boolean = false
 }
 
-type Segment = {
+export type Segment = {
     type: string,
     x1: number,
     y1: number,
@@ -48,6 +48,29 @@ type Segment = {
     y2: number,
     x3: number,
     y3: number
+}
+
+export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW"
+
+export class BoundingBox {
+    x1: number
+    y1: number
+    x2: number
+    y2: number
+
+    constructor({x1, y1, x2, y2}: { x1: number, y1: number, x2: number, y2: number }) {
+        this.x1 = x1
+        this.y1 = y1
+        this.x2 = x2
+        this.y2 = y2
+    }
+
+    includes(other: BoundingBox): boolean {
+        return this.x1 < other.x1 &&
+            this.y1 < other.y1 &&
+            this.x2 > other.x2 &&
+            this.y2 > other.y2
+    }
 }
 
 export class SMP {
@@ -199,14 +222,16 @@ export class ImageData {
     get pixels(): Array<Color> {
         this.ensureRGBA()
         const result: Array<Color> = []
-        for (let dataIndex = 0, pxIndex = 0; dataIndex < this.data.length; dataIndex += 4, pxIndex++) {
+        let pxIndex = 0
+        from(0).to(this.data.length).step(4).forEach(dataIndex => {
             result[pxIndex] = new Color({
                 r: this.data[dataIndex],
                 g: this.data[dataIndex + 1],
                 b: this.data[dataIndex + 2],
                 a: this.data[dataIndex + 3]
             })
-        }
+            pxIndex++
+        })
         return result
     }
 
@@ -227,20 +252,6 @@ export class ImageData {
             width: (width ? width : pixels.length.sqrt().ceil()),
             height: (height ? height : pixels.length.sqrt().ceil())
         })
-    }
-
-    ensureRGBA(): ImageData {
-        if (this.isRGB) {
-            const newImgData = Buffer.alloc(this.totalPixels * 4)
-            from(0).to(this.totalPixels).forEach((pxIndex: number) => {
-                newImgData[pxIndex * 4] = this.data[pxIndex * 3] // r
-                newImgData[pxIndex * 4 + 1] = this.data[pxIndex * 3 + 1] // g
-                newImgData[pxIndex * 4 + 2] = this.data[pxIndex * 3 + 2] // b
-                newImgData[pxIndex * 4 + 3] = 255; // a
-            })
-            this.data = newImgData
-        }
-        return this
     }
 
     ensureRGB(): ImageData {
@@ -268,6 +279,20 @@ export class ImageData {
                 }))
             })
         })
+        return this
+    }
+
+    ensureRGBA(): ImageData {
+        if (this.isRGB) {
+            const newImgData = Buffer.alloc(this.totalPixels * 4)
+            from(0).to(this.totalPixels).forEach((pxIndex: number) => {
+                newImgData[pxIndex * 4] = this.data[pxIndex * 3] // r
+                newImgData[pxIndex * 4 + 1] = this.data[pxIndex * 3 + 1] // g
+                newImgData[pxIndex * 4 + 2] = this.data[pxIndex * 3 + 2] // b
+                newImgData[pxIndex * 4 + 3] = 255 // a
+            })
+            this.data = newImgData
+        }
         return this
     }
 }
