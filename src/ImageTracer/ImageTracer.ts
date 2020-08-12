@@ -92,6 +92,9 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     writeLog(palette, "palette")
     writePixels(palette, "palette")
 
+    logD(`Quantization cycles: ${options.colorquantcycles}, palette size: ${palette.length}\n` +
+        `Total loop iterations are: ${options.colorquantcycles * palette.length * imageData.totalPixels * palette.length}`)
+
     // Repeat clustering step options.colorquantcycles times
     from(0).to(options.colorquantcycles).forEach((cycle: number) => {
 
@@ -667,4 +670,3 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
     return svg
 }
-
