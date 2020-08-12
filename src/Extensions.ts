@@ -1,4 +1,5 @@
 import {abs, ceil, floor, pow, round, sqrt} from "./Utils";
+import {comma} from "number-magic";
 
 declare global {
     interface Array<T> {
@@ -42,7 +43,9 @@ declare global {
 
         pow(exponent: number): number
 
-        roundToDec(places: number): number
+        roundToDec(places?: number): number
+
+        comma(): string
     }
 }
 
@@ -146,6 +149,11 @@ function _number() {
     if (!Number.prototype.roundToDec)
         Number.prototype.roundToDec = function (this: number, places: number = 0): number {
             return +this.toFixed(places)
+        }
+
+    if (!Number.prototype.comma)
+        Number.prototype.comma = function (this: number): string {
+            return comma(this)
         }
 }
 

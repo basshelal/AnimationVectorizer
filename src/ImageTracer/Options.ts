@@ -5,17 +5,10 @@ export type Options = {
 
     // Color quantization
     colorsNumber: number,
-    mincolorratio: number,
     colorquantcycles: number,
 
     // SVG rendering
-    lineFilter: boolean,
-    scale: number, // TODO delete this we don't need it!
-    roundcoords: number,
-
-    // Blur
-    blurRadius: number,
-    blurDelta: number
+    roundcoords: number
 }
 
 export const optionDefault: Options = {
@@ -23,25 +16,15 @@ export const optionDefault: Options = {
     qSplineThreshold: 1,
     pathomit: 8,
     colorsNumber: 16,
-    mincolorratio: 0,
     colorquantcycles: 3,
-    lineFilter: false,
-    scale: 1,
-    roundcoords: 1,
-    blurRadius: 0,
-    blurDelta: 20
+    roundcoords: 1
 }
 
 export const optionDetailed: Options = {
-    pathomit: 0,
-    roundcoords: 2,
     lineThreshold: 0.5,
     qSplineThreshold: 0.5,
+    pathomit: 0,
     colorsNumber: 64,
-    mincolorratio: 0,
     colorquantcycles: 3,
-    lineFilter: false,
-    scale: 1,
-    blurRadius: 0,
-    blurDelta: 20
+    roundcoords: 2
 }

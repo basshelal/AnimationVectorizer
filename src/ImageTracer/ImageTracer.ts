@@ -93,7 +93,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     writePixels(palette, "palette")
 
     logD(`Quantization cycles: ${options.colorquantcycles}, palette size: ${palette.length}\n` +
-        `Total loop iterations are: ${options.colorquantcycles * palette.length * imageData.totalPixels * palette.length}`)
+        `Total loop iterations are: ${(options.colorquantcycles * palette.length * imageData.totalPixels * palette.length).comma()}`)
 
     // Repeat clustering step options.colorquantcycles times
     from(0).to(options.colorquantcycles).forEach((cycle: number) => {
@@ -114,7 +114,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
                 // TODO fix this! This is non deterministic!
-                if ((paletteSum[k].n / imageData.totalPixels < options.mincolorratio) &&
+                if ((paletteSum[k].n / imageData.totalPixels < 0) &&
                     (cycle < options.colorquantcycles - 1)) {
                     logW("Randomizing a palette color!")
                     palette[k] = new Color({
@@ -556,38 +556,31 @@ function batchTracePaths(interNodePaths: Array<PointPath>, ltres: number, qtres:
 // Getting SVG path element string from a traced path
 function svgPathString(traceData: TraceData, lnum: number, pathnum: number, options: Options): string {
 
-    let layer = traceData.layers[lnum],
-        smp = layer[pathnum],
-        str = "",
-        pcnt
-
-    // Line filter
-    if (options.lineFilter && (smp.segments.length < 3)) {
-        return str;
-    }
+    let layer = traceData.layers[lnum]
+    let smp = layer[pathnum]
 
     // Starting path element, desc contains layer and path number
-    str = `<path ${traceData.palette[lnum].toSVG} d="`
+    let str = `<path ${traceData.palette[lnum].toSVG} d="`
 
     // Creating non-hole path string
     if (options.roundcoords === -1) {
-        str += 'M ' + smp.segments[0].x1 * options.scale + ' ' + smp.segments[0].y1 * options.scale + ' ';
-        for (pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            str += smp.segments[pcnt].type + ' ' + smp.segments[pcnt].x2 * options.scale + ' ' + smp.segments[pcnt].y2 * options.scale + ' ';
+        str += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
+        for (let pcnt = 0; pcnt < smp.segments.length; pcnt++) {
+            str += `${smp.segments[pcnt].type} ${smp.segments[pcnt].x2} ${smp.segments[pcnt].y2} `
             if (smp.segments[pcnt].hasOwnProperty('x3')) {
-                str += smp.segments[pcnt].x3 * options.scale + ' ' + smp.segments[pcnt].y3 * options.scale + ' ';
+                str += `${smp.segments[pcnt].x3} ${smp.segments[pcnt].y3} `
             }
         }
-        str += 'Z ';
+        str += `Z `
     } else {
-        str += 'M ' + roundToDec(smp.segments[0].x1 * options.scale, options.roundcoords) + ' ' + roundToDec(smp.segments[0].y1 * options.scale, options.roundcoords) + ' ';
-        for (pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            str += smp.segments[pcnt].type + ' ' + roundToDec(smp.segments[pcnt].x2 * options.scale, options.roundcoords) + ' ' + roundToDec(smp.segments[pcnt].y2 * options.scale, options.roundcoords) + ' ';
+        str += `M ${smp.segments[0].x1.roundToDec(options.roundcoords)} ${smp.segments[0].y1.roundToDec(options.roundcoords)} `
+        for (let pcnt = 0; pcnt < smp.segments.length; pcnt++) {
+            str += `${smp.segments[pcnt].type} ${smp.segments[pcnt].x2.roundToDec(options.roundcoords)} ${smp.segments[pcnt].y2.roundToDec(options.roundcoords)} `
             if (smp.segments[pcnt].hasOwnProperty('x3')) {
-                str += roundToDec(smp.segments[pcnt].x3 * options.scale, options.roundcoords) + ' ' + roundToDec(smp.segments[pcnt].y3 * options.scale, options.roundcoords) + ' ';
+                str += `${smp.segments[pcnt].x3.roundToDec(options.roundcoords)} ${smp.segments[pcnt].y3.roundToDec(options.roundcoords)} `
             }
         }
-        str += 'Z ';
+        str += `Z `
     }// End of creating non-hole path string
 
     // Hole children
@@ -597,52 +590,48 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
         if (options.roundcoords === -1) {
 
             if (hsmp.segments[hsmp.segments.length - 1].hasOwnProperty('x3')) {
-                str += 'M ' + hsmp.segments[hsmp.segments.length - 1].x3 * options.scale + ' ' + hsmp.segments[hsmp.segments.length - 1].y3 * options.scale + ' ';
+                str += `M ${hsmp.segments[hsmp.segments.length - 1].x3} ${hsmp.segments[hsmp.segments.length - 1].y3} `
             } else {
-                str += 'M ' + hsmp.segments[hsmp.segments.length - 1].x2 * options.scale + ' ' + hsmp.segments[hsmp.segments.length - 1].y2 * options.scale + ' ';
+                str += `M ${hsmp.segments[hsmp.segments.length - 1].x2} ${hsmp.segments[hsmp.segments.length - 1].y2} `
             }
 
-            for (pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
-                str += hsmp.segments[pcnt].type + ' ';
+            for (let pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
+                str += `${hsmp.segments[pcnt].type} `
                 if (hsmp.segments[pcnt].hasOwnProperty('x3')) {
-                    str += hsmp.segments[pcnt].x2 * options.scale + ' ' + hsmp.segments[pcnt].y2 * options.scale + ' ';
+                    str += `${hsmp.segments[pcnt].x2} ${hsmp.segments[pcnt].y2} `
                 }
 
-                str += hsmp.segments[pcnt].x1 * options.scale + ' ' + hsmp.segments[pcnt].y1 * options.scale + ' ';
+                str += `${hsmp.segments[pcnt].x1} ${hsmp.segments[pcnt].y1} `
             }
 
         } else {
 
             if (hsmp.segments[hsmp.segments.length - 1].hasOwnProperty('x3')) {
-                str += 'M ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].x3 * options.scale) + ' ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].y3 * options.scale) + ' ';
+                str += `M ${hsmp.segments[hsmp.segments.length - 1].x3.roundToDec()} ${hsmp.segments[hsmp.segments.length - 1].y3.roundToDec()} `
             } else {
-                str += 'M ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].x2 * options.scale) + ' ' + roundToDec(hsmp.segments[hsmp.segments.length - 1].y2 * options.scale) + ' ';
+                str += `M ${hsmp.segments[hsmp.segments.length - 1].x2.roundToDec()} ${hsmp.segments[hsmp.segments.length - 1].y2.roundToDec()} `
             }
 
-            for (pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
-                str += hsmp.segments[pcnt].type + ' ';
+            for (let pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
+                str += `${hsmp.segments[pcnt].type} `
                 if (hsmp.segments[pcnt].hasOwnProperty('x3')) {
-                    str += roundToDec(hsmp.segments[pcnt].x2 * options.scale) + ' ' + roundToDec(hsmp.segments[pcnt].y2 * options.scale) + ' ';
+                    str += `${hsmp.segments[pcnt].x2.roundToDec()} ${hsmp.segments[pcnt].y2.roundToDec()} `
                 }
-                str += roundToDec(hsmp.segments[pcnt].x1 * options.scale) + ' ' + roundToDec(hsmp.segments[pcnt].y1 * options.scale) + ' ';
+                str += `${hsmp.segments[pcnt].x1.roundToDec()} ${hsmp.segments[pcnt].y1.roundToDec()} `
             }
 
 
         }// End of creating hole path string
 
-        str += 'Z '; // Close path
+        str += `Z ` // Close path
 
     }// End of holepath check
 
     // Closing path element
-    str += '" />';
+    str += `" />`
 
-    return str;
+    return str
 
-}
-
-function roundToDec(val: number, places: number = 0): number {
-    return +val.toFixed(places)
 }
 
 /**
@@ -659,14 +648,14 @@ function getSvgString(traceData: TraceData, options: Options): string {
         from(0).to(traceData.layers[layerIndex].length).forEach(pathIndex => {
             // Adding SVG <path> string
             if (!traceData.layers[layerIndex][pathIndex].isHolePath) {
-                svg += svgPathString(traceData, layerIndex, pathIndex, options);
+                svg += svgPathString(traceData, layerIndex, pathIndex, options)
             }
         })
     })
 
-    svg += '</svg>'
+    svg += `</svg>`
 
-    logD(`Finished conversion SVG size is ${svg.length} bytes`)
+    logD(`Finished conversion SVG size is ${svg.length.comma()} bytes`)
 
     return svg
 }
