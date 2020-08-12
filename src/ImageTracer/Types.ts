@@ -92,8 +92,10 @@ export class SegmentPath extends Path {
     }
 }
 
+export type SVGPathCommand = "M" | "L" | "H" | "V" | "Z" | "C" | "S" | "Q" | "T" | "A"
+
 export type Segment = {
-    type: string,
+    type: SVGPathCommand,
     x1: number,
     y1: number,
     x2: number,
@@ -101,6 +103,35 @@ export type Segment = {
     x3: number,
     y3: number
 }
+
+
+/*export class Segment {
+
+    type: SVGPathCommand
+    x1: number
+    y1: number
+    x2: number
+    y2: number
+    x3: number | null
+    y3: number | null
+
+    constructor({type, x1, y1, x2, y2, x3, y3}: {
+        type: SVGPathCommand, x1: number,
+        y1: number, x2: number, y2: number, x3?: number, y3?: number
+    }) {
+        this.type = type
+        this.x1 = x1
+        this.y1 = y1
+        this.x2 = x2
+        this.y2 = y2
+        this.x3 = x3 ? x3 : null
+        this.y3 = y3 ? y3 : null
+    }
+
+    get has3(): boolean {
+        return this.x3 !== null && this.y3 !== null
+    }
+}*/
 
 export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW" | null
 
