@@ -6,9 +6,9 @@ export type Palette = Array<Color>
 export class Point {
     x: number
     y: number
-    lineSegment: number
+    lineSegment: Direction
 
-    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: number }) {
+    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: Direction }) {
         this.x = x
         this.y = y
         this.lineSegment = lineSegment
@@ -48,10 +48,48 @@ export class Path {
 
 export class PointPath extends Path {
     points: Array<Point> = []
+
+    constructor({boundingBox, holeChildren, isHolePath, points}: {
+        boundingBox: BoundingBox,
+        holeChildren: Array<number>,
+        isHolePath: boolean,
+        points: Array<Point>
+    }) {
+        super({boundingBox, holeChildren, isHolePath})
+        this.points = points
+    }
+
+    static fromPath(path: Path, points: Array<Point> = []): PointPath {
+        return new PointPath({
+            boundingBox: path.boundingBox,
+            holeChildren: path.holeChildren,
+            isHolePath: path.isHolePath,
+            points: points
+        })
+    }
 }
 
 export class SegmentPath extends Path {
     segments: Array<Segment> = []
+
+    constructor({boundingBox, holeChildren, isHolePath, segments}: {
+        boundingBox: BoundingBox,
+        holeChildren: Array<number>,
+        isHolePath: boolean,
+        segments: Array<Segment>
+    }) {
+        super({boundingBox, holeChildren, isHolePath})
+        this.segments = segments
+    }
+
+    static fromPath(path: Path, segments: Array<Segment> = []): SegmentPath {
+        return new SegmentPath({
+            boundingBox: path.boundingBox,
+            holeChildren: path.holeChildren,
+            isHolePath: path.isHolePath,
+            segments: segments
+        })
+    }
 }
 
 export type Segment = {
@@ -65,6 +103,30 @@ export type Segment = {
 }
 
 export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW" | null
+
+// Edge node types ( ▓: this layer or 1; ░: not this layer or 0 )
+// 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
+// 48  ░░  ░░  ░░  ░░  ▓░  ▓░  ▓░  ▓░  ░▓  ░▓  ░▓  ░▓  ▓▓  ▓▓  ▓▓  ▓▓
+//     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
+// order is top left (1), top right (2), bottom left (4), bottom right (8)
+const EdgeNodeTypeList = {
+    0: [0, 0, 0, 0],
+    1: [1, 0, 0, 0],
+    2: [0, 2, 0, 0],
+    3: [1, 2, 0, 0],
+    4: [0, 0, 4, 0],
+    5: [1, 0, 4, 0],
+    6: [0, 2, 4, 0],
+    7: [1, 2, 4, 0],
+    8: [0, 0, 0, 8],
+    9: [1, 0, 0, 8],
+    10: [0, 2, 0, 8],
+    11: [1, 2, 0, 8],
+    12: [0, 0, 4, 8],
+    13: [1, 0, 4, 8],
+    14: [0, 2, 4, 8],
+    15: [1, 2, 4, 8]
+}
 
 export class BoundingBox {
     x1: number

@@ -6,6 +6,7 @@ import {ColorQuantizer} from "./ColorQuantizer";
 import {
     BoundingBox,
     Color,
+    Direction,
     Grid,
     ImageData,
     IndexedImage,
@@ -56,8 +57,8 @@ function imageDataToTraceData(imageData: ImageData, options: Options): TraceData
 
     // Loop to trace each color layer
     const layers: Grid<SegmentPath> = indexedImage.palette.map((_, colorIndex: number) => {
-            const layers: Grid<number> = layeringStep(indexedImage, colorIndex)
-            const paths: Array<PointPath> = pathScan(layers, options.pathomit)
+            const edges: Grid<number> = edgeDetection(indexedImage, colorIndex)
+            const paths: Array<PointPath> = pathScan(edges, options.pathomit)
             return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
         }
     )
@@ -173,33 +174,32 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 }
 
 // 2. Layer separation and edge detection
-// Edge node types ( ▓: this layer or 1; ░: not this layer or 0 )
-// 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
-// 48  ░░  ░░  ░░  ░░  ░▓  ░▓  ░▓  ░▓  ▓░  ▓░  ▓░  ▓░  ▓▓  ▓▓  ▓▓  ▓▓
-
 // 3. Walking through an edge node array, discarding edge node types 0 and 15 and creating paths from the rest.
 
+// Edge node types ( ▓: this layer or 1; ░: not this layer or 0 )
+// 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
+// 48  ░░  ░░  ░░  ░░  ▓░  ▓░  ▓░  ▓░  ░▓  ░▓  ░▓  ░▓  ▓▓  ▓▓  ▓▓  ▓▓
 //     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-function layeringStep(indexedImage: IndexedImage, colorNumber: number): Grid<number> {
+function edgeDetection(indexedImage: IndexedImage, colorNumber: number): Grid<number> {
     const height = indexedImage.height
     const width = indexedImage.width
 
     // Creating a layer for each indexed color in indexedImage.array
-    const layers: Grid<number> = Array.init(height, () => Array.init(width, () => 0))
+    const pixels: Grid<number> = Array.init(height, () => Array.init(width, () => 0))
 
     // Looping through all pixels and calculating edge node type
     // TODO why are we starting from 1?? Anything else breaks :/
     //  probably has to do with the +2 we saw earlier
     from(1).to(height).forEach(y => {
         from(1).to(width).forEach(x => {
-            layers[y][x] =
-                (indexedImage.array[y - 1][x - 1] === colorNumber ? 1 : 0) +
-                (indexedImage.array[y - 1][x] === colorNumber ? 2 : 0) +
-                (indexedImage.array[y][x - 1] === colorNumber ? 8 : 0) +
-                (indexedImage.array[y][x] === colorNumber ? 4 : 0)
+            pixels[y][x] =
+                (indexedImage.array[y - 1][x - 1] === colorNumber ? 1 : 0) +    // top left (1)
+                (indexedImage.array[y - 1][x] === colorNumber ? 2 : 0) +        // top right (2)
+                (indexedImage.array[y][x] === colorNumber ? 4 : 0) +            // bottom left (4)
+                (indexedImage.array[y][x - 1] === colorNumber ? 8 : 0)          // bottom right (8)
         })
     })
-    return layers
+    return pixels
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
@@ -211,7 +211,7 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
     let pathCount = 0
     from(0).to(height).forEach(y => {
         from(0).to(width).forEach(x => {
-            if ((grid[y][x] == 4) || (grid[y][x] == 11)) { // Other values are not valid // TODO why????
+            if ((grid[y][x] === 4) || (grid[y][x] === 11)) { // Other values are not valid // TODO why????
 
                 // Init
                 let px = x
@@ -234,7 +234,7 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                     paths[pathCount].points[pointCount] = new Point({
                         x: px - 1,
                         y: py - 1,
-                        lineSegment: 0
+                        lineSegment: null
                     })
 
                     // Bounding box
@@ -299,24 +299,12 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
     return paths
 }
 
-function boundingBoxIncludes(parentBox: Array<number>, childBox: Array<number>): boolean {
-    return ((parentBox[0] < childBox[0]) &&
-        (parentBox[1] < childBox[1]) &&
-        (parentBox[2] > childBox[2]) &&
-        (parentBox[3] > childBox[3]))
-}
-
 // 4. interpolating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
 function interNodes(paths: Array<PointPath>): Array<PointPath> {
     const ins: Array<PointPath> = []
 
     from(0).to(paths.length).forEach(path => {
-        ins[path] = {
-            points: [],
-            boundingBox: paths[path].boundingBox,
-            holeChildren: paths[path].holeChildren,
-            isHolePath: paths[path].isHolePath
-        }
+        ins[path] = PointPath.fromPath(paths[path])
         const pathLength = paths[path].points.length
 
         from(0).to(pathLength).forEach(point => {
@@ -392,22 +380,22 @@ function testRightAngle(path: PointPath, idx1: number, idx2: number, idx3: numbe
 // 5.5. If the spline fails (distance error > qtres), find the point with the biggest error, set splitpoint = fitting point
 // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
 
-function getDirection(x1: number, y1: number, x2: number, y2: number): number {
-    let val: number
-    if (x1 < x2) {
-        if (y1 < y2) val = 1 // SouthEast
-        else if (y1 > y2) val = 7 // NE
-        else val = 0 // E
-    } else if (x1 > x2) {
-        if (y1 < y2) val = 3 // SW
-        else if (y1 > y2) val = 5 // NW
-        else val = 4 // W
+function getDirection(x1: number, y1: number, x2: number, y2: number): Direction {
+    let dir: Direction
+    if (x1 < x2) { // East
+        if (y1 < y2) dir = "SE"
+        else if (y1 > y2) dir = "NE"
+        else dir = "E"
+    } else if (x1 > x2) { // West
+        if (y1 < y2) dir = "SW"
+        else if (y1 > y2) dir = "NW"
+        else dir = "W"
     } else {
-        if (y1 < y2) val = 2 // S
-        else if (y1 > y2) val = 6 // N
-        else val = 8 // center, this should not happen
+        if (y1 < y2) dir = "S"
+        else if (y1 > y2) dir = "N"
+        else dir = null // this should not happen
     }
-    return val
+    return dir
 }
 
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
@@ -418,12 +406,7 @@ function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
     let segtype2
     let seqend
 
-    const smp: SegmentPath = {
-        segments: [],
-        boundingBox: path.boundingBox,
-        holeChildren: path.holeChildren,
-        isHolePath: path.isHolePath
-    }
+    const smp: SegmentPath = SegmentPath.fromPath(path)
 
     while (pointCount < path.points.length) {
         // 5.1. Find sequences of points with only 2 segment types
@@ -461,20 +444,23 @@ function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
 // called from tracePath()
 function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number, seqend: number): Array<any> {
     // return if invalid seqend
-    if ((seqend > path.points.length) || (seqend < 0)) {
-        return [];
-    }
+    if ((seqend > path.points.length) || (seqend < 0)) return []
     // variables
-    let errorpoint = seqstart, errorval = 0, curvepass = true, px, py, dist2;
-    let tl = (seqend - seqstart);
+    let errorpoint = seqstart
+    let errorval = 0
+    let curvepass = true
+    let px
+    let py
+    let dist2
+    let tl = (seqend - seqstart)
     if (tl < 0) {
-        tl += path.points.length;
+        tl += path.points.length
     }
-    let vx = (path.points[seqend].x - path.points[seqstart].x) / tl,
-        vy = (path.points[seqend].y - path.points[seqstart].y) / tl;
+    let vx = (path.points[seqend].x - path.points[seqstart].x) / tl
+    let vy = (path.points[seqend].y - path.points[seqstart].y) / tl
 
     // 5.2. Fit a straight line on the sequence
-    let pcnt = (seqstart + 1) % path.points.length, pl;
+    let pcnt = (seqstart + 1) % path.points.length, pl
     while (pcnt != seqend) {
         pl = pcnt - seqstart;
         if (pl < 0) {
@@ -500,7 +486,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
             y1: path.points[seqstart].y,
             x2: path.points[seqend].x,
             y2: path.points[seqend].y
-        }];
+        }]
     }
 
     // 5.3. If the straight line fails (distance error>ltres), find the point with the biggest error
@@ -510,7 +496,10 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
 
     // 5.4. Fit a quadratic spline through this point, measure errors on every point in the sequence
     // helpers and projecting to get control point
-    let t = (fitpoint - seqstart) / tl, t1 = (1 - t) * (1 - t), t2 = 2 * (1 - t) * t, t3 = t * t;
+    let t = (fitpoint - seqstart) / tl
+    let t1 = (1 - t) * (1 - t)
+    let t2 = 2 * (1 - t) * t
+    let t3 = t * t
     let cpx = (t1 * path.points[seqstart].x + t3 * path.points[seqend].x - path.points[fitpoint].x) / -t2,
         cpy = (t1 * path.points[seqstart].y + t3 * path.points[seqend].y - path.points[fitpoint].y) / -t2;
 
