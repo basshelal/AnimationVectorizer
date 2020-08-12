@@ -77,10 +77,8 @@ function _array() {
         }
 
     if (!Array.init)
-        Array.init = function <T>(length: number, initializer: ((index: number) => T) | T): Array<T> {
-            return Array.from({length: length}, (_, i) =>
-                initializer instanceof Function ? initializer(i) : initializer
-            )
+        Array.init = function <T>(length: number, initializer: (index: number) => T): Array<T> {
+            return Array.from({length: length}, (_, i) => initializer(i))
         }
 }
 

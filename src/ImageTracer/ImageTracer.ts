@@ -79,7 +79,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
     //  for a 1 px border perhaps??
     const array: Grid<number> = Array.init(imageData.height + 2, () =>
-        Array.init(imageData.width + 2, -1)
+        Array.init(imageData.width + 2, () => -1)
     )
 
     const paletteSum: Array<{ r: number, g: number, b: number, a: number, n: number }> = []

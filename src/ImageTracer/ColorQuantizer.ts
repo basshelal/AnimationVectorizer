@@ -1,6 +1,7 @@
 // Octree Color Quantization from this excellent article https://observablehq.com/@tmcw/octree-color-quantization
 
 import {Color, Grid, Palette} from "./Types";
+import {from} from "../Utils";
 
 const MAX_DEPTH = 8
 
@@ -9,7 +10,7 @@ export class ColorQuantizer {
     root: Node
 
     constructor(colors?: Array<Color>) {
-        this.levels = Array.from({length: MAX_DEPTH}, () => [])
+        this.levels = Array.init(MAX_DEPTH, () => [])
         this.root = new Node(0, this)
         if (colors) colors.forEach(c => this.addColor(c))
     }
@@ -24,25 +25,24 @@ export class ColorQuantizer {
 
     makePalette(colorCount: number): Palette {
         let leafCount: number = this.leafNodes.length
-        for (let level = MAX_DEPTH - 1; level > -1; level--) {
+        from(MAX_DEPTH - 1).to(-1).step(-1).forEach(level => {
             if (this.levels[level]) {
-                for (let node of this.levels[level]) {
-                    leafCount -= node.removeLeaves()
-                    if (leafCount <= colorCount) break
-                }
-                if (leafCount <= colorCount) break
-                this.levels[level] = []
+                this.levels[level].forEach(node => {
+                    if (leafCount > colorCount) leafCount -= node.removeLeaves()
+                })
+                if (leafCount > colorCount) this.levels[level] = []
             }
-        }
+        })
         let palette: Palette = []
         let paletteIndex = 0
-        for (let node of this.leafNodes) {
-            if (paletteIndex >= colorCount) break
-            if (node.isLeaf) palette.push(node.color)
-            node.paletteIndex = paletteIndex
-            paletteIndex++
-        }
-        for (let color of palette) color.round()
+        this.leafNodes.forEach(node => {
+            if (paletteIndex < colorCount) {
+                if (node.isLeaf) palette.push(node.color)
+                node.paletteIndex = paletteIndex
+                paletteIndex++
+            }
+        })
+        palette.forEach(color => color.round())
         return palette
     }
 
@@ -118,12 +118,11 @@ export class Node {
 
     removeLeaves(): number {
         let result = 0
-        for (let node of this.children) {
-            if (!node) continue
+        this.children.forEach(node => {
             this._color.add(node._color)
             this.pixelCount += node.pixelCount
             result++
-        }
+        })
         this.children = []
         return result - 1
     }

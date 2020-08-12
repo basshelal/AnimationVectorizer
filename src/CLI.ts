@@ -11,7 +11,7 @@ extensions()
 async function test() {
 
     logD("Reading PNG...")
-    let pngImageData: PNGImageData = await readPNG("./out/frames/500.png")
+    let pngImageData: PNGImageData = await readPNG("./out/frames/218.png")
 
     logD("Converting PNGImageData to ImageData...")
     let imageData: ImageData = PNGImageDataToImageData(pngImageData)
