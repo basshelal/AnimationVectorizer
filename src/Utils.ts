@@ -7,7 +7,6 @@ export function now(): string {
     return moment().format(momentFormat)
 }
 
-
 export function json(value: any, space: number = 2): string {
     return JSON.stringify(value, null, space)
 }

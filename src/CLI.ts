@@ -4,11 +4,18 @@ import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG";
 import {imageDataToSVG} from "./ImageTracer/ImageTracer";
 import {optionDetailed} from "./ImageTracer/Options";
 import {ImageData} from "./ImageTracer/Types";
-import {logD} from "./Log";
+import {logD, logOptions} from "./Log";
+import {now} from "./Utils";
+import moment, {duration} from "moment";
 
 extensions()
 
 async function test() {
+
+    logOptions.enabled = true
+
+    const start = moment()
+    logD(`Starting at ${now()}`)
 
     logD("Reading PNG...")
     let pngImageData: PNGImageData = await readPNG("./out/frames/218.png")
@@ -24,7 +31,9 @@ async function test() {
     logD("Writing output svg file...")
     writeFileSync("./out/test.svg", svg)
 
-    logD("Finished!")
+    const finish = moment()
+    logD(`Finished at ${now()}`)
+    console.log(`Operation took ${duration(finish.diff(start), "milliseconds").asSeconds()} seconds`)
 
     process.exit(0)
 

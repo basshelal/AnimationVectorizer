@@ -59,7 +59,7 @@ export function imageDataToTraceData(imageData: ImageData, options: Options): Tr
     // Loop to trace each color layer
     const layers: Grid<SegmentPath> = indexedImage.palette.map((_, colorIndex: number) => {
             const edges: Grid<number> = edgeDetection(indexedImage, colorIndex)
-            const paths: Array<PointPath> = pathScan(edges, options.pathomit)
+        const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
             return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
         }
     )
@@ -93,11 +93,11 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     writeLog(palette, "palette")
     writePixels(palette, "palette")
 
-    logD(`Quantization cycles: ${options.colorquantcycles}, palette size: ${palette.length}\n` +
-        `Total loop iterations are: ${(options.colorquantcycles * palette.length * imageData.totalPixels * palette.length).comma()}`)
+    logD(`Quantization cycles: ${options.colorQuantCycles}, palette size: ${palette.length}\n` +
+        `Total loop iterations are: ${(options.colorQuantCycles * palette.length * imageData.totalPixels * palette.length).comma()}`)
 
     // Repeat clustering step options.colorquantcycles times
-    from(0).to(options.colorquantcycles).forEach((cycle: number) => {
+    from(0).to(options.colorQuantCycles).forEach((cycle: number) => {
 
         // Average colors from the second iteration onwards
         if (cycle > 0) {
@@ -116,7 +116,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 // Randomizing a color, if there are too few pixels and there will be a new cycle
                 // TODO fix this! This is non deterministic!
                 if ((paletteSum[k].n / imageData.totalPixels < 0) &&
-                    (cycle < options.colorquantcycles - 1)) {
+                    (cycle < options.colorQuantCycles - 1)) {
                     logW("Randomizing a palette color!")
                     palette[k] = new Color({
                         r: floor(random() * 255),
@@ -203,6 +203,8 @@ function edgeDetection(indexedImage: IndexedImage, colorNumber: number): Grid<nu
                 (indexedImage.array[y][x - 1] === colorNumber ? 8 : 0)          // bottom right (8)
         })
     })
+
+    writeLog(pixels, `edgeDetection${colorNumber}`)
     return pixels
 }
 
@@ -537,7 +539,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
         })]
     }
     // 5.5. If the spline fails (distance error>qtres), find the point with the biggest error
-    let splitpoint = fitpoint; // Earlier: floor((fitpoint + errorpoint)/2);
+    const splitpoint = fitpoint // Earlier: floor((fitpoint + errorpoint)/2);
 
     // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
     return fitSeq(path, ltres, qtres, seqstart, splitpoint).concat(
@@ -554,8 +556,8 @@ function batchTracePaths(interNodePaths: Array<PointPath>, ltres: number, qtres:
 function svgPathString(traceData: TraceData, lnum: number, pathnum: number, options: Options): string {
 
     const places: number = options.roundToDec
-    let layer = traceData.layers[lnum]
-    let smp = layer[pathnum]
+    const layer = traceData.layers[lnum]
+    const smp = layer[pathnum]
 
     // Starting path element, desc contains layer and path number
     let str = `<path ${traceData.palette[lnum].toSVG} d="`
