@@ -19,7 +19,6 @@ async function test() {
     logD("Converting ImageData to SVG string...")
     const options = optionDetailed
     options.colorsNumber = 128
-    options.colorquantcycles = 8
     let svg: string = imageDataToSVG(imageData, options)
 
     logD("Writing output svg file...")

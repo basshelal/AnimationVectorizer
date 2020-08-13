@@ -541,7 +541,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
 
     // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
     return fitSeq(path, ltres, qtres, seqstart, splitpoint).concat(
-        fitSeq(path, ltres, qtres, splitpoint, seqend));
+        fitSeq(path, ltres, qtres, splitpoint, seqend))
 
 }
 
@@ -553,6 +553,7 @@ function batchTracePaths(interNodePaths: Array<PointPath>, ltres: number, qtres:
 // Getting SVG path element string from a traced path
 function svgPathString(traceData: TraceData, lnum: number, pathnum: number, options: Options): string {
 
+    const places: number = options.roundToDec
     let layer = traceData.layers[lnum]
     let smp = layer[pathnum]
 
@@ -560,11 +561,11 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     let str = `<path ${traceData.palette[lnum].toSVG} d="`
 
     // Creating non-hole path string
-    str += `M ${smp.segments[0].x1.roundToDec(options.roundcoords)} ${smp.segments[0].y1.roundToDec(options.roundcoords)} `
+    str += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
     smp.segments.forEach((segment: Segment) => {
-        str += `${segment.type} ${segment.x2.roundToDec(options.roundcoords)} ${segment.y2.roundToDec(options.roundcoords)} `
+        str += `${segment.type} ${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
         if (segment.x3 !== null && segment.y3 !== null) {
-            str += `${segment.x3.roundToDec(options.roundcoords)} ${segment.y3.roundToDec(options.roundcoords)} `
+            str += `${segment.x3.roundToDec(places)} ${segment.y3.roundToDec(places)} `
         }
     })
     str += `Z `
@@ -575,18 +576,18 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
         const last: Segment = hsmp.segments[hsmp.segments.length - 1]
         // Creating hole path string
         if (last.x3 !== null && last.y3 !== null) {
-            str += `M ${last.x3.roundToDec()} ${last.y3.roundToDec()} `
+            str += `M ${last.x3.roundToDec(places)} ${last.y3.roundToDec(places)} `
         } else {
-            str += `M ${last.x2.roundToDec()} ${last.y2.roundToDec()} `
+            str += `M ${last.x2.roundToDec(places)} ${last.y2.roundToDec(places)} `
         }
 
         from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
             const segment: Segment = hsmp.segments[point]
             str += `${segment.type} `
             if (segment.x3 !== null && segment.y3 !== null) {
-                str += `${segment.x2.roundToDec()} ${segment.y2.roundToDec()} `
+                str += `${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
             }
-            str += `${segment.x1.roundToDec()} ${segment.y1.roundToDec()} `
+            str += `${segment.x1.roundToDec(places)} ${segment.y1.roundToDec(places)} `
         })
 
         str += `Z` // Close path
