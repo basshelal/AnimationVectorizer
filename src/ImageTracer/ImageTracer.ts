@@ -442,7 +442,7 @@ function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
 }
 
 // called from tracePath()
-function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number, seqend: number): Array<any> {
+function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number, seqend: number): Array<Segment> {
     // return if invalid seqend
     if ((seqend > path.points.length) || (seqend < 0)) return []
     // variables
@@ -480,13 +480,13 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     }
     // return straight line if fits
     if (curvepass) {
-        return [{
+        return [new Segment({
             type: 'L',
             x1: path.points[seqstart].x,
             y1: path.points[seqstart].y,
             x2: path.points[seqend].x,
             y2: path.points[seqend].y
-        }]
+        })]
     }
 
     // 5.3. If the straight line fails (distance error>ltres), find the point with the biggest error
@@ -526,7 +526,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     }
     // return spline if fits
     if (curvepass) {
-        return [{
+        return [new Segment({
             type: 'Q',
             x1: path.points[seqstart].x,
             y1: path.points[seqstart].y,
@@ -534,7 +534,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
             y2: cpy,
             x3: path.points[seqend].x,
             y3: path.points[seqend].y
-        }];
+        })]
     }
     // 5.5. If the spline fails (distance error>qtres), find the point with the biggest error
     let splitpoint = fitpoint; // Earlier: floor((fitpoint + errorpoint)/2);
@@ -573,7 +573,7 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
         str += `M ${smp.segments[0].x1.roundToDec(options.roundcoords)} ${smp.segments[0].y1.roundToDec(options.roundcoords)} `
         smp.segments.forEach((segment: Segment) => {
             str += `${segment.type} ${segment.x2.roundToDec(options.roundcoords)} ${segment.y2.roundToDec(options.roundcoords)} `
-            if (segment.hasOwnProperty('x3')) {
+            if (segment.x3 !== null && segment.y3 !== null) {
                 str += `${segment.x3.roundToDec(options.roundcoords)} ${segment.y3.roundToDec(options.roundcoords)} `
             }
         })
@@ -581,48 +581,50 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     }// End of creating non-hole path string
 
     // Hole children
-    for (let hcnt = 0; hcnt < smp.holeChildren.length; hcnt++) {
-        let hsmp = layer[smp.holeChildren[hcnt]];
+    smp.holeChildren.forEach((hole: number) => {
+        const hsmp: SegmentPath = layer[hole]
+        const last: Segment = hsmp.segments[hsmp.segments.length - 1]
         // Creating hole path string
         if (options.roundcoords === -1) {
 
-            if (hsmp.segments[hsmp.segments.length - 1].hasOwnProperty('x3')) {
-                str += `M ${hsmp.segments[hsmp.segments.length - 1].x3} ${hsmp.segments[hsmp.segments.length - 1].y3} `
+            if (last.x3 !== null && last.y3 !== null) {
+                str += `M ${last.x3} ${last.y3} `
             } else {
-                str += `M ${hsmp.segments[hsmp.segments.length - 1].x2} ${hsmp.segments[hsmp.segments.length - 1].y2} `
+                str += `M ${last.x2} ${last.y2} `
             }
 
-            for (let pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
-                str += `${hsmp.segments[pcnt].type} `
-                if (hsmp.segments[pcnt].hasOwnProperty('x3')) {
-                    str += `${hsmp.segments[pcnt].x2} ${hsmp.segments[pcnt].y2} `
+            from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
+                const segment: Segment = hsmp.segments[point]
+                str += `${segment.type} `
+                if (segment.x3 !== null && segment.y3 !== null) {
+                    str += `${segment.x2} ${segment.y2} `
                 }
-
-                str += `${hsmp.segments[pcnt].x1} ${hsmp.segments[pcnt].y1} `
-            }
+                str += `${segment.x1} ${segment.y1} `
+            })
 
         } else {
 
-            if (hsmp.segments[hsmp.segments.length - 1].hasOwnProperty('x3')) {
-                str += `M ${hsmp.segments[hsmp.segments.length - 1].x3.roundToDec()} ${hsmp.segments[hsmp.segments.length - 1].y3.roundToDec()} `
+            if (last.x3 !== null && last.y3 !== null) {
+                str += `M ${last.x3.roundToDec()} ${last.y3.roundToDec()} `
             } else {
-                str += `M ${hsmp.segments[hsmp.segments.length - 1].x2.roundToDec()} ${hsmp.segments[hsmp.segments.length - 1].y2.roundToDec()} `
+                str += `M ${last.x2.roundToDec()} ${last.y2.roundToDec()} `
             }
 
-            for (let pcnt = hsmp.segments.length - 1; pcnt >= 0; pcnt--) {
-                str += `${hsmp.segments[pcnt].type} `
-                if (hsmp.segments[pcnt].hasOwnProperty('x3')) {
-                    str += `${hsmp.segments[pcnt].x2.roundToDec()} ${hsmp.segments[pcnt].y2.roundToDec()} `
+            from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
+                const segment: Segment = hsmp.segments[point]
+                str += `${segment.type} `
+                if (segment.x3 !== null && segment.y3 !== null) {
+                    str += `${segment.x2.roundToDec()} ${segment.y2.roundToDec()} `
                 }
-                str += `${hsmp.segments[pcnt].x1.roundToDec()} ${hsmp.segments[pcnt].y1.roundToDec()} `
-            }
+                str += `${segment.x1.roundToDec()} ${segment.y1.roundToDec()} `
+            })
 
 
         }// End of creating hole path string
 
         str += `Z ` // Close path
 
-    }// End of holepath check
+    })// End of holepath check
 
     // Closing path element
     str += `" />`
