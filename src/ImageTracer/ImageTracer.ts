@@ -239,7 +239,7 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                 })
                 let pathFinished = false
                 let pointCount = 0
-                let holePath = (grid[y][x] == 11)
+                let holePath = (grid[y][x] === 11)
                 let dir = 1
 
                 // Path points loop
@@ -438,7 +438,7 @@ function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
         }
 
         // 5.2. - 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-        smp.segments = smp.segments.concat(fitSeq(path, ltres, qtres, pointCount, seqend))
+        smp.segments.pushAll(fitSeq(path, ltres, qtres, pointCount, seqend))
 
         // forward pointCount;
         if (seqend > 0) {
@@ -551,7 +551,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     const splitpoint = fitpoint // Earlier: floor((fitpoint + errorpoint)/2);
 
     // 5.6. Split sequence and recursively apply 5.2. - 5.6. to startpoint-splitpoint and splitpoint-endpoint sequences
-    return fitSeq(path, ltres, qtres, seqstart, splitpoint).concat(
+    return fitSeq(path, ltres, qtres, seqstart, splitpoint).pushAll(
         fitSeq(path, ltres, qtres, splitpoint, seqend))
 
 }
@@ -564,12 +564,15 @@ function batchTracePaths(interNodePaths: Array<PointPath>, ltres: number, qtres:
 // Getting SVG path element string from a traced path
 function svgPathString(traceData: TraceData, lnum: number, pathnum: number, options: Options): string {
 
+    // TODO if the last command is the same as the first M then just have the Z
+    //  we can have huge size savings from this
+
     const places: number = options.roundToDec
     const layer = traceData.layers[lnum]
     const smp = layer[pathnum]
 
     // Starting path element, desc contains layer and path number
-    let str = `<path ${traceData.palette[lnum].toSVG} d="`
+    let str = `<path lnum="${lnum}" pnum="${pathnum}" ${traceData.palette[lnum].toSVG} d="`
 
     // Creating non-hole path string
     str += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `

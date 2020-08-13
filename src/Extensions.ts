@@ -12,6 +12,8 @@ declare global {
         remove(element: T): void
 
         isEmpty(): boolean
+
+        pushAll(items: Iterable<T>): Array<T>
     }
 
     interface ArrayConstructor {
@@ -74,6 +76,12 @@ function _array() {
     if (!Array.prototype.isEmpty)
         Array.prototype.isEmpty = function (this: Array<any>) {
             return this.length === 0
+        }
+
+    if (!Array.prototype.pushAll)
+        Array.prototype.pushAll = function <T>(this: Array<T>, items: Iterable<T>): Array<T> {
+            for (let item of items) this.push(item)
+            return this
         }
 
     if (!Array.init)
