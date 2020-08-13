@@ -560,74 +560,41 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     let str = `<path ${traceData.palette[lnum].toSVG} d="`
 
     // Creating non-hole path string
-    if (options.roundcoords === -1) {
-        str += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
-        smp.segments.forEach((segment: Segment) => {
-            str += `${segment.type} ${segment.x2} ${segment.y2} `
-            if (segment.hasOwnProperty('x3')) {
-                str += `${segment.x3} ${segment.y3} `
-            }
-        })
-        str += `Z `
-    } else {
-        str += `M ${smp.segments[0].x1.roundToDec(options.roundcoords)} ${smp.segments[0].y1.roundToDec(options.roundcoords)} `
-        smp.segments.forEach((segment: Segment) => {
-            str += `${segment.type} ${segment.x2.roundToDec(options.roundcoords)} ${segment.y2.roundToDec(options.roundcoords)} `
-            if (segment.x3 !== null && segment.y3 !== null) {
-                str += `${segment.x3.roundToDec(options.roundcoords)} ${segment.y3.roundToDec(options.roundcoords)} `
-            }
-        })
-        str += `Z `
-    }// End of creating non-hole path string
+    str += `M ${smp.segments[0].x1.roundToDec(options.roundcoords)} ${smp.segments[0].y1.roundToDec(options.roundcoords)} `
+    smp.segments.forEach((segment: Segment) => {
+        str += `${segment.type} ${segment.x2.roundToDec(options.roundcoords)} ${segment.y2.roundToDec(options.roundcoords)} `
+        if (segment.x3 !== null && segment.y3 !== null) {
+            str += `${segment.x3.roundToDec(options.roundcoords)} ${segment.y3.roundToDec(options.roundcoords)} `
+        }
+    })
+    str += `Z `
 
     // Hole children
     smp.holeChildren.forEach((hole: number) => {
         const hsmp: SegmentPath = layer[hole]
         const last: Segment = hsmp.segments[hsmp.segments.length - 1]
         // Creating hole path string
-        if (options.roundcoords === -1) {
-
-            if (last.x3 !== null && last.y3 !== null) {
-                str += `M ${last.x3} ${last.y3} `
-            } else {
-                str += `M ${last.x2} ${last.y2} `
-            }
-
-            from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
-                const segment: Segment = hsmp.segments[point]
-                str += `${segment.type} `
-                if (segment.x3 !== null && segment.y3 !== null) {
-                    str += `${segment.x2} ${segment.y2} `
-                }
-                str += `${segment.x1} ${segment.y1} `
-            })
-
+        if (last.x3 !== null && last.y3 !== null) {
+            str += `M ${last.x3.roundToDec()} ${last.y3.roundToDec()} `
         } else {
+            str += `M ${last.x2.roundToDec()} ${last.y2.roundToDec()} `
+        }
 
-            if (last.x3 !== null && last.y3 !== null) {
-                str += `M ${last.x3.roundToDec()} ${last.y3.roundToDec()} `
-            } else {
-                str += `M ${last.x2.roundToDec()} ${last.y2.roundToDec()} `
+        from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
+            const segment: Segment = hsmp.segments[point]
+            str += `${segment.type} `
+            if (segment.x3 !== null && segment.y3 !== null) {
+                str += `${segment.x2.roundToDec()} ${segment.y2.roundToDec()} `
             }
+            str += `${segment.x1.roundToDec()} ${segment.y1.roundToDec()} `
+        })
 
-            from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
-                const segment: Segment = hsmp.segments[point]
-                str += `${segment.type} `
-                if (segment.x3 !== null && segment.y3 !== null) {
-                    str += `${segment.x2.roundToDec()} ${segment.y2.roundToDec()} `
-                }
-                str += `${segment.x1.roundToDec()} ${segment.y1.roundToDec()} `
-            })
-
-
-        }// End of creating hole path string
-
-        str += `Z ` // Close path
+        str += `Z` // Close path
 
     })// End of holepath check
 
     // Closing path element
-    str += `" />`
+    str += `"/>`
 
     return str
 
