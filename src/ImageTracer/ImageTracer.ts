@@ -13,6 +13,7 @@ import {
     Palette,
     Point,
     PointPath,
+    Segment,
     SegmentPath,
     TraceData
 } from "./Types";
@@ -404,23 +405,19 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): Direction
 // 5.2. - 5.6. recursively fitting a straight or quadratic line segment on this sequence of path nodes,
 
 function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
-    let pointCount = 0
-    let segtype1
-    let segtype2
-    let seqend
-
     const smp: SegmentPath = SegmentPath.fromPath(path)
 
+    let pointCount = 0
     while (pointCount < path.points.length) {
         // 5.1. Find sequences of points with only 2 segment types
-        segtype1 = path.points[pointCount].lineSegment
-        segtype2 = -1
-        seqend = pointCount + 1
+        let segtype1: Direction = path.points[pointCount].lineSegment
+        let segtype2: Direction = null
+        let seqend = pointCount + 1
         while (((path.points[seqend].lineSegment === segtype1) ||
             (path.points[seqend].lineSegment === segtype2) ||
-            (segtype2 === -1)) && (seqend < path.points.length - 1)) {
+            (segtype2 === null)) && (seqend < path.points.length - 1)) {
 
-            if ((path.points[seqend].lineSegment !== segtype1) && (segtype2 === -1)) {
+            if ((path.points[seqend].lineSegment !== segtype1) && (segtype2 === null)) {
                 segtype2 = path.points[seqend].lineSegment
             }
             seqend++
@@ -565,21 +562,21 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     // Creating non-hole path string
     if (options.roundcoords === -1) {
         str += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
-        for (let pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            str += `${smp.segments[pcnt].type} ${smp.segments[pcnt].x2} ${smp.segments[pcnt].y2} `
-            if (smp.segments[pcnt].hasOwnProperty('x3')) {
-                str += `${smp.segments[pcnt].x3} ${smp.segments[pcnt].y3} `
+        smp.segments.forEach((segment: Segment) => {
+            str += `${segment.type} ${segment.x2} ${segment.y2} `
+            if (segment.hasOwnProperty('x3')) {
+                str += `${segment.x3} ${segment.y3} `
             }
-        }
+        })
         str += `Z `
     } else {
         str += `M ${smp.segments[0].x1.roundToDec(options.roundcoords)} ${smp.segments[0].y1.roundToDec(options.roundcoords)} `
-        for (let pcnt = 0; pcnt < smp.segments.length; pcnt++) {
-            str += `${smp.segments[pcnt].type} ${smp.segments[pcnt].x2.roundToDec(options.roundcoords)} ${smp.segments[pcnt].y2.roundToDec(options.roundcoords)} `
-            if (smp.segments[pcnt].hasOwnProperty('x3')) {
-                str += `${smp.segments[pcnt].x3.roundToDec(options.roundcoords)} ${smp.segments[pcnt].y3.roundToDec(options.roundcoords)} `
+        smp.segments.forEach((segment: Segment) => {
+            str += `${segment.type} ${segment.x2.roundToDec(options.roundcoords)} ${segment.y2.roundToDec(options.roundcoords)} `
+            if (segment.hasOwnProperty('x3')) {
+                str += `${segment.x3.roundToDec(options.roundcoords)} ${segment.y3.roundToDec(options.roundcoords)} `
             }
-        }
+        })
         str += `Z `
     }// End of creating non-hole path string
 
