@@ -52,7 +52,7 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 // 1. Color quantization
 
 // Tracing imageData, then returning traceData (layers with paths, palette, image size)
-function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
+export function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
     // Loop to trace each color layer

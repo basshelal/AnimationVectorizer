@@ -17,6 +17,12 @@
   Not a huge fan of this though because it does change the actual source of the SVG but lossless compression options
   can be explored and used.
 
+* 13-August-20: We need better color quantization and better edge detection afterwards because some edges of the image 
+are actually multiple pixels wide, so instead of using a grid of 4 (2x2) we should look into larger grids like 9 (3x3) 
+or 16 (4x4) with the most basic unit (corresponding to a pixel before) being larger, hence we've created a threshold 
+on what is the lowest width needed to be considered an edge. This is because cartoons don't really have thin edges, but 
+I see this potentially failing with really low or really high resolution cartoon frames, so be careful.
+
 ## Ideas
 
 * Find some test clips from cartoons, I think a nice mix of time period and art styles would be nice

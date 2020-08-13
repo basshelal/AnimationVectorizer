@@ -15,7 +15,7 @@ declare global {
     }
 
     interface ArrayConstructor {
-        init<T>(length: number, initializer: ((index: number) => T) | T): Array<T>
+        init<T>(length: number, initializer: ((index: number) => T)): Array<T>
     }
 
     interface Object {
