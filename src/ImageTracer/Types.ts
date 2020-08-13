@@ -183,6 +183,10 @@ export class IndexedImage {
     get width(): number {
         return this.array[0].length | 0
     }
+
+    get total(): number {
+        return this.height * this.width
+    }
 }
 
 export class TraceData {
@@ -258,7 +262,7 @@ export class Color {
     }
 
     get toSVG(): string {
-        return `fill="${this.toRGB}" stroke="${this.toRGB}" stroke-width="1" opacity="${this.a / 255.0}"`
+        return `fill="${this.toRGB}" stroke="${this.toRGB}"`
     }
 
     get toCSS(): string {

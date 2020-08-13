@@ -56,13 +56,22 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 export function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
+    logD(`Tracing layers...\n` +
+        `${indexedImage.palette.length} iterations`)
+
     // Loop to trace each color layer
     const layers: Grid<SegmentPath> = indexedImage.palette.map((_, colorIndex: number) => {
+            logD(`Beginning Edge Detection, total loop iterations are:` +
+                `${indexedImage.total.comma()}`)
             const edges: Grid<number> = edgeDetection(indexedImage, colorIndex)
-        const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
+            logD(`Beginning Path Scan, total loop iterations are: ~` +
+                `${indexedImage.total.comma()}`)
+            const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
             return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
         }
     )
+    logD(`Finished tracing layers...\n` +
+        `Total layers: ${layers.length}`)
     return new TraceData({
         layers: layers,
         palette: indexedImage.palette,
@@ -87,8 +96,8 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     const palette: Palette = new ColorQuantizer(imageData.uniqueColors).makePalette(options.colorsNumber)
 
-    logD(`Original image unique colors: ${imageData.uniqueColors.length}`)
-    logD(`New Palette colors: ${palette.length}`)
+    logD(`Original image unique colors: ${imageData.uniqueColors.length}\n` +
+        `New Palette colors: ${palette.length}`)
 
     writeLog(palette, "palette")
     writePixels(palette, "palette")
@@ -171,8 +180,8 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
     writeLog(palette, "palette-1")
     writePixels(palette, "palette-1")
 
-    logD("Finished Color Quantization...")
-    logD(`Indexed image is ${array.length} x ${array[0].length} and has ${palette.length} colors in palette`)
+    logD(`Finished Color Quantization...\n` +
+        `Indexed image is ${array.length} x ${array[0].length} and has ${palette.length} colors in palette`)
 
     return new IndexedImage({array: array, palette: palette})
 }
@@ -222,12 +231,12 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                 // Init
                 let px = x
                 let py = y
-                paths[pathCount] = {
+                paths[pathCount] = new PointPath({
                     points: [],
                     boundingBox: new BoundingBox({x1: px, y1: py, x2: px, y2: py}),
                     holeChildren: [],
                     isHolePath: false
-                };
+                })
                 let pathFinished = false
                 let pointCount = 0
                 let holePath = (grid[y][x] == 11)
