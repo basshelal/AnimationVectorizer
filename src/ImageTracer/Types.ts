@@ -6,12 +6,10 @@ export type Palette = Array<Color>
 export class Point {
     x: number
     y: number
-    lineSegment: Direction
 
-    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: Direction }) {
+    constructor({x, y}: { x: number, y: number }) {
         this.x = x
         this.y = y
-        this.lineSegment = lineSegment
     }
 
     isInPolygon(polygon: Array<Point>): boolean {
@@ -27,6 +25,15 @@ export class Point {
         }
 
         return isIn
+    }
+}
+
+export class SegmentPoint extends Point {
+    lineSegment: Direction
+
+    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: Direction }) {
+        super({x, y})
+        this.lineSegment = lineSegment
     }
 }
 
@@ -47,19 +54,19 @@ export class Path {
 }
 
 export class PointPath extends Path {
-    points: Array<Point> = []
+    points: Array<SegmentPoint> = []
 
     constructor({boundingBox, holeChildren, isHolePath, points}: {
         boundingBox: BoundingBox,
         holeChildren: Array<number>,
         isHolePath: boolean,
-        points: Array<Point>
+        points: Array<SegmentPoint>
     }) {
         super({boundingBox, holeChildren, isHolePath})
         this.points = points
     }
 
-    static fromPath(path: Path, points: Array<Point> = []): PointPath {
+    static fromPath(path: Path, points: Array<SegmentPoint> = []): PointPath {
         return new PointPath({
             boundingBox: path.boundingBox,
             holeChildren: path.holeChildren,
@@ -257,12 +264,12 @@ export class Color {
         return `rgba(${this.r},${this.g},${this.b},${this.a})`
     }
 
-    toHex(ignoreAlpha: boolean = false): string {
-        return `${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${ignoreAlpha ? Color.hex(this.r) : ""}`
+    get toSVG(): string {
+        return `fill="${this.toHex()}" stroke="${this.toHex()}"`
     }
 
-    get toSVG(): string {
-        return `fill="${this.toRGB}" stroke="${this.toRGB}"`
+    toHex(ignoreAlpha: boolean = true): string {
+        return `#${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${!ignoreAlpha ? Color.hex(this.a) : ""}`
     }
 
     get toCSS(): string {

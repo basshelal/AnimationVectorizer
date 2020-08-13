@@ -11,10 +11,10 @@ import {
     ImageData,
     IndexedImage,
     Palette,
-    Point,
     PointPath,
     Segment,
     SegmentPath,
+    SegmentPoint,
     TraceData
 } from "./Types";
 import {logD, logW, writeLog, writePixels} from "../Log";
@@ -67,7 +67,7 @@ export function imageDataToTraceData(imageData: ImageData, options: Options): Tr
             logD(`Beginning Path Scan, total loop iterations are: ~` +
                 `${indexedImage.total.comma()}`)
             const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
-            return batchTracePaths(interNodes(paths), options.lineThreshold, options.qSplineThreshold)
+        return interNodes(paths).map(path => tracePath(path, options.lineThreshold, options.qSplineThreshold))
         }
     )
     logD(`Finished tracing layers...\n` +
@@ -246,7 +246,7 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                 while (!pathFinished) {
 
                     // New path point
-                    paths[pathCount].points[pointCount] = new Point({
+                    paths[pathCount].points[pointCount] = new SegmentPoint({
                         x: px - 1,
                         y: py - 1,
                         lineSegment: null
@@ -343,7 +343,7 @@ function interNodes(paths: Array<PointPath>): Array<PointPath> {
                 }
 
                 // This corner point
-                ins[path].points.push(new Point({
+                ins[path].points.push(new SegmentPoint({
                     x: paths[path].points[point].x,
                     y: paths[path].points[point].y,
                     lineSegment: getDirection(
@@ -357,7 +357,7 @@ function interNodes(paths: Array<PointPath>): Array<PointPath> {
             }// End of right angle enhance
 
             // interpolate between two path points
-            ins[path].points.push(new Point({
+            ins[path].points.push(new SegmentPoint({
                 x: ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
                 y: ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2),
                 lineSegment: getDirection(
@@ -554,11 +554,6 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     return fitSeq(path, ltres, qtres, seqstart, splitpoint).pushAll(
         fitSeq(path, ltres, qtres, splitpoint, seqend))
 
-}
-
-// 5. Batch tracing paths
-function batchTracePaths(interNodePaths: Array<PointPath>, ltres: number, qtres: number): Array<SegmentPath> {
-    return interNodePaths.map(path => tracePath(path, ltres, qtres))
 }
 
 // Getting SVG path element string from a traced path
