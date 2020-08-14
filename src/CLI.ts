@@ -1,5 +1,5 @@
 import extensions from "./Extensions";
-import {writeFileSync} from "fs";
+import {statSync, writeFileSync} from "fs";
 import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG";
 import {imageDataToSVG} from "./ImageTracer/ImageTracer";
 import {optionDetailed} from "./ImageTracer/Options";
@@ -30,6 +30,9 @@ async function test() {
 
     logD("Writing output svg file...")
     writeFileSync("./out/test.svg", svg)
+
+    logD(`Original PNG size is ${statSync("./out/frames/218.png").size.comma()} bytes`)
+    logD(`Output   SVG size is ${statSync("./out/test.svg").size.comma()} bytes`)
 
     const finish = moment()
     logD(`Finished at ${now()}`)

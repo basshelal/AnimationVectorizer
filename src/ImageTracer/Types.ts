@@ -29,11 +29,11 @@ export class Point {
 }
 
 export class SegmentPoint extends Point {
-    lineSegment: Direction
+    direction: Direction
 
-    constructor({x, y, lineSegment}: { x: number, y: number, lineSegment: Direction }) {
+    constructor({x, y, direction}: { x: number, y: number, direction: Direction }) {
         super({x, y})
-        this.lineSegment = lineSegment
+        this.direction = direction
     }
 }
 
@@ -266,6 +266,10 @@ export class Color {
 
     get toSVG(): string {
         return `fill="${this.toHex()}" stroke="${this.toHex()}"`
+    }
+
+    get toSVGEdge(): string {
+        return `fill="#ffffff" stroke="#000000" stroke-width="0.25" stroke-opacity="0.5"`
     }
 
     toHex(ignoreAlpha: boolean = true): string {

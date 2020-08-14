@@ -67,7 +67,8 @@ export function imageDataToTraceData(imageData: ImageData, options: Options): Tr
             logD(`Beginning Path Scan, total loop iterations are: ~` +
                 `${indexedImage.total.comma()}`)
             const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
-        return interNodes(paths).map(path => tracePath(path, options.lineThreshold, options.qSplineThreshold))
+            const interpolated: Array<PointPath> = interpolatePaths(paths)
+            return interpolated.map(path => tracePath(path, options.lineThreshold, options.qSplineThreshold))
         }
     )
     logD(`Finished tracing layers...\n` +
@@ -218,15 +219,15 @@ function edgeDetection(indexedImage: IndexedImage, colorNumber: number): Grid<nu
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
-function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
-    let paths: Array<PointPath> = []
-    const width = grid[0].length
-    const height = grid.length
+function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
+    const paths: Array<PointPath> = []
+    const width = edges[0].length
+    const height = edges.length
 
     let pathCount = 0
     from(0).to(height).forEach(y => {
         from(0).to(width).forEach(x => {
-            if ((grid[y][x] === 4) || (grid[y][x] === 11)) { // Other values are not valid // TODO why????
+            if ((edges[y][x] === 4) || (edges[y][x] === 11)) { // Other values are not valid // TODO why????
 
                 // Init
                 let px = x
@@ -239,7 +240,7 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                 })
                 let pathFinished = false
                 let pointCount = 0
-                let holePath = (grid[y][x] === 11)
+                let holePath = (edges[y][x] === 11)
                 let dir = 1
 
                 // Path points loop
@@ -249,7 +250,7 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                     paths[pathCount].points[pointCount] = new SegmentPoint({
                         x: px - 1,
                         y: py - 1,
-                        lineSegment: null
+                        direction: null
                     })
 
                     // Bounding box
@@ -267,8 +268,8 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
-                    const lookupRow = pathScanCombinedLookup[grid[py][px]][dir]
-                    grid[py][px] = lookupRow[0]
+                    const lookupRow = pathScanCombinedLookup[edges[py][px]][dir]
+                    edges[py][px] = lookupRow[0]
                     dir = lookupRow[1]
                     px += lookupRow[2]
                     py += lookupRow[3]
@@ -315,61 +316,63 @@ function pathScan(grid: Grid<number>, pathOmit: number): Array<PointPath> {
 }
 
 // 4. interpolating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
-function interNodes(paths: Array<PointPath>): Array<PointPath> {
-    const ins: Array<PointPath> = []
+function interpolatePaths(paths: Array<PointPath>): Array<PointPath> {
+    const result: Array<PointPath> = []
 
-    from(0).to(paths.length).forEach(path => {
-        ins[path] = PointPath.fromPath(paths[path])
-        const pathLength = paths[path].points.length
+    from(0).to(paths.length).forEach(pathIndex => {
+        const path = paths[pathIndex]
+        const resultPath = PointPath.fromPath(path)
+        result[pathIndex] = resultPath
+        const pathLength = path.points.length
 
         from(0).to(pathLength).forEach(point => {
             // next and previous point indexes
-            let nextidx = (point + 1) % pathLength
-            let nextidx2 = (point + 2) % pathLength
-            let previdx = (point - 1 + pathLength) % pathLength
-            let previdx2 = (point - 2 + pathLength) % pathLength
+            const nextIndex = (point + 1) % pathLength
+            const nextIndex2 = (point + 2) % pathLength
+            const previousIndex = (point - 1 + pathLength) % pathLength
+            const previousIndex2 = (point - 2 + pathLength) % pathLength
 
             // right angle enhance
-            if (testRightAngle(paths[path], previdx2, previdx, point, nextidx, nextidx2)) {
+            if (testRightAngle(path, previousIndex2, previousIndex, point, nextIndex, nextIndex2)) {
 
                 // Fix previous direction
-                if (ins[path].points.length > 0) {
-                    ins[path].points[ins[path].points.length - 1].lineSegment = getDirection(
-                        ins[path].points[ins[path].points.length - 1].x,
-                        ins[path].points[ins[path].points.length - 1].y,
-                        paths[path].points[point].x,
-                        paths[path].points[point].y
-                    );
+                if (resultPath.points.length > 0) {
+                    resultPath.points[resultPath.points.length - 1].direction = getDirection(
+                        resultPath.points[resultPath.points.length - 1].x,
+                        resultPath.points[resultPath.points.length - 1].y,
+                        path.points[point].x,
+                        path.points[point].y
+                    )
                 }
 
                 // This corner point
-                ins[path].points.push(new SegmentPoint({
-                    x: paths[path].points[point].x,
-                    y: paths[path].points[point].y,
-                    lineSegment: getDirection(
-                        paths[path].points[point].x,
-                        paths[path].points[point].y,
-                        ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
-                        ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2)
+                resultPath.points.push(new SegmentPoint({
+                    x: path.points[point].x,
+                    y: path.points[point].y,
+                    direction: getDirection(
+                        path.points[point].x,
+                        path.points[point].y,
+                        ((path.points[point].x + path.points[nextIndex].x) / 2),
+                        ((path.points[point].y + path.points[nextIndex].y) / 2)
                     )
                 }))
 
             }// End of right angle enhance
 
             // interpolate between two path points
-            ins[path].points.push(new SegmentPoint({
-                x: ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
-                y: ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2),
-                lineSegment: getDirection(
-                    ((paths[path].points[point].x + paths[path].points[nextidx].x) / 2),
-                    ((paths[path].points[point].y + paths[path].points[nextidx].y) / 2),
-                    ((paths[path].points[nextidx].x + paths[path].points[nextidx2].x) / 2),
-                    ((paths[path].points[nextidx].y + paths[path].points[nextidx2].y) / 2)
+            resultPath.points.push(new SegmentPoint({
+                x: ((path.points[point].x + path.points[nextIndex].x) / 2),
+                y: ((path.points[point].y + path.points[nextIndex].y) / 2),
+                direction: getDirection(
+                    ((path.points[point].x + path.points[nextIndex].x) / 2),
+                    ((path.points[point].y + path.points[nextIndex].y) / 2),
+                    ((path.points[nextIndex].x + path.points[nextIndex2].x) / 2),
+                    ((path.points[nextIndex].y + path.points[nextIndex2].y) / 2)
                 )
             }))
         })
     })
-    return ins
+    return result
 }
 
 function testRightAngle(path: PointPath, idx1: number, idx2: number, idx3: number, idx4: number, idx5: number): boolean {
@@ -421,15 +424,15 @@ function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
     let pointCount = 0
     while (pointCount < path.points.length) {
         // 5.1. Find sequences of points with only 2 segment types
-        let segtype1: Direction = path.points[pointCount].lineSegment
+        let segtype1: Direction = path.points[pointCount].direction
         let segtype2: Direction = null
         let seqend = pointCount + 1
-        while (((path.points[seqend].lineSegment === segtype1) ||
-            (path.points[seqend].lineSegment === segtype2) ||
+        while (((path.points[seqend].direction === segtype1) ||
+            (path.points[seqend].direction === segtype2) ||
             (segtype2 === null)) && (seqend < path.points.length - 1)) {
 
-            if ((path.points[seqend].lineSegment !== segtype1) && (segtype2 === null)) {
-                segtype2 = path.points[seqend].lineSegment
+            if ((path.points[seqend].direction !== segtype1) && (segtype2 === null)) {
+                segtype2 = path.points[seqend].direction
             }
             seqend++
         }
@@ -567,17 +570,17 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     const smp = layer[pathnum]
 
     // Starting path element, desc contains layer and path number
-    let str = `<path lnum="${lnum}" pnum="${pathnum}" ${traceData.palette[lnum].toSVG} d="`
+    let string = `<path lnum="${lnum}" pnum="${pathnum}" ${traceData.palette[lnum].toSVG} d="`
 
     // Creating non-hole path string
-    str += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
+    string += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
     smp.segments.forEach((segment: Segment) => {
-        str += `${segment.type} ${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
+        string += `${segment.type} ${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
         if (segment.x3 !== null && segment.y3 !== null) {
-            str += `${segment.x3.roundToDec(places)} ${segment.y3.roundToDec(places)} `
+            string += `${segment.x3.roundToDec(places)} ${segment.y3.roundToDec(places)} `
         }
     })
-    str += `Z `
+    string += `Z `
 
     // Hole children
     smp.holeChildren.forEach((hole: number) => {
@@ -585,29 +588,25 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
         const last: Segment = hsmp.segments[hsmp.segments.length - 1]
         // Creating hole path string
         if (last.x3 !== null && last.y3 !== null) {
-            str += `M ${last.x3.roundToDec(places)} ${last.y3.roundToDec(places)} `
+            string += `M ${last.x3.roundToDec(places)} ${last.y3.roundToDec(places)} `
         } else {
-            str += `M ${last.x2.roundToDec(places)} ${last.y2.roundToDec(places)} `
+            string += `M ${last.x2.roundToDec(places)} ${last.y2.roundToDec(places)} `
         }
 
         from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
             const segment: Segment = hsmp.segments[point]
-            str += `${segment.type} `
+            string += `${segment.type} `
             if (segment.x3 !== null && segment.y3 !== null) {
-                str += `${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
+                string += `${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
             }
-            str += `${segment.x1.roundToDec(places)} ${segment.y1.roundToDec(places)} `
+            string += `${segment.x1.roundToDec(places)} ${segment.y1.roundToDec(places)} `
         })
 
-        str += `Z` // Close path
+        string += `Z`
+    })
+    string += `"/>`
 
-    })// End of holepath check
-
-    // Closing path element
-    str += `"/>`
-
-    return str
-
+    return string
 }
 
 /**
