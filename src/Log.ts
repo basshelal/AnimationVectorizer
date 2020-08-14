@@ -29,7 +29,7 @@ export function logI(message: any) {
         )
 }
 
-export function logE(message: any, calledFrom: string = "") {
+export function logE(message: any) {
     if (logOptions.enabled)
         console.error(`${now()}\n` +
             chalk.red(`${message.toString()}\n`)

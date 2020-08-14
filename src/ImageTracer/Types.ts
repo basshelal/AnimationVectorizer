@@ -175,20 +175,20 @@ export class BoundingBox {
 }
 
 export class IndexedImage {
-    array: Grid<number>
+    grid: Grid<number>
     palette: Palette
 
-    constructor({array, palette}: { array: Grid<number>, palette: Palette }) {
-        this.array = array
+    constructor({grid, palette}: { grid: Grid<number>, palette: Palette }) {
+        this.grid = grid
         this.palette = palette
     }
 
     get height(): number {
-        return this.array.length
+        return this.grid.length
     }
 
     get width(): number {
-        return this.array[0].length | 0
+        return this.grid[0].length | 0
     }
 
     get total(): number {
@@ -360,6 +360,15 @@ export class ImageData {
             width: (width ? width : pixels.length.sqrt().ceil()),
             height: (height ? height : pixels.length.sqrt().ceil())
         })
+    }
+
+    static fromIndexedImage(indexedImage: IndexedImage): ImageData {
+        const flat: Array<number> = []
+        indexedImage.grid.forEach(array => array.forEach(num => flat.push(num)))
+        return ImageData.fromPixels(
+            flat.map(number => number !== -1 ? indexedImage.palette[number] : new Color()),
+            indexedImage.width, indexedImage.height
+        )
     }
 
     ensureRGB(): ImageData {

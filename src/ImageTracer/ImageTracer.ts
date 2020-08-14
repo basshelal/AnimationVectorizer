@@ -17,7 +17,9 @@ import {
     SegmentPoint,
     TraceData
 } from "./Types";
-import {logD, logW, writeLog, writePixels} from "../Log";
+import {logD, logW, writeLog, writeLogImage, writePixels} from "../Log";
+
+let iterationCount: number = 0
 
 // pathScanCombinedLookup[ arr[py][px] ][ dir ] = [nextarrpypx, nextdir, deltapx, deltapy];
 const pathScanCombinedLookup: Array<Grid<number>> = [
@@ -46,6 +48,7 @@ const pathScanCombinedLookup: Array<Grid<number>> = [
  * Converts the passed in `imageData` with the desired `options` into an SVG `string`
  */
 export function imageDataToSVG(imageData: ImageData, options: Options): string {
+    iterationCount = 0
     const traceData: TraceData = imageDataToTraceData(imageData, options)
     return getSvgString(traceData, options)
 }
@@ -56,28 +59,31 @@ export function imageDataToSVG(imageData: ImageData, options: Options): string {
 export function imageDataToTraceData(imageData: ImageData, options: Options): TraceData {
     const indexedImage: IndexedImage = colorQuantization(imageData, options)
 
-    logD(`Tracing layers...\n` +
-        `${indexedImage.palette.length} iterations`)
+    writeLogImage(ImageData.fromIndexedImage(indexedImage), `indexedImage`)
+
+    logD(`Tracing layers...`)
 
     // Loop to trace each color layer
+    // TODO parellelizable! A thread for every color since they don't need any communication
     const layers: Grid<SegmentPath> = indexedImage.palette.map((_, colorIndex: number) => {
-            logD(`Beginning Edge Detection, total loop iterations are:` +
-                `${indexedImage.total.comma()}`)
+            iterationCount++
             const edges: Grid<number> = edgeDetection(indexedImage, colorIndex)
-            logD(`Beginning Path Scan, total loop iterations are: ~` +
-                `${indexedImage.total.comma()}`)
             const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
             const interpolated: Array<PointPath> = interpolatePaths(paths)
-            return interpolated.map(path => tracePath(path, options.lineThreshold, options.qSplineThreshold))
+            return interpolated.map(path => {
+                iterationCount++
+                return tracePath(path, options.lineThreshold, options.qSplineThreshold);
+            })
         }
     )
     logD(`Finished tracing layers...\n` +
-        `Total layers: ${layers.length}`)
+        `Total layers: ${layers.length}\n` +
+        `Final iteration count ~${iterationCount.comma()}`)
     return new TraceData({
         layers: layers,
         palette: indexedImage.palette,
-        width: indexedImage.array[0].length - 2,
-        height: indexedImage.array.length - 2
+        width: indexedImage.grid[0].length - 2,
+        height: indexedImage.grid.length - 2
     })
 }
 
@@ -89,7 +95,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
     // TODO why + 2????? Less than 2 fails :/ Has something to do with the pathScan
     //  for a 1 px border perhaps??
-    const array: Grid<number> = Array.init(imageData.height + 2, () =>
+    const grid: Grid<number> = Array.init(imageData.height + 2, () =>
         Array.init(imageData.width + 2, () => -1)
     )
 
@@ -113,6 +119,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
         if (cycle > 0) {
             // averaging paletteSum for palette
             from(0).to(palette.length).forEach(k => {
+                iterationCount++
                 // averaging
                 if (paletteSum[k].n > 0) {
                     palette[k] = new Color({
@@ -144,12 +151,14 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
 
         // loop through all pixels
         imageData.forEachPixel((y, x, imageColor) => {
+            iterationCount++
 
             // find closest color from palette by measuring (rectilinear) color distance between this pixel and all palette colors
             let colorIndex = 0
             let lastMinDistance = imageData.isRGBA ? (256 * 4) : (256 * 3) // 4 * 256 is the maximum RGBA distance
 
             palette.forEach((paletteColor: Color, index: number) => {
+                iterationCount++
                 // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
                 const distance = (paletteColor.r - imageColor.r).abs() +
                     (paletteColor.g - imageColor.g).abs() +
@@ -171,20 +180,20 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             paletteSum[colorIndex].n++
 
             // update the indexed color array
-            array[y + 1][x + 1] = colorIndex
+            grid[y + 1][x + 1] = colorIndex
         })
     })
 
     writeLog(paletteSum, "paletteSum")
-    writeLog(array, "indexedArray")
+    writeLog(grid, "indexedArray")
 
     writeLog(palette, "palette-1")
     writePixels(palette, "palette-1")
 
     logD(`Finished Color Quantization...\n` +
-        `Indexed image is ${array.length} x ${array[0].length} and has ${palette.length} colors in palette`)
+        `Indexed image is ${grid.length} x ${grid[0].length} and has ${palette.length} colors in palette`)
 
-    return new IndexedImage({array: array, palette: palette})
+    return new IndexedImage({grid: grid, palette: palette})
 }
 
 // 2. Layer separation and edge detection
@@ -206,11 +215,12 @@ function edgeDetection(indexedImage: IndexedImage, colorNumber: number): Grid<nu
     //  probably has to do with the +2 we saw earlier
     from(1).to(height).forEach(y => {
         from(1).to(width).forEach(x => {
+            iterationCount++
             pixels[y][x] =
-                (indexedImage.array[y - 1][x - 1] === colorNumber ? 1 : 0) +    // top left (1)
-                (indexedImage.array[y - 1][x] === colorNumber ? 2 : 0) +        // top right (2)
-                (indexedImage.array[y][x] === colorNumber ? 4 : 0) +            // bottom left (4)
-                (indexedImage.array[y][x - 1] === colorNumber ? 8 : 0)          // bottom right (8)
+                (indexedImage.grid[y - 1][x - 1] === colorNumber ? 1 : 0) +    // top left (1)
+                (indexedImage.grid[y - 1][x] === colorNumber ? 2 : 0) +        // top right (2)
+                (indexedImage.grid[y][x] === colorNumber ? 4 : 0) +            // bottom left (4)
+                (indexedImage.grid[y][x - 1] === colorNumber ? 8 : 0)          // bottom right (8)
         })
     })
 
@@ -227,6 +237,7 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
     let pathCount = 0
     from(0).to(height).forEach(y => {
         from(0).to(width).forEach(x => {
+            iterationCount++
             if ((edges[y][x] === 4) || (edges[y][x] === 11)) { // Other values are not valid // TODO why????
 
                 // Init
@@ -291,6 +302,7 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
                                 let parentIndex = 0
                                 let parentbbox = new BoundingBox({x1: -1, y1: -1, x2: width + 1, y2: height + 1})
                                 from(0).to(pathCount).forEach(parent => {
+                                    iterationCount++
                                     if ((!paths[parent].isHolePath) &&
                                         paths[parent].boundingBox.includes(paths[pathCount].boundingBox) &&
                                         parentbbox.includes(paths[parent].boundingBox) &&
@@ -326,6 +338,7 @@ function interpolatePaths(paths: Array<PointPath>): Array<PointPath> {
         const pathLength = path.points.length
 
         from(0).to(pathLength).forEach(point => {
+            iterationCount++
             // next and previous point indexes
             const nextIndex = (point + 1) % pathLength
             const nextIndex2 = (point + 2) % pathLength
