@@ -343,6 +343,14 @@ export class ImageData {
         return result
     }
 
+    get pixelsGrid(): Grid<Color> {
+        const result: Grid<Color> = []
+        this.forEachPixel((y, x, color) => {
+            result[y][x] = color
+        })
+        return result
+    }
+
     get uniqueColors(): Array<Color> {
         return Array.from(new Set(this.pixels))
     }
