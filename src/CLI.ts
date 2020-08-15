@@ -18,17 +18,16 @@ async function test() {
     logD(`Starting at ${now()}`)
 
     logD("Reading PNG...")
-    let pngImageData: PNGImageData = await readPNG("./out/frames/218.png")
+    let pngImageData: PNGImageData = await readPNG("./out/shapes.png")
 
     logD("Converting PNGImageData to ImageData...")
     let imageData: ImageData = PNGImageDataToImageData(pngImageData)
 
     logD("Converting ImageData to SVG string...")
     const options = optionDetailed
-    options.colorsNumber = 128
+    options.colorsNumber = 32
     let svg: string = imageDataToSVG(imageData, options)
 
-    logD("Writing output svg file...")
     writeFileSync("./out/test.svg", svg)
 
     logD(`Original PNG size is ${statSync("./out/frames/218.png").size.comma()} bytes`)

@@ -65,17 +65,19 @@ export function imageDataToTraceData(imageData: ImageData, options: Options): Tr
 
     // Loop to trace each color layer
     // TODO parellelizable! A thread for every color since they don't need any communication
-    const layers: Grid<SegmentPath> = indexedImage.palette.map((_, colorIndex: number) => {
+    const layers: Grid<SegmentPath> = []
+    const colorPaths: Array<{ color: Color, pointPaths: Array<PointPath> }> = []
+    indexedImage.palette.forEach((color: Color, colorIndex: number) => {
             iterationCount++
             const edges: Grid<number> = edgeDetection(indexedImage, colorIndex)
             const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
+            colorPaths.push({color: color, pointPaths: paths})
             const interpolated: Array<PointPath> = interpolatePaths(paths)
-            return interpolated.map(path => {
-                iterationCount++
-                return tracePath(path, options.lineThreshold, options.qSplineThreshold);
-            })
+            const tracedPaths: Array<SegmentPath> = interpolated.map(path => tracePath(path, options.lineThreshold, options.qSplineThreshold))
+            layers.push(tracedPaths)
         }
     )
+    writeLog(colorPaths, `colorPaths`)
     logD(`Finished tracing layers...\n` +
         `Total layers: ${layers.length}\n` +
         `Final iteration count ~${iterationCount.comma()}`)
@@ -224,13 +226,13 @@ function edgeDetection(indexedImage: IndexedImage, colorNumber: number): Grid<nu
         })
     })
 
-    writeLog(pixels, `edgeDetection${colorNumber}`)
+    //writeLog(pixels, `edgeDetection${colorNumber}`)
     return pixels
 }
 
 // Walk directions (dir): 0 > ; 1 ^ ; 2 < ; 3 v
 function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
-    const paths: Array<PointPath> = []
+    const pointPaths: Array<PointPath> = []
     const width = edges[0].length
     const height = edges.length
 
@@ -243,7 +245,7 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
                 // Init
                 let px = x
                 let py = y
-                paths[pathCount] = new PointPath({
+                pointPaths[pathCount] = new PointPath({
                     points: [],
                     boundingBox: new BoundingBox({x1: px, y1: py, x2: px, y2: py}),
                     holeChildren: [],
@@ -258,24 +260,24 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
                 while (!pathFinished) {
 
                     // New path point
-                    paths[pathCount].points[pointCount] = new SegmentPoint({
+                    pointPaths[pathCount].points[pointCount] = new SegmentPoint({
                         x: px - 1,
                         y: py - 1,
                         direction: null
                     })
 
                     // Bounding box
-                    if ((px - 1) < paths[pathCount].boundingBox.x1) {
-                        paths[pathCount].boundingBox.x1 = px - 1
+                    if ((px - 1) < pointPaths[pathCount].boundingBox.x1) {
+                        pointPaths[pathCount].boundingBox.x1 = px - 1
                     }
-                    if ((px - 1) > paths[pathCount].boundingBox.x2) {
-                        paths[pathCount].boundingBox.x2 = px - 1
+                    if ((px - 1) > pointPaths[pathCount].boundingBox.x2) {
+                        pointPaths[pathCount].boundingBox.x2 = px - 1
                     }
-                    if ((py - 1) < paths[pathCount].boundingBox.y1) {
-                        paths[pathCount].boundingBox.y1 = py - 1
+                    if ((py - 1) < pointPaths[pathCount].boundingBox.y1) {
+                        pointPaths[pathCount].boundingBox.y1 = py - 1
                     }
-                    if ((py - 1) > paths[pathCount].boundingBox.y2) {
-                        paths[pathCount].boundingBox.y2 = py - 1
+                    if ((py - 1) > pointPaths[pathCount].boundingBox.y2) {
+                        pointPaths[pathCount].boundingBox.y2 = py - 1
                     }
 
                     // Next: look up the replacement, direction and coordinate changes = clear this cell, turn if required, walk forward
@@ -286,15 +288,15 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
                     py += lookupRow[3]
 
                     // Close path
-                    if ((px - 1 === paths[pathCount].points[0].x) && (py - 1 === paths[pathCount].points[0].y)) {
+                    if ((px - 1 === pointPaths[pathCount].points[0].x) && (py - 1 === pointPaths[pathCount].points[0].y)) {
                         pathFinished = true
 
-                        // Discarding paths shorter than pathOmit
-                        if (paths[pathCount].points.length < pathOmit) {
-                            paths.pop()
+                        // Discarding pointPaths shorter than pathOmit
+                        if (pointPaths[pathCount].points.length < pathOmit) {
+                            pointPaths.pop()
                         } else {
 
-                            paths[pathCount].isHolePath = holePath;
+                            pointPaths[pathCount].isHolePath = holePath
 
                             // Finding the parent shape for this hole
                             if (holePath) {
@@ -303,17 +305,17 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
                                 let parentbbox = new BoundingBox({x1: -1, y1: -1, x2: width + 1, y2: height + 1})
                                 from(0).to(pathCount).forEach(parent => {
                                     iterationCount++
-                                    if ((!paths[parent].isHolePath) &&
-                                        paths[parent].boundingBox.includes(paths[pathCount].boundingBox) &&
-                                        parentbbox.includes(paths[parent].boundingBox) &&
-                                        paths[pathCount].points[0].isInPolygon(paths[parent].points)
+                                    if ((!pointPaths[parent].isHolePath) &&
+                                        pointPaths[parent].boundingBox.includes(pointPaths[pathCount].boundingBox) &&
+                                        parentbbox.includes(pointPaths[parent].boundingBox) &&
+                                        pointPaths[pathCount].points[0].isInPolygon(pointPaths[parent].points)
                                     ) {
                                         parentIndex = parent;
-                                        parentbbox = paths[parent].boundingBox
+                                        parentbbox = pointPaths[parent].boundingBox
                                     }
                                 })
 
-                                paths[parentIndex].holeChildren.push(pathCount)
+                                pointPaths[parentIndex].holeChildren.push(pathCount)
 
                             }// End of holePath parent finding
                             pathCount++
@@ -324,7 +326,7 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
             }// End of Follow path
         })
     })
-    return paths
+    return pointPaths
 }
 
 // 4. interpolating between path points for nodes with 8 directions ( East, SouthEast, S, SW, W, NW, N, NE )
@@ -443,6 +445,7 @@ function tracePath(path: PointPath, ltres: number, qtres: number): SegmentPath {
         while (((path.points[seqend].direction === segtype1) ||
             (path.points[seqend].direction === segtype2) ||
             (segtype2 === null)) && (seqend < path.points.length - 1)) {
+            iterationCount++
 
             if ((path.points[seqend].direction !== segtype1) && (segtype2 === null)) {
                 segtype2 = path.points[seqend].direction
@@ -489,6 +492,7 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     // 5.2. Fit a straight line on the sequence
     let pcnt = (seqstart + 1) % path.points.length, pl
     while (pcnt != seqend) {
+        iterationCount++
         pl = pcnt - seqstart;
         if (pl < 0) {
             pl += path.points.length;
@@ -588,6 +592,7 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
     // Creating non-hole path string
     string += `M ${smp.segments[0].x1} ${smp.segments[0].y1} `
     smp.segments.forEach((segment: Segment) => {
+        iterationCount++
         string += `${segment.type} ${segment.x2.roundToDec(places)} ${segment.y2.roundToDec(places)} `
         if (segment.x3 !== null && segment.y3 !== null) {
             string += `${segment.x3.roundToDec(places)} ${segment.y3.roundToDec(places)} `
@@ -607,6 +612,7 @@ function svgPathString(traceData: TraceData, lnum: number, pathnum: number, opti
         }
 
         from(hsmp.segments.length - 1).to(-1).step(-1).forEach(point => {
+            iterationCount++
             const segment: Segment = hsmp.segments[point]
             string += `${segment.type} `
             if (segment.x3 !== null && segment.y3 !== null) {
@@ -634,6 +640,7 @@ function getSvgString(traceData: TraceData, options: Options): string {
     // Drawing: Layers and Paths loops
     from(0).to(traceData.layers.length).forEach(layerIndex => {
         from(0).to(traceData.layers[layerIndex].length).forEach(pathIndex => {
+            iterationCount++
             // Adding SVG <path> string
             if (!traceData.layers[layerIndex][pathIndex].isHolePath) {
                 svg += svgPathString(traceData, layerIndex, pathIndex, options)
