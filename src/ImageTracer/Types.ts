@@ -379,6 +379,12 @@ export class ImageData {
         )
     }
 
+    static fromGrid(grid: Grid<number>, hasAlpha: boolean): ImageData {
+        const flat: Array<number> = []
+        grid.forEach(array => array.forEach(num => flat.push(num)))
+        return new ImageData({height: grid.length, width: grid[0].length, data: Buffer.from(flat)})
+    }
+
     ensureRGB(): ImageData {
         if (this.isRGBA) {
             const newImgData = Buffer.alloc(this.totalPixels * 3)
