@@ -27,6 +27,7 @@
     "@babel/runtime": "^7.11.2",
     "axios": "^0.19.2",
     "chalk": "^4.1.0",
+    "cli-progress": "^3.8.2",
     "commander": "^4.1.1",
     "debug": "~2.6.9",
     "fs-extra": "^8.1.0",
