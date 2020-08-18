@@ -16,7 +16,7 @@ import {
     SegmentPath,
     SegmentPoint,
     TraceData
-} from "./Types";
+} from "../Types";
 import {logD, logW, writeLog, writeLogImage, writePixels} from "../Log";
 
 let iterationCount: number = 0

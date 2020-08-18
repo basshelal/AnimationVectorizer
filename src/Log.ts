@@ -1,4 +1,4 @@
-import {Color, ImageData} from "./ImageTracer/Types";
+import {Color, ImageData} from "./Types";
 import {writeImage} from "./PNG";
 import {writeFileSync} from "fs";
 import {json, now} from "./Utils";

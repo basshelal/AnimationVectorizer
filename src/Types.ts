@@ -1,4 +1,4 @@
-import {from} from "../Utils";
+import {from} from "./Utils";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
@@ -377,12 +377,6 @@ export class ImageData {
             flat.map(number => number !== -1 ? indexedImage.palette[number] : new Color()),
             indexedImage.width, indexedImage.height
         )
-    }
-
-    static fromGrid(grid: Grid<number>, hasAlpha: boolean): ImageData {
-        const flat: Array<number> = []
-        grid.forEach(array => array.forEach(num => flat.push(num)))
-        return new ImageData({height: grid.length, width: grid[0].length, data: Buffer.from(flat)})
     }
 
     ensureRGB(): ImageData {

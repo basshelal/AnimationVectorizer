@@ -4,7 +4,7 @@ import {now} from "./Utils";
 import moment, {duration} from "moment";
 import {imread, imwrite, Mat} from "opencv4nodejs";
 import {PNGImageDataToImageData, readPNG} from "./PNG";
-import {Grid} from "./ImageTracer/Types";
+import {Grid} from "./Types";
 
 extensions()
 
@@ -32,7 +32,7 @@ async function test() {
 
     const src: Mat = imread("./out/frames/1.png")
     logD(src.getData().length)
-    const result: Mat = src.canny(50, 100, 3, false)
+    const result: Mat = src.canny(75, 125, 3, false)
     const grid: Grid<number> = result.getDataAsArray()
     logD(grid.length * grid[0].length)
     imwrite("./out.png", result)
@@ -41,9 +41,14 @@ async function test() {
     const pngImageData = PNGImageDataToImageData(await readPNG("./out.png"))
     logD(pngImageData.totalPixels)
 
+    let max = 0
     const flat: Array<number> = []
-    grid.forEach(array => array.forEach(num => flat.push(num)))
+    grid.forEach(array => array.forEach(num => {
+        flat.push(num)
+        if (num > max) max = num
+    }))
 
+    logD(max)
     logD(flat.length)
     logD(pngImageData.data.length)
 

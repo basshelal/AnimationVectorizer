@@ -1,6 +1,6 @@
 // Octree Color Quantization from this excellent article https://observablehq.com/@tmcw/octree-color-quantization
 
-import {Color, Grid, Palette} from "./Types";
+import {Color, Grid, Palette} from "../Types";
 import {from} from "../Utils";
 
 const MAX_DEPTH = 8
