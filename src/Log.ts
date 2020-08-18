@@ -3,6 +3,7 @@ import {writeImage} from "./PNG";
 import {writeFileSync} from "fs";
 import {json, now} from "./Utils";
 import chalk from "chalk";
+import {AssertionError} from "assert";
 
 export const logOptions = {
     enabled: true
@@ -36,9 +37,11 @@ export function logE(message: any) {
         )
 }
 
-export function assert(condition: boolean, message: string) {
-    if (logOptions.enabled)
-        console.assert(condition, message)
+export function assert(condition: boolean, message: string, args?: IArguments, func?: Function) {
+    if (logOptions.enabled && !condition) {
+        logE(`Assertion Error${func ? ` at ${func.name}` : ``}!\n${message}\nargs:\n${json(args)}\n`)
+        throw new AssertionError({message: ``, stackStartFn: func})
+    }
 }
 
 export async function writePixels(pixels: Array<Color>, fileName: string) {

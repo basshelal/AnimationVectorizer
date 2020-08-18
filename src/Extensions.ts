@@ -23,9 +23,6 @@ declare global {
     }
 
     interface Object {
-        in(array: Array<any>): boolean
-
-        notIn(array: Array<any>): boolean
 
         toJson(space: number): string
 
@@ -103,15 +100,6 @@ function _array() {
 }
 
 function _object() {
-    if (!Object.prototype.in)
-        Object.prototype.in = function (this: Object, array: Array<any>): boolean {
-            return array.contains(this)
-        }
-
-    if (!Object.prototype.notIn)
-        Object.prototype.notIn = function (this: Object, array: Array<any>): boolean {
-            return array.notContains(this)
-        }
 
     if (!Object.prototype.toJson)
         Object.prototype.toJson = function (this: Object, space: number = 0): string {
@@ -120,15 +108,17 @@ function _object() {
 
     if (!Object.prototype.properties)
         Object.prototype.properties = function (this: Object): Array<{ key: string, value: any, type: any }> {
-            return Object.keys(this).map((key, index) => {
-                // @ts-ignore
-                return {key: key, value: this[key], type: typeof this[key]}
-            })
+            if (this)
+                return Object.keys(this).map((key, index) => {
+                    // @ts-ignore
+                    return {key: key, value: this[key], type: typeof this[key]}
+                })
+            else return []
         }
 
     if (!Object.prototype.also)
         Object.prototype.also = function (this: Object, block: (it: Object) => void): Object {
-            block(this)
+            if (this) block(this)
             return this
         }
 }
