@@ -15,17 +15,19 @@ async function test() {
 
     const images: Array<Mat> = EdgeDetector.loopOnImage({
         imagePath: "./out/frames/1.png",
-        threshold1Min: 0,
-        threshold1Max: 200,
-        threshold2Min: 0,
-        threshold2Max: 200,
+        iterations: 300,
+        minThresholdStart: 0,
+        maxThresholdStart: 100,
         L2gradient: false,
         apertureSize: 3
     })
 
     logD(`Writing...`)
 
-    images.forEach((image, index) => imwrite(`./out/test/${index}.png`, image))
+    images.forEach((image, i) => imwrite(`./out/test/${i}.png`, image))
+
+    const avg = EdgeDetector.averageEdges(images)
+    imwrite(`./out/test/avg.png`, avg)
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +
