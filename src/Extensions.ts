@@ -14,6 +14,8 @@ declare global {
         isEmpty(): boolean
 
         pushAll(items: Iterable<T>): Array<T>
+
+        flatten<R>(): Array<R>
     }
 
     interface ArrayConstructor {
@@ -87,6 +89,16 @@ function _array() {
     if (!Array.init)
         Array.init = function <T>(length: number, initializer: (index: number) => T): Array<T> {
             return Array.from({length: length}, (_, i) => initializer(i))
+        }
+
+    if (!Array.prototype.flatten)
+        Array.prototype.flatten = function <R>(this: Array<any>): Array<R> {
+            const result: Array<R> = []
+            this.forEach(it => {
+                if (it instanceof Array) it.flatten<R>().forEach(i => result.push(i))
+                else result.push(it)
+            })
+            return result
         }
 }
 
