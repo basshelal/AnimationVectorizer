@@ -1,9 +1,11 @@
 import extensions from "./Extensions";
 import {logD} from "./Log";
-import {now} from "./Utils";
+import {json, now} from "./Utils";
 import moment, {duration} from "moment";
+import {imread, imwrite, Mat} from "opencv4nodejs";
+import {PathScanner} from "./Vectorizer/PathScanner";
+import {writeFileSync} from "fs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
-import {imwrite, Mat} from "opencv4nodejs";
 
 extensions()
 
@@ -28,6 +30,12 @@ async function test() {
 
     const avg = EdgeDetector.averageEdges(images)
     imwrite(`./out/test/avg.png`, avg)
+
+    const img = imread(`./out/test/avg.png`)
+
+    const paths = PathScanner.pathsFromEdgesMat(avg)
+
+    writeFileSync(`./paths.json`, json(paths))
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +

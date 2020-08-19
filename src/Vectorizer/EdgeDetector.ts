@@ -3,7 +3,7 @@ import {from} from "../Utils";
 import {assert, logD} from "../Log";
 
 export const EdgeDetector = {
-    onImage({imagePath, minThreshold, maxThreshold, apertureSize, L2gradient}: {
+    onImage({imagePath, minThreshold, maxThreshold, apertureSize = 3, L2gradient = false}: {
         imagePath: string, minThreshold: number, maxThreshold: number,
         apertureSize?: number, L2gradient?: boolean
     }): Mat {

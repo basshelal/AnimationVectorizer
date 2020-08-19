@@ -1,4 +1,5 @@
-import {from} from "./Utils";
+import {from, json} from "./Utils";
+import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
@@ -280,6 +281,10 @@ export class Color {
         return `rgb(${this.r.floor()},${this.g.floor()},${this.b.floor()})`
     }
 
+    get isZero(): boolean {
+        return this.r === 0 && this.g === 0 && this.b === 0
+    }
+
     clone(): Color {
         return new Color({r: this.r, g: this.g, b: this.b, a: this.a})
     }
@@ -420,4 +425,26 @@ export class ImageData {
         }
         return this
     }
+}
+
+export type Pixel = Color
+export type Image = Array<Pixel>
+
+export function matToImage(mat: Mat): Image {
+    const result: Array<Pixel> = []
+    let converted: Mat
+    if (mat.channels === 1) {
+        converted = mat.cvtColor(COLOR_GRAY2RGB).convertTo(CV_8UC3)
+    } else if (mat.channels === 3) {
+        converted = mat.convertTo(CV_8UC3)
+    } else if (mat.channels === 4) {
+        converted = mat.cvtColor(COLOR_BGRA2RGB).convertTo(CV_8UC3)
+    } else throw Error(`None of the conversions worked on mat:\n${json(mat)}`)
+    const data = converted.getDataAsArray() as unknown as number [][][]
+    data.forEach(column => {
+        column.forEach(value => {
+            result.push(new Color({r: value[0], g: value[1], b: value[2]}))
+        })
+    })
+    return result
 }
