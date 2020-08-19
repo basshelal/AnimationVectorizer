@@ -1,3 +1,3 @@
 import {GPU} from "gpu.js";
 
-export const gpu = new GPU({mode: "headlessgl"})
+export const gpu = new GPU()
