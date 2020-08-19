@@ -35,7 +35,7 @@ async function test() {
 
     const paths = PathScanner.pathsFromEdgesMat(avg)
 
-    writeFileSync(`./paths.json`, json(paths))
+    writeFileSync(`./paths.json`, json(paths, 1))
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +

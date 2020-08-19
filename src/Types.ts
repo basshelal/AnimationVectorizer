@@ -427,11 +427,20 @@ export class ImageData {
     }
 }
 
-export type Pixel = Color
-export type Image = Array<Pixel>
+export class IndexedColor extends Color {
 
-export function matToImage(mat: Mat): Image {
-    const result: Array<Pixel> = []
+    public x: number
+    public y: number
+
+    constructor(index: { x: number, y: number }, color?: { r: number, g: number, b: number, a?: number }) {
+        super(color)
+        this.x = index.x
+        this.y = index.y
+    }
+}
+
+export function matToColorGrid(mat: Mat): Grid<Color> {
+    const result: Grid<Color> = Array.init(mat.cols, () => Array.init(mat.rows, () => new Color()))
     let converted: Mat
     if (mat.channels === 1) {
         converted = mat.cvtColor(COLOR_GRAY2RGB).convertTo(CV_8UC3)
@@ -441,9 +450,9 @@ export function matToImage(mat: Mat): Image {
         converted = mat.cvtColor(COLOR_BGRA2RGB).convertTo(CV_8UC3)
     } else throw Error(`None of the conversions worked on mat:\n${json(mat)}`)
     const data = converted.getDataAsArray() as unknown as number [][][]
-    data.forEach(column => {
-        column.forEach(value => {
-            result.push(new Color({r: value[0], g: value[1], b: value[2]}))
+    data.forEach((column, y) => {
+        column.forEach((value, x) => {
+            result[y][x] = new Color({r: value[0], g: value[1], b: value[2]})
         })
     })
     return result
