@@ -31,6 +31,7 @@ export const EdgeDetector = {
         }).reverse()
     },
 
+    // TODO try to convert to GPU
     averageEdges(mats: Array<Mat>): Mat {
         const height: number = mats[0].cols
         const width: number = mats[0].rows
@@ -38,11 +39,11 @@ export const EdgeDetector = {
         const result = new Mat(mats[0].rows, mats[0].cols, mats[0].type)
 
         from(0).to(height).forEach(y => {
+            logD(`y: ${y}`)
             from(0).to(width).forEach(x => {
-                const pxValues: Array<number> = mats.map((mat: Mat) => mat.at(x, y))
-                const sum: number = pxValues.reduce((prev, curr) => prev + curr)
-                const avg: number = parseFloat((sum / totalMats).toFixed(2))
-                result.set(x, y, avg)
+                let sum = 0
+                mats.forEach(mat => sum += mat.at(x, y))
+                result.set(x, y, (sum / totalMats).roundToDec(1))
             })
         })
         return result
