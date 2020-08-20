@@ -31,10 +31,7 @@ async function test() {
 
     logD(`Converting...`)
 
-    const mats = images.map((it, index) => {
-        logD(`Converting ${index}`)
-        return matDataTo2DArray(it)
-    })
+    const mats = images.map((mat) => matDataTo2DArray(mat))
 
     logW(`Running on GPU...`)
 

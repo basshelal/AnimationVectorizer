@@ -1,6 +1,6 @@
 import {from, json} from "./Utils";
 import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
-import {assert, logD} from "./Log";
+import {assert} from "./Log";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
@@ -461,14 +461,19 @@ export function matToColorGrid(mat: Mat): Grid<Color> {
 
 export function matDataTo2DArray(mat: Mat): number[][] {
     assert(mat.channels === 1, `Mat has more than 1 channel`, arguments, matDataTo2DArray)
+    const height: number = mat.rows
+    const width: number = mat.cols
+    const flatArray = new Uint8Array(mat.getData())
+
     const result: number[][] = []
-    for (let row = 0; row < mat.rows; row++) {
+    for (let y = 0; y < height; y++) {
         result.push([])
-        for (let col = 0; col < mat.cols; col++) {
-            result[row].push(mat.at(row, col))
+        for (let x = 0; x < width; x++) {
+            result[y].push(flatArray[(width * y) + x])
         }
     }
-    logD(`Converted mat of rows: ${mat.rows} and cols: ${mat.cols} ` +
-        `to 2DArray of height: ${result.length} and width: ${result[0].length}`)
+    assert(result.length === height && result[0].length === width,
+        `Converted Array has incorrect dimensions! Expecting ${width}x${height},` +
+        ` found ${result[0].length}x${result.length}`, arguments, matDataTo2DArray)
     return result
 }

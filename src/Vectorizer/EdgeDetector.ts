@@ -21,16 +21,14 @@ export const EdgeDetector = {
         assert(minThresholdStart <= maxThresholdStart && iterations > 0,
             `EdgeDetector.loopOnImage thresholds are not valid!`,
             arguments, this.loopOnImage)
-        return from(0).to(iterations).map(iteration => {
-            logD(iteration)
-            return this.onImage({
+        return from(0).to(iterations).map(iteration =>
+            this.onImage({
                 imagePath: imagePath,
                 minThreshold: minThresholdStart + iteration,
                 maxThreshold: maxThresholdStart + iteration,
                 apertureSize: apertureSize,
                 L2gradient: L2gradient
-            })
-        }).reverse()
+            })).reverse()
     },
 
     // TODO try to convert to GPU
@@ -51,7 +49,7 @@ export const EdgeDetector = {
         return result
     },
 
-    averageEdgesGPU: function (mats: number[][][], chunkSize: number = 20) {
+    averageEdgesGPU(mats: number[][][], chunkSize: number = 20) {
         const totalMats: number = mats.length
         const height: number = mats[0].length
         const width: number = mats[0][0].length
@@ -73,7 +71,7 @@ export const EdgeDetector = {
         const kernel: IKernelRunShortcut = gpu.createKernel(kernelFunc)
             .setOutput([width, height])
 
-        let chunksNumber = (totalMats / chunkSize).floor()
+        const chunksNumber = (totalMats / chunkSize).floor()
 
         const matsChunks: number[][][][] = []
 
