@@ -3,7 +3,6 @@
     "module": "CommonJS",
     "target": "ESNext",
     "sourceMap": true,
-    "watch": true,
     "alwaysStrict": true,
     "strict": true,
     "lib": [

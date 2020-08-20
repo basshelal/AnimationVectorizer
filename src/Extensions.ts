@@ -9,6 +9,8 @@ declare global {
 
         lastIndex(): number
 
+        last(): T
+
         remove(element: T): void
 
         isEmpty(): boolean
@@ -64,6 +66,11 @@ function _array() {
     if (!Array.prototype.lastIndex)
         Array.prototype.lastIndex = function (this: Array<any>): number {
             return this.length - 1
+        }
+
+    if (!Array.prototype.last)
+        Array.prototype.last = function <T>(this: Array<T>): T {
+            return this[this.length - 1]
         }
 
     if (!Array.prototype.remove)

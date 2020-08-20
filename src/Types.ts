@@ -28,11 +28,39 @@ export class Point {
 
         return isIn
     }
+
+    shifted(direction: Direction, amount: number = 1): Point {
+        const x = this.x
+        const y = this.y
+        const a = amount
+        switch (direction) {
+            case "N":
+                return new Point({x: x, y: y - a})
+            case "NE":
+                return new Point({x: x + a, y: y - a})
+            case "E":
+                return new Point({x: x + a, y: y})
+            case "SE":
+                return new Point({x: x + a, y: y + a})
+            case "S":
+                return new Point({x: x, y: y + a})
+            case "SW":
+                return new Point({x: x - a, y: y + a})
+            case "W":
+                return new Point({x: x - a, y: y})
+            case "NW":
+                return new Point({x: x - a, y: y - a})
+            default :
+                throw new Error(`Could not shift for direction ${direction} by amount ${a} in point ${this}`)
+        }
+    }
 }
 
 export type SVGPathCommand = "M" | "L" | "H" | "V" | "Z" | "C" | "S" | "Q" | "T" | "A"
 
-export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW" | null
+export type Direction = "N" | "NE" | "E" | "SE" | "S" | "SW" | "W" | "NW" | null
+
+export const AllDirections: Array<Direction> = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
 
 export class BoundingBox {
     x1: number
@@ -76,7 +104,6 @@ export class IndexedImage {
         return this.height * this.width
     }
 }
-
 
 // TODO Technically this is also a representation of Pixel, should we change its name to that?
 export class Color {
@@ -319,16 +346,88 @@ export class IndexedColor extends Color {
     public x: number
     public y: number
 
-    constructor(index: { x: number, y: number }, color?: { r: number, g: number, b: number, a?: number }) {
-        super(color)
-        this.x = index.x
-        this.y = index.y
+    static NULL = new IndexedColor({x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+
+    constructor({x, y, r, g, b, a}: { x: number, y: number, r: number, g: number, b: number, a?: number }) {
+        super({r, g, b, a})
+        this.x = x
+        this.y = y
+    }
+
+    static fromColor({x, y}: { x: number, y: number }, color: Color): IndexedColor {
+        return new IndexedColor({
+            x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
+        })
     }
 }
 
+export const NO_ID = -1
+
 export class PathIndexedColor extends IndexedColor {
-    hasPath: boolean = false
-    // pathId: number // associate this point to a single Path
+
+    static NULL = new PathIndexedColor({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+    pathId: number = NO_ID
+
+    constructor({pathId, x, y, r, g, b, a}: {
+        pathId: number, x: number, y: number,
+        r: number, g: number, b: number, a?: number
+    }) {
+        super({x, y, r, g, b, a})
+        this.pathId = pathId
+    }
+
+    get hasPath(): boolean {
+        return this.pathId !== NO_ID
+    }
+
+    get isNull(): boolean {
+        return this === PathIndexedColor.NULL
+    }
+
+    get isNotNull(): boolean {
+        return this !== PathIndexedColor.NULL
+    }
+
+    static fromColor({pathId = NO_ID, x, y}: { pathId?: number, x: number, y: number }, color: Color): PathIndexedColor {
+        return new PathIndexedColor({
+            pathId: pathId, x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
+        })
+    }
+
+    static fromIndexedColor(pathId: number, indexedColor: IndexedColor): PathIndexedColor {
+        return PathIndexedColor.fromColor({pathId: pathId, x: indexedColor.x, y: indexedColor.y}, indexedColor)
+    }
+}
+
+export class Path {
+
+    static NULL = new Path({id: NO_ID, points: []})
+    id: number = NO_ID
+    points: Array<PathIndexedColor> = []
+
+    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathIndexedColor> }) {
+        this.id = id
+        this.points = points
+    }
+
+    get isEmpty(): boolean {
+        return this.points.isEmpty()
+    }
+
+    get isComplete(): boolean {
+        return false // TODO basically if this path forms a polygon
+    }
+
+    hasPoint(point: PathIndexedColor): boolean {
+        return this.points.contains(point)
+    }
+
+    add(point: PathIndexedColor) {
+        if (!this.hasPoint(point)) {
+            this.points.push(point)
+            point.pathId = this.id
+        }
+    }
 }
 
 export function matToColorGrid(mat: Mat): Grid<Color> {
