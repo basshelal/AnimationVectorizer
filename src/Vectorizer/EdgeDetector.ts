@@ -51,21 +51,27 @@ export const EdgeDetector = {
         return result
     },
 
-    averageEdgesGPU(mats: number[][][], chunkSize: number = 20) {
+    averageEdgesGPU: function (mats: number[][][], chunkSize: number = 20) {
+        const totalMats: number = mats.length
         const height: number = mats[0].length
         const width: number = mats[0][0].length
-        const totalMats: number = mats.length
+
+        logD(`totalMats: ${totalMats}`)
+        logD(`height: ${height}`)
+        logD(`width: ${width}`)
 
         const kernelFunc: KernelFunction = function (mats: number[][][], length: number): number {
+            const x = this.thread.x
+            const y = this.thread.y!!
             let sum = 0
             for (let i = 0; i < length; i++) {
-                sum += mats[i][this.thread.x][this.thread.y!!]
+                sum += mats[i][y][x]
             }
             return sum / length
         }
 
         const kernel: IKernelRunShortcut = gpu.createKernel(kernelFunc)
-            .setOutput([height, width])
+            .setOutput([width, height])
 
         let chunksNumber = (totalMats / chunkSize).floor()
 
@@ -85,7 +91,6 @@ export const EdgeDetector = {
         // Remainder mats in the last chunks
 
         logD(`Remaining ${totalMats % chunkSize}`)
-        logD(`Remaining ${totalMats - (chunksNumber * chunkSize)}`)
 
         if (totalMats % chunkSize !== 0) {
             const lastChunk: number[][][] = []
@@ -99,8 +104,8 @@ export const EdgeDetector = {
 
         const averagedMats: number[][][] = []
 
-        matsChunks.forEach(mat => {
-            averagedMats.push(kernel(mat, mat.length) as number[][])
+        matsChunks.forEach((chunk: number[][][]) => {
+            averagedMats.push(kernel(chunk, chunk.length) as number[][])
         })
 
         // What if averagedMats is still too big??
@@ -108,22 +113,22 @@ export const EdgeDetector = {
 
         const finalAveragedMat: number[][] = kernel(averagedMats, averagedMats.length) as number[][]
 
-        console.log(finalAveragedMat.length)
-        console.log(finalAveragedMat[0].length)
+        logD(`Averaged Height: ${finalAveragedMat.length}`)
+        logD(`Averaged Width: ${finalAveragedMat[0].length}`)
 
         const final: number[][][] = Array.init(finalAveragedMat.length, (yIndex) =>
             Array.init(finalAveragedMat[yIndex].length, (xIndex) =>
                 Array.init(1, () => finalAveragedMat[yIndex][xIndex]))
         )
 
-        console.log(final.length)
-        console.log(final[0].length)
-        console.log(final[0][0].length)
+        logD(`Final Height: ${final.length}`)
+        logD(`Final Width: ${final[0].length}`)
 
-        return new Mat(final, CV_8UC1)
+        const result = new Mat(final, CV_8UC1)
+
+        logD(`Mat cols: ${result.cols}`)
+        logD(`Mat rows: ${result.rows}`)
+
+        return result
     },
-
-    averageEdgesGPUArray(mats: number[][][], chunkSize: number = 20) {
-
-    }
 }

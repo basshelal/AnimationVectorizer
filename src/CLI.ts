@@ -1,12 +1,12 @@
 import extensions from "./Extensions";
-import {logD} from "./Log";
+import {logD, logW} from "./Log";
 import {json, now} from "./Utils";
 import moment, {duration} from "moment";
 import {imread, imwrite, Mat} from "opencv4nodejs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
+import {matDataTo2DArray} from "./Types";
 import {PathScanner} from "./Vectorizer/PathScanner";
 import {writeFileSync} from "fs";
-import {matDataTo2DArray} from "./Types";
 
 extensions()
 
@@ -36,7 +36,7 @@ async function test() {
         return matDataTo2DArray(it)
     })
 
-    logD(`Running on GPU...`)
+    logW(`Running on GPU...`)
 
     const avg = EdgeDetector.averageEdgesGPU(mats)
     imwrite(`./out/test/avg.png`, avg)

@@ -1,6 +1,6 @@
 import {from, json} from "./Utils";
 import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
-import {assert} from "./Log";
+import {assert, logD} from "./Log";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
@@ -461,5 +461,14 @@ export function matToColorGrid(mat: Mat): Grid<Color> {
 
 export function matDataTo2DArray(mat: Mat): number[][] {
     assert(mat.channels === 1, `Mat has more than 1 channel`, arguments, matDataTo2DArray)
-    return Array.init(mat.cols, (y) => Array.init(mat.rows, (x) => mat.at(x, y)))
+    const result: number[][] = []
+    for (let row = 0; row < mat.rows; row++) {
+        result.push([])
+        for (let col = 0; col < mat.cols; col++) {
+            result[row].push(mat.at(row, col))
+        }
+    }
+    logD(`Converted mat of rows: ${mat.rows} and cols: ${mat.cols} ` +
+        `to 2DArray of height: ${result.length} and width: ${result[0].length}`)
+    return result
 }
