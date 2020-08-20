@@ -2,7 +2,7 @@ import extensions from "./Extensions";
 import {logD, logW, writeLog} from "./Log";
 import {now} from "./Utils";
 import moment, {duration} from "moment";
-import {imread, imwrite, Mat} from "opencv4nodejs";
+import {imwrite, Mat} from "opencv4nodejs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
 import {matDataTo2DArray} from "./Types";
 import {PathScanner} from "./Vectorizer/PathScanner";
@@ -14,38 +14,40 @@ async function test() {
     const start = moment()
     logD(`Starting at ${now()}`)
 
-    const totalMemoryGB = (v8.getHeapStatistics().total_available_size / 1024 / 1024 / 1024)
+    const totalMemoryGB = (v8.getHeapStatistics().total_available_size / (1024).pow(3))
         .toFixed(2)
 
-    logW(`Running Node with ${totalMemoryGB} GB of available memory...`)
+    logW(`Running NodeJS with ${totalMemoryGB} GB of available memory...`)
 
-    logD(`Looping...`)
+    logD(`Edge Detection looping...`)
 
     const images: Array<Mat> = EdgeDetector.loopOnImage({
         imagePath: "./out/frames/1.png",
-        iterations: 500,
-        minThresholdStart: 0,
-        maxThresholdStart: 100,
+        iterations: 250, // 500
+        minThresholdStart: 50, // 0
+        maxThresholdStart: 100, // 50 but 30 is also OK
         L2gradient: false,
         apertureSize: 3
     })
 
-    logD(`Writing...`)
+    logD(`Writing edge detection images...`)
 
     images.forEach((image, i) => imwrite(`./out/test/${i}.png`, image))
 
-    logD(`Converting...`)
+    logD(`Converting matrices to number arrays...`)
 
     const mats = images.map((mat) => matDataTo2DArray(mat))
 
-    logW(`Running on GPU...`)
+    logW(`Running on GPU averaging edge detection images...`)
 
     const avg = EdgeDetector.averageEdgesGPU(mats, 50)
     imwrite(`./out/test/avg.png`, avg)
 
-    const img = imread(`./out/test/avg.png`)
+    logD(`Scanning paths...`)
 
     const paths = PathScanner.pathsFromEdgesMat(avg)
+
+    logD(`Writing paths...`)
 
     writeLog(paths, `paths`)
 
