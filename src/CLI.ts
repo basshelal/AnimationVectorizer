@@ -4,15 +4,18 @@ import {now} from "./Utils";
 import moment, {duration} from "moment";
 import {imwrite, Mat} from "opencv4nodejs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
-import {matDataTo2DArray} from "./Types";
+import {ImageData, matDataTo2DArray, matToColorGrid} from "./Types";
 import {PathScanner} from "./Vectorizer/PathScanner";
 import * as v8 from "v8";
+import {writeImage} from "./PNG";
 
 extensions()
 
 async function test() {
     const start = moment()
     logD(`Starting at ${now()}`)
+
+    logW(v8.getHeapStatistics().total_available_size)
 
     const totalMemoryGB = (v8.getHeapStatistics().total_available_size / (1024).pow(3))
         .toFixed(2)
@@ -23,9 +26,9 @@ async function test() {
 
     const images: Array<Mat> = EdgeDetector.loopOnImage({
         imagePath: "./out/frames/1.png",
-        iterations: 250, // 500
-        minThresholdStart: 50, // 0
-        maxThresholdStart: 100, // 50 but 30 is also OK
+        iterations: 500, // 500
+        minThresholdStart: 0, // 0
+        maxThresholdStart: 50, // 50 but 30 is also OK
         L2gradient: false,
         apertureSize: 3
     })
@@ -50,6 +53,12 @@ async function test() {
     logD(`Writing paths...`)
 
     writeLog(paths, `paths`)
+
+    logD(`Writing PNG Image...`)
+
+    const img = ImageData.fromPixelsGrid(matToColorGrid(avg))
+
+    writeImage(`./out/test/img.png`, img)
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +

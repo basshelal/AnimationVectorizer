@@ -1,6 +1,6 @@
 import {from, json} from "./Utils";
 import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
-import {assert} from "./Log";
+import {assert, logD} from "./Log";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
@@ -30,130 +30,9 @@ export class Point {
     }
 }
 
-export class SegmentPoint extends Point {
-    direction: Direction
-
-    constructor({x, y, direction}: { x: number, y: number, direction: Direction }) {
-        super({x, y})
-        this.direction = direction
-    }
-}
-
-export class Path {
-    boundingBox: BoundingBox
-    holeChildren: Array<number> = []
-    isHolePath: boolean = false
-
-    constructor({boundingBox, holeChildren, isHolePath}: {
-        boundingBox: BoundingBox,
-        holeChildren: Array<number>,
-        isHolePath: boolean
-    }) {
-        this.boundingBox = boundingBox;
-        this.holeChildren = holeChildren;
-        this.isHolePath = isHolePath;
-    }
-}
-
-export class PointPath extends Path {
-    points: Array<SegmentPoint> = []
-
-    constructor({boundingBox, holeChildren, isHolePath, points}: {
-        boundingBox: BoundingBox,
-        holeChildren: Array<number>,
-        isHolePath: boolean,
-        points: Array<SegmentPoint>
-    }) {
-        super({boundingBox, holeChildren, isHolePath})
-        this.points = points
-    }
-
-    static fromPath(path: Path, points: Array<SegmentPoint> = []): PointPath {
-        return new PointPath({
-            boundingBox: path.boundingBox,
-            holeChildren: path.holeChildren,
-            isHolePath: path.isHolePath,
-            points: points
-        })
-    }
-}
-
-export class SegmentPath extends Path {
-    segments: Array<Segment> = []
-
-    constructor({boundingBox, holeChildren, isHolePath, segments}: {
-        boundingBox: BoundingBox,
-        holeChildren: Array<number>,
-        isHolePath: boolean,
-        segments: Array<Segment>
-    }) {
-        super({boundingBox, holeChildren, isHolePath})
-        this.segments = segments
-    }
-
-    static fromPath(path: Path, segments: Array<Segment> = []): SegmentPath {
-        return new SegmentPath({
-            boundingBox: path.boundingBox,
-            holeChildren: path.holeChildren,
-            isHolePath: path.isHolePath,
-            segments: segments
-        })
-    }
-}
-
 export type SVGPathCommand = "M" | "L" | "H" | "V" | "Z" | "C" | "S" | "Q" | "T" | "A"
 
-export class Segment {
-    type: SVGPathCommand
-    x1: number
-    y1: number
-    x2: number
-    y2: number
-    x3: number | null
-    y3: number | null
-
-    constructor({type, x1, y1, x2, y2, x3, y3}: {
-        type: SVGPathCommand, x1: number, y1: number, x2: number, y2: number, x3?: number | null, y3?: number | null
-    }) {
-        this.type = type
-        this.x1 = x1
-        this.y1 = y1
-        this.x2 = x2
-        this.y2 = y2
-        this.x3 = x3 ? x3 : null
-        this.y3 = y3 ? y3 : null
-    }
-
-    get has3(): boolean {
-        return this.x3 !== null && this.y3 !== null
-    }
-}
-
 export type Direction = "N" | "S" | "E" | "W" | "NE" | "NW" | "SE" | "SW" | null
-
-// Edge node types ( ▓: this layer or 1; ░: not this layer or 0 )
-// 12  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓  ░░  ▓░  ░▓  ▓▓
-// 48  ░░  ░░  ░░  ░░  ▓░  ▓░  ▓░  ▓░  ░▓  ░▓  ░▓  ░▓  ▓▓  ▓▓  ▓▓  ▓▓
-//     0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15
-// order is top left (1), top right (2), bottom left (4), bottom right (8)
-const EdgeNodeTypeList = {
-    0: [0, 0, 0, 0],
-    1: [1, 0, 0, 0],
-    2: [0, 2, 0, 0],
-    3: [1, 2, 0, 0],
-    4: [0, 0, 4, 0],
-    5: [1, 0, 4, 0],
-    6: [0, 2, 4, 0],
-    7: [1, 2, 4, 0],
-    8: [0, 0, 0, 8],
-    9: [1, 0, 0, 8],
-    10: [0, 2, 0, 8],
-    11: [1, 2, 0, 8],
-    12: [0, 0, 4, 8],
-    13: [1, 0, 4, 8],
-    14: [0, 2, 4, 8],
-    15: [1, 2, 4, 8]
-}
 
 export class BoundingBox {
     x1: number
@@ -198,24 +77,6 @@ export class IndexedImage {
     }
 }
 
-export class TraceData {
-    public layers: Grid<SegmentPath>
-    public palette: Palette
-    public width: number
-    public height: number
-
-    constructor({layers, palette, width, height}: {
-        layers: Grid<SegmentPath>,
-        palette: Palette,
-        width: number,
-        height: number
-    }) {
-        this.layers = layers
-        this.palette = palette
-        this.width = width
-        this.height = height
-    }
-}
 
 // TODO Technically this is also a representation of Pixel, should we change its name to that?
 export class Color {
@@ -284,6 +145,10 @@ export class Color {
 
     get isZero(): boolean {
         return this.r === 0 && this.g === 0 && this.b === 0
+    }
+
+    get isNotZero(): boolean {
+        return !this.isZero
     }
 
     clone(): Color {
@@ -376,6 +241,27 @@ export class ImageData {
         })
     }
 
+    static fromPixelsGrid(grid: Grid<Color>): ImageData {
+        const height = grid.length
+        const width = grid[0].length
+        logD(`height: ${height}, width: ${width} buffer size: ${height * width * 4}`)
+        const buffer = Buffer.alloc(height * width * 4)
+        grid.forEach((row, y) => {
+            row.forEach((color, x) => {
+                const index = (width * y) + x
+                buffer[index * 4] = color.r
+                buffer[index * 4 + 1] = color.g
+                buffer[index * 4 + 2] = color.b
+                buffer[index * 4 + 3] = color.a
+            })
+        })
+        return new ImageData({
+            data: buffer,
+            width: width,
+            height: height
+        })
+    }
+
     static fromIndexedImage(indexedImage: IndexedImage): ImageData {
         const flat: Array<number> = []
         indexedImage.grid.forEach(array => array.forEach(num => flat.push(num)))
@@ -440,8 +326,15 @@ export class IndexedColor extends Color {
     }
 }
 
+export class PathIndexedColor extends IndexedColor {
+    hasPath: boolean = false
+    // pathId: number // associate this point to a single Path
+}
+
 export function matToColorGrid(mat: Mat): Grid<Color> {
-    const result: Grid<Color> = Array.init(mat.cols, () => Array.init(mat.rows, () => new Color()))
+    const height: number = mat.rows
+    const width: number = mat.cols
+    const result: Grid<Color> = Array.init(height, () => Array.init(width, () => new Color()))
     let converted: Mat
     if (mat.channels === 1) {
         converted = mat.cvtColor(COLOR_GRAY2RGB).convertTo(CV_8UC3)
@@ -456,6 +349,9 @@ export function matToColorGrid(mat: Mat): Grid<Color> {
             result[y][x] = new Color({r: value[0], g: value[1], b: value[2]})
         })
     })
+    assert(result.length === height && result[0].length === width,
+        `Converted Grid has incorrect dimensions! Expecting ${width}x${height},` +
+        ` found ${result[0].length}x${result.length}`, arguments, matToColorGrid)
     return result
 }
 

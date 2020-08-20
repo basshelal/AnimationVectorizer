@@ -37,7 +37,7 @@ export const EdgeDetector = {
             }))
     },
 
-    averageEdgesGPU(mats: number[][][], chunkSize: number = 20) {
+    averageEdgesGPU(mats: number[][][], chunkSize: number = 20): Mat {
         const totalMats: number = mats.length
         const height: number = mats[0].length
         const width: number = mats[0][0].length

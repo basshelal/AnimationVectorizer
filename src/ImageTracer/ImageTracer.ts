@@ -3,20 +3,7 @@
 import {Options} from "./Options";
 import {floor, from, random} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {
-    BoundingBox,
-    Color,
-    Direction,
-    Grid,
-    ImageData,
-    IndexedImage,
-    Palette,
-    PointPath,
-    Segment,
-    SegmentPath,
-    SegmentPoint,
-    TraceData
-} from "../Types";
+import {BoundingBox, Color, Direction, Grid, ImageData, IndexedImage, Palette, Point, SVGPathCommand} from "../Types";
 import {logD, logW, writeLog, writeLogImage, writePixels} from "../Log";
 
 let iterationCount: number = 0
@@ -654,3 +641,120 @@ function getSvgString(traceData: TraceData, options: Options): string {
 
     return svg
 }
+
+class ImageTracerPath {
+    boundingBox: BoundingBox
+    holeChildren: Array<number> = []
+    isHolePath: boolean = false
+
+    constructor({boundingBox, holeChildren, isHolePath}: {
+        boundingBox: BoundingBox,
+        holeChildren: Array<number>,
+        isHolePath: boolean
+    }) {
+        this.boundingBox = boundingBox;
+        this.holeChildren = holeChildren;
+        this.isHolePath = isHolePath;
+    }
+}
+
+class SegmentPoint extends Point {
+    direction: Direction
+
+    constructor({x, y, direction}: { x: number, y: number, direction: Direction }) {
+        super({x, y})
+        this.direction = direction
+    }
+}
+
+class PointPath extends ImageTracerPath {
+    points: Array<SegmentPoint> = []
+
+    constructor({boundingBox, holeChildren, isHolePath, points}: {
+        boundingBox: BoundingBox,
+        holeChildren: Array<number>,
+        isHolePath: boolean,
+        points: Array<SegmentPoint>
+    }) {
+        super({boundingBox, holeChildren, isHolePath})
+        this.points = points
+    }
+
+    static fromPath(path: ImageTracerPath, points: Array<SegmentPoint> = []): PointPath {
+        return new PointPath({
+            boundingBox: path.boundingBox,
+            holeChildren: path.holeChildren,
+            isHolePath: path.isHolePath,
+            points: points
+        })
+    }
+}
+
+class SegmentPath extends ImageTracerPath {
+    segments: Array<Segment> = []
+
+    constructor({boundingBox, holeChildren, isHolePath, segments}: {
+        boundingBox: BoundingBox,
+        holeChildren: Array<number>,
+        isHolePath: boolean,
+        segments: Array<Segment>
+    }) {
+        super({boundingBox, holeChildren, isHolePath})
+        this.segments = segments
+    }
+
+    static fromPath(path: ImageTracerPath, segments: Array<Segment> = []): SegmentPath {
+        return new SegmentPath({
+            boundingBox: path.boundingBox,
+            holeChildren: path.holeChildren,
+            isHolePath: path.isHolePath,
+            segments: segments
+        })
+    }
+}
+
+class TraceData {
+    public layers: Grid<SegmentPath>
+    public palette: Palette
+    public width: number
+    public height: number
+
+    constructor({layers, palette, width, height}: {
+        layers: Grid<SegmentPath>,
+        palette: Palette,
+        width: number,
+        height: number
+    }) {
+        this.layers = layers
+        this.palette = palette
+        this.width = width
+        this.height = height
+    }
+}
+
+class Segment {
+    type: SVGPathCommand
+    x1: number
+    y1: number
+    x2: number
+    y2: number
+    x3: number | null
+    y3: number | null
+
+    constructor({type, x1, y1, x2, y2, x3, y3}: {
+        type: SVGPathCommand, x1: number, y1: number, x2: number, y2: number, x3?: number | null, y3?: number | null
+    }) {
+        this.type = type
+        this.x1 = x1
+        this.y1 = y1
+        this.x2 = x2
+        this.y2 = y2
+        this.x3 = x3 ? x3 : null
+        this.y3 = y3 ? y3 : null
+    }
+
+    get has3(): boolean {
+        return this.x3 !== null && this.y3 !== null
+    }
+}
+
