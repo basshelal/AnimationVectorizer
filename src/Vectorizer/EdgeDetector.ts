@@ -1,4 +1,4 @@
-import {imread, Mat} from "opencv4nodejs";
+import {CV_8UC1, imread, Mat} from "opencv4nodejs";
 import {from} from "../Utils";
 import {assert, logD} from "../Log";
 import {IKernelRunShortcut, KernelFunction} from "gpu.js";
@@ -51,9 +51,9 @@ export const EdgeDetector = {
         return result
     },
 
-    averageEdgesGPU(mats: Array<Mat>) {
-        const height: number = mats[0].cols
-        const width: number = mats[0].rows
+    averageEdgesGPU(mats: number[][][], chunkSize: number = 20) {
+        const height: number = mats[0].length
+        const width: number = mats[0][0].length
         const totalMats: number = mats.length
 
         const kernelFunc: KernelFunction = function (mats: number[][][], length: number): number {
@@ -67,32 +67,63 @@ export const EdgeDetector = {
         const kernel: IKernelRunShortcut = gpu.createKernel(kernelFunc)
             .setOutput([height, width])
 
+        let chunksNumber = (totalMats / chunkSize).floor()
 
-        let chunksNumber = totalMats / 20 // Each chunk has 20 mats
-        let rem = totalMats % 20 // number of mats in last chunk
+        const matsChunks: number[][][][] = []
 
+        from(0).to(chunksNumber).forEach(chunk => {
+            const matChunk: number[][][] = []
+            from(0).to(chunkSize).forEach(mat => {
+                const index = (chunk * chunkSize) + mat
+                matChunk.push(mats[index])
+            })
+            matsChunks.push(matChunk)
+        })
 
-        // TODO tired... must sleep...
+        logD(`Chunks before remainder are ${matsChunks.length}`)
 
+        // Remainder mats in the last chunks
 
-        const results: number[][][] = []
+        logD(`Remaining ${totalMats % chunkSize}`)
+        logD(`Remaining ${totalMats - (chunksNumber * chunkSize)}`)
 
-        /*
-         * You have to split the input into manageable chunks (10 or 20 is good),
-         * do this by running the kernel function on each chunk of the input
-         * then you can rerun it on all the results of those
-         */
-
-        for (let i = 0; i < 5; i++) {
-            const result: number[][] = kernel([[[]]], 20) as number[][]
-            results.push(result)
-
-            //  console.log(result)
-
+        if (totalMats % chunkSize !== 0) {
+            const lastChunk: number[][][] = []
+            from(chunksNumber * chunkSize).to(totalMats).forEach(index => {
+                lastChunk.push(mats[index])
+            })
+            matsChunks.push(lastChunk)
         }
 
-        const result: number[][] = kernel(results, 10) as number[][]
+        logD(`Chunks after remainder are ${matsChunks.length}`)
 
-        console.log(result)
+        const averagedMats: number[][][] = []
+
+        matsChunks.forEach(mat => {
+            averagedMats.push(kernel(mat, mat.length) as number[][])
+        })
+
+        // What if averagedMats is still too big??
+        // Then we need to recurse probably :/
+
+        const finalAveragedMat: number[][] = kernel(averagedMats, averagedMats.length) as number[][]
+
+        console.log(finalAveragedMat.length)
+        console.log(finalAveragedMat[0].length)
+
+        const final: number[][][] = Array.init(finalAveragedMat.length, (yIndex) =>
+            Array.init(finalAveragedMat[yIndex].length, (xIndex) =>
+                Array.init(1, () => finalAveragedMat[yIndex][xIndex]))
+        )
+
+        console.log(final.length)
+        console.log(final[0].length)
+        console.log(final[0][0].length)
+
+        return new Mat(final, CV_8UC1)
+    },
+
+    averageEdgesGPUArray(mats: number[][][], chunkSize: number = 20) {
+
     }
 }
