@@ -106,8 +106,11 @@ export const EdgeDetector = {
             averagedMats.push(kernel(chunk, chunk.length) as number[][])
         })
 
-        // What if averagedMats is still too big??
-        // Then we need to recurse probably :/
+        // TODO What if averagedMats is still too big??
+        //  Then we need to recurse probably :/
+        //  This can happen and it seems will only show a GPUJs internal error
+
+        logD(`Averaged Mats: ${averagedMats.length}`)
 
         const finalAveragedMat: number[][] = kernel(averagedMats, averagedMats.length) as number[][]
 

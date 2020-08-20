@@ -1,12 +1,12 @@
 import extensions from "./Extensions";
-import {logD, logW} from "./Log";
-import {json, now} from "./Utils";
+import {logD, logW, writeLog} from "./Log";
+import {now} from "./Utils";
 import moment, {duration} from "moment";
 import {imread, imwrite, Mat} from "opencv4nodejs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
 import {matDataTo2DArray} from "./Types";
 import {PathScanner} from "./Vectorizer/PathScanner";
-import {writeFileSync} from "fs";
+import * as v8 from "v8";
 
 extensions()
 
@@ -14,11 +14,16 @@ async function test() {
     const start = moment()
     logD(`Starting at ${now()}`)
 
+    const totalMemoryGB = (v8.getHeapStatistics().total_available_size / 1024 / 1024 / 1024)
+        .toFixed(2)
+
+    logW(`Running Node with ${totalMemoryGB} GB of available memory...`)
+
     logD(`Looping...`)
 
     const images: Array<Mat> = EdgeDetector.loopOnImage({
         imagePath: "./out/frames/1.png",
-        iterations: 300,
+        iterations: 500,
         minThresholdStart: 0,
         maxThresholdStart: 100,
         L2gradient: false,
@@ -35,14 +40,14 @@ async function test() {
 
     logW(`Running on GPU...`)
 
-    const avg = EdgeDetector.averageEdgesGPU(mats)
+    const avg = EdgeDetector.averageEdgesGPU(mats, 50)
     imwrite(`./out/test/avg.png`, avg)
 
     const img = imread(`./out/test/avg.png`)
 
     const paths = PathScanner.pathsFromEdgesMat(avg)
 
-    writeFileSync(`./paths.json`, json(paths, 1))
+    writeLog(paths, `paths`)
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +
