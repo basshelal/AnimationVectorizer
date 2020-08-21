@@ -4,10 +4,9 @@ import {now} from "./Utils";
 import moment, {duration} from "moment";
 import {imwrite, Mat} from "opencv4nodejs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
-import {ImageData, matDataTo2DArray, matToColorGrid} from "./Types";
+import {matDataTo2DArray} from "./Types";
 import {PathScanner} from "./Vectorizer/PathScanner";
 import * as v8 from "v8";
-import {writeImage} from "./PNG";
 
 extensions()
 
@@ -48,17 +47,11 @@ async function test() {
 
     logD(`Scanning paths...`)
 
-    const paths = PathScanner.pathsFromEdgesMat(avg)
+    const paths = PathScanner.parsePaths(avg)
 
     logD(`Writing paths...`)
 
     writeLog(paths, `paths`)
-
-    logD(`Writing PNG Image...`)
-
-    const img = ImageData.fromPixelsGrid(matToColorGrid(avg))
-
-    writeImage(`./out/test/img.png`, img)
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +

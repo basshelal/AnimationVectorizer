@@ -1,7 +1,7 @@
 import {CV_8UC1, imread, Mat} from "opencv4nodejs";
 import {from} from "../Utils";
 import {assert, logD} from "../Log";
-import {IKernelRunShortcut, KernelFunction} from "gpu.js";
+import {IKernelRunShortcut} from "gpu.js";
 import {gpu} from "../GPU";
 
 export const EdgeDetector = {
@@ -46,7 +46,7 @@ export const EdgeDetector = {
             `height: ${height}\n` +
             `width: ${width}`)
 
-        const kernelFunc: KernelFunction = function (mats: number[][][], length: number): number {
+        const kernel: IKernelRunShortcut = gpu.createKernel(function (mats: number[][][], length: number): number {
             const x = this.thread.x
             const y = this.thread.y!!
             let sum = 0
@@ -54,10 +54,7 @@ export const EdgeDetector = {
                 sum += mats[i][y][x]
             }
             return sum / length
-        }
-
-        const kernel: IKernelRunShortcut = gpu.createKernel(kernelFunc)
-            .setOutput([width, height])
+        }).setOutput([width, height])
 
         const chunksNumber = (totalMats / chunkSize).floor()
 

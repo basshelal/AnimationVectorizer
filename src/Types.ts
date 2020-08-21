@@ -404,6 +404,7 @@ export class Path {
     static NULL = new Path({id: NO_ID, points: []})
     id: number = NO_ID
     points: Array<PathIndexedColor> = []
+    isComplete: boolean = false
 
     constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathIndexedColor> }) {
         this.id = id
@@ -412,10 +413,6 @@ export class Path {
 
     get isEmpty(): boolean {
         return this.points.isEmpty()
-    }
-
-    get isComplete(): boolean {
-        return false // TODO basically if this path forms a polygon
     }
 
     hasPoint(point: PathIndexedColor): boolean {
