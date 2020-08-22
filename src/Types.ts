@@ -1,4 +1,4 @@
-import {from, json} from "./Utils";
+import {from, json, random} from "./Utils";
 import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
 import {assert, logD} from "./Log";
 
@@ -201,6 +201,15 @@ export class Color {
         this.g = this.g.round()
         this.b = this.b.round()
         this.a = this.a.round()
+    }
+
+    static random(includeAlpha: boolean = false): Color {
+        return new Color({
+            r: (random() * 255).roundToDec(0),
+            g: (random() * 255).roundToDec(0),
+            b: (random() * 255).roundToDec(0),
+            a: includeAlpha ? (random() * 255).roundToDec(0) : 255
+        })
     }
 }
 

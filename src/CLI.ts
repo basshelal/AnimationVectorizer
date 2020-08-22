@@ -4,7 +4,7 @@ import {now} from "./Utils";
 import moment, {duration} from "moment";
 import {imwrite, Mat} from "opencv4nodejs";
 import {EdgeDetector} from "./Vectorizer/EdgeDetector";
-import {ImageData, matDataTo2DArray} from "./Types";
+import {Color, ImageData, matDataTo2DArray} from "./Types";
 import {PathScanner} from "./Vectorizer/PathScanner";
 import * as v8 from "v8";
 import {writeImage} from "./PNG";
@@ -52,7 +52,15 @@ async function test() {
 
     writeLog(paths.valuesArray(), `paths`)
 
-    const pathsColorGrid = PathScanner.pathsToColorGrid(paths.valuesArray(), avg.cols, avg.rows)
+    const randomized = paths.valuesArray()
+    randomized.forEach(path => {
+        const color = Color.random()
+        path.points.forEach(pathColor => {
+            pathColor.data = color
+        })
+    })
+
+    const pathsColorGrid = PathScanner.pathsToColorGrid(randomized, avg.cols, avg.rows)
 
     writeImage(`./out/test/paths.png`, ImageData.fromPixelsGrid(pathsColorGrid))
 
