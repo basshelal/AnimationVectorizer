@@ -428,8 +428,14 @@ export class Path {
         return this.points.contains(point)
     }
 
+    pointAt({x, y}: { x: number, y: number }): PathColor | null {
+        const result: PathColor | undefined =
+            this.points.find(pathColor => pathColor.x === x && pathColor.y === y)
+        return result ? result : null
+    }
+
     add(pathColor: PathColor) {
-        if (!this.hasPoint(pathColor)) {
+        if (!this.hasPoint(pathColor) && !pathColor.hasPath) {
             this.points.push(pathColor)
             pathColor.pathId = this.id
         }
