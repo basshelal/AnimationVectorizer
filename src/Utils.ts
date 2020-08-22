@@ -109,3 +109,4 @@ export function from(from: number) {
     }
 }
 
+export type NumberObject = { it: number }
