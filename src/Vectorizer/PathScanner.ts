@@ -1,11 +1,11 @@
 import {Mat} from "opencv4nodejs";
-import {AllDirections, Color, Direction, Grid, matToColorGrid, Path, PathColor, Point} from "../Types";
-import {assert, logD} from "../Log";
+import {AllDirections, Color, Direction, Grid, ID, matToColorGrid, Path, PathColor} from "../Types";
+import {logD} from "../Log";
 
 export const PathScanner = {
-    parsePaths(mat: Mat): Array<Path> {
+    parsePaths(mat: Mat): Map<number, Path> {
         const image: Grid<Color> = matToColorGrid(mat)
-        const paths: Array<Path> = []
+        const paths = new Map<ID, Path>()
 
         /* TODO
          *  We need to use a Map to store the Paths so that we can index it by path ID
@@ -30,59 +30,29 @@ export const PathScanner = {
             })
         )
 
-        let count = 0
+        const height = pointsGrid.length
+        const width = pointsGrid[0].length
 
-        pointsGrid.forEach((column: Array<PathColor>, y: number) => {
-            column.forEach((pathColor: PathColor, x: number) => {
+        pointsGrid.forEach((column: Array<PathColor>) => {
+            column.forEach((pathColor: PathColor) => {
                 if (pathColor.isNotNull) { // we are an edge pixel!
-                    count++
-                    assert(pathColor.x === x && pathColor.y === y,
-                        `Point y and x are not corresponding!`, arguments, this.parsePaths)
                     if (!pathColor.hasPath) { // Beginning a new path
-                        const currentPath = new Path({id: currentId++})
-                        currentPath.add(pathColor)
-                        // Start following path
-                        const followed = this.followPath(currentPath, pointsGrid)
-                        if (followed.isComplete) paths.push(followed)
+                        const newPath = new Path({id: currentId++})
+                        newPath.add(pathColor)
+                        const validNeighbors: Array<PathColor> =
+                            AllDirections.map((dir: Direction) => pathColor.point.shifted(dir, 1))
+                                .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
+                                .map(point => pointsGrid[point.y][point.x]) // map to the PathIndexedColor at that position
+                                .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero) // filter to only be valid colors // TODO what about image edges?
+                        newPath.addAll(validNeighbors)
+                        paths.set(newPath.id, newPath)
                     }
                 }
             })
         })
-        logD(`Count: ${count}`)
-        logD(`Paths: ${paths.length}`)
+        logD(`Paths: ${paths.size}`)
 
         return paths
-    },
-
-    followPath(path: Path, pointsGrid: Grid<PathColor>): Path {
-        if (path.isComplete) return path // base case
-
-        const height = pointsGrid.length
-        const width = pointsGrid[0].length
-
-        const last: PathColor = path.points.last()
-
-        const x = last.x
-        const y = last.y
-
-        const lastPoint = new Point({x: last.x, y: last.y})
-
-        const allShiftsBy1: Array<Point> = AllDirections.map((dir: Direction) => lastPoint.shifted(dir, 1))
-        const validShifts: Array<PathColor> = allShiftsBy1
-            .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height) // within bounds 0->max-1
-            .map(point => {
-                return pointsGrid[point.y][point.x]
-            }) // map to the PathIndexedColor at that position
-            .filter(pathColor => {
-                return pathColor.isNotNull && pathColor.isNotZero
-            }) // filter to only be valid colors // TODO what about image edges?
-
-        logD(`Valid shifts: ${validShifts.length}`)
-
-        path.addAll(validShifts)
-        path.isComplete = true
-
-        return path
     },
 
 }

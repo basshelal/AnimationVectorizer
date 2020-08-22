@@ -26,6 +26,14 @@ declare global {
         init<T>(length: number, initializer: ((index: number) => T)): Array<T>
     }
 
+    interface Map<K, V> {
+        entriesArray(): Array<{ k: K, v: V }>
+
+        keysArray(): Array<K>
+
+        valuesArray(): Array<V>
+    }
+
     interface Object {
 
         toJson(space: number): string
@@ -111,6 +119,27 @@ function _array() {
     })
 }
 
+function _map() {
+    protoExtension(Map, "entriesArray",
+        function <K, V>(this: Map<K, V>): Array<{ k: K, v: V }> {
+            const result: Array<{ k: K, v: V }> = []
+            for (let entry of this.entries()) result.push({k: entry[0], v: entry[1]})
+            return result
+        })
+    protoExtension(Map, "keysArray",
+        function <K>(this: Map<K, any>): Array<K> {
+            const result: Array<K> = []
+            for (let key of this.keys()) result.push(key)
+            return result
+        })
+    protoExtension(Map, "valuesArray",
+        function <V>(this: Map<any, V>): Array<V> {
+            const result: Array<V> = []
+            for (let value of this.values()) result.push(value)
+            return result
+        })
+}
+
 function _object() {
     protoExtension(Object, "toJson",
         function (this: Object, space: number = 0): string {
@@ -169,6 +198,7 @@ function _number() {
 
 export default function () {
     _array()
+    _map()
     _object()
     _number()
 }

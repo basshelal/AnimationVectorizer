@@ -108,10 +108,10 @@ export class IndexedImage {
 // TODO Technically this is also a representation of Pixel, should we change its name to that?
 export class Color {
 
-    public r: number
-    public g: number
-    public b: number
-    public a: number
+    r: number
+    g: number
+    b: number
+    a: number
 
     // TODO we should remove alpha at some point when we understand how everything works because we don't need it
 
@@ -205,10 +205,10 @@ export class Color {
 }
 
 export class ImageData {
-    public height: number
-    public width: number
-    public data: Buffer
-    public totalPixels: number
+    height: number
+    width: number
+    data: Buffer
+    totalPixels: number
 
     constructor({height, width, data}: { height: number, width: number, data: Buffer }) {
         this.height = height
@@ -343,8 +343,8 @@ export class ImageData {
 
 export class IndexedColor extends Color {
 
-    public x: number
-    public y: number
+    x: number
+    y: number
 
     static NULL = new IndexedColor({x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
 
@@ -359,14 +359,19 @@ export class IndexedColor extends Color {
             x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
         })
     }
+
+    get point(): Point {
+        return new Point({x: this.x, y: this.y})
+    }
 }
 
+export type ID = number // cuz readability
 export const NO_ID = -1
 
 export class PathColor extends IndexedColor {
 
     static NULL = new PathColor({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
-    pathId: number = NO_ID
+    pathId: ID = NO_ID
 
     constructor({pathId, x, y, r, g, b, a}: {
         pathId: number, x: number, y: number,
@@ -406,9 +411,9 @@ export class PathColor extends IndexedColor {
 export class Path {
 
     static NULL = new Path({id: NO_ID, points: []})
-    id: number = NO_ID
+    id: ID = NO_ID
     points: Array<PathColor> = []
-    isComplete: boolean = false
+    formsPolygon: boolean = false
 
     constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathColor> }) {
         this.id = id

@@ -49,7 +49,7 @@ async function test() {
 
     logD(`Writing paths...`)
 
-    writeLog(paths, `paths`)
+    writeLog(paths.valuesArray(), `paths`)
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +
