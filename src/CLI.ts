@@ -14,8 +14,6 @@ async function test() {
     const start = moment()
     logD(`Starting at ${now()}`)
 
-    logW(v8.getHeapStatistics().total_available_size)
-
     const totalMemoryGB = (v8.getHeapStatistics().total_available_size / (1024).pow(3))
         .toFixed(2)
 

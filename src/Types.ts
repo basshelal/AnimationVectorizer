@@ -363,9 +363,9 @@ export class IndexedColor extends Color {
 
 export const NO_ID = -1
 
-export class PathIndexedColor extends IndexedColor {
+export class PathColor extends IndexedColor {
 
-    static NULL = new PathIndexedColor({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+    static NULL = new PathColor({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
     pathId: number = NO_ID
 
     constructor({pathId, x, y, r, g, b, a}: {
@@ -381,21 +381,25 @@ export class PathIndexedColor extends IndexedColor {
     }
 
     get isNull(): boolean {
-        return this === PathIndexedColor.NULL
+        return this === PathColor.NULL
     }
 
     get isNotNull(): boolean {
-        return this !== PathIndexedColor.NULL
+        return this !== PathColor.NULL
     }
 
-    static fromColor({pathId = NO_ID, x, y}: { pathId?: number, x: number, y: number }, color: Color): PathIndexedColor {
-        return new PathIndexedColor({
+    static fromColor({pathId = NO_ID, x, y}: { pathId?: number, x: number, y: number }, color: Color): PathColor {
+        return new PathColor({
             pathId: pathId, x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
         })
     }
 
-    static fromIndexedColor(pathId: number, indexedColor: IndexedColor): PathIndexedColor {
-        return PathIndexedColor.fromColor({pathId: pathId, x: indexedColor.x, y: indexedColor.y}, indexedColor)
+    static fromIndexedColor(pathId: number, indexedColor: IndexedColor): PathColor {
+        return PathColor.fromColor({pathId: pathId, x: indexedColor.x, y: indexedColor.y}, indexedColor)
+    }
+
+    toString(): string {
+        return JSON.stringify(this)
     }
 }
 
@@ -403,10 +407,10 @@ export class Path {
 
     static NULL = new Path({id: NO_ID, points: []})
     id: number = NO_ID
-    points: Array<PathIndexedColor> = []
+    points: Array<PathColor> = []
     isComplete: boolean = false
 
-    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathIndexedColor> }) {
+    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathColor> }) {
         this.id = id
         this.points = points
     }
@@ -415,15 +419,19 @@ export class Path {
         return this.points.isEmpty()
     }
 
-    hasPoint(point: PathIndexedColor): boolean {
+    hasPoint(point: PathColor): boolean {
         return this.points.contains(point)
     }
 
-    add(point: PathIndexedColor) {
-        if (!this.hasPoint(point)) {
-            this.points.push(point)
-            point.pathId = this.id
+    add(pathColor: PathColor) {
+        if (!this.hasPoint(pathColor)) {
+            this.points.push(pathColor)
+            pathColor.pathId = this.id
         }
+    }
+
+    addAll(pathColors: Array<PathColor>) {
+        pathColors.forEach(pathColor => this.add(pathColor))
     }
 }
 
