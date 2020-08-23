@@ -437,8 +437,8 @@ export class Path {
         return this.points.isEmpty()
     }
 
-    hasPoint(point: PathColor): boolean {
-        return this.points.contains(point)
+    contains(pathColor: PathColor): boolean {
+        return this.points.contains(pathColor)
     }
 
     pointAt({x, y}: { x: number, y: number }): PathColor | null {
@@ -448,7 +448,7 @@ export class Path {
     }
 
     add(pathColor: PathColor) {
-        if (!this.hasPoint(pathColor) && !pathColor.hasPath) {
+        if (!this.contains(pathColor) && !pathColor.hasPath) {
             this.points.push(pathColor)
             pathColor.pathId = this.id
         }
@@ -456,6 +456,13 @@ export class Path {
 
     addAll(pathColors: Array<PathColor>) {
         pathColors.forEach(pathColor => this.add(pathColor))
+    }
+
+    remove(pathColor: PathColor) {
+        if (this.contains(pathColor)) {
+            this.points.remove(pathColor)
+            pathColor.pathId = NO_ID
+        }
     }
 }
 

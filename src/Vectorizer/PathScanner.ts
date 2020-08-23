@@ -3,6 +3,7 @@ import {AllDirections, Color, Direction, Grid, ID, matToColorGrid, NO_ID, Path, 
 import {logD} from "../Log";
 import {NumberObject} from "../Utils";
 
+// Read this https://en.wikipedia.org/wiki/Connected-component_labeling
 export class PathScanner {
 
     private constructor() {
@@ -72,7 +73,7 @@ export class PathScanner {
                 .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero)
 
         // Don't have neighbors? look a little further maybe???
-        if (neighbors.isEmpty()) return
+        if (neighbors.isEmpty()) return // TODO look further? It's risky
 
         // Do have neighbors? Get their Paths
         const neighborPaths: Array<Path> = neighbors.map(neighbor => neighbor.pathId)
@@ -83,31 +84,36 @@ export class PathScanner {
         if (!pathColor.hasPath) {
             //  I dont have a path and neither do any of my neighbors
             if (neighborPaths.isEmpty()) {
-
+                // Make a new path and set me and my neighbors to it
             }
             //  I dont have a path but my neighbors have the same path
             if (neighborPaths.length === 1) {
-
+                // Set my path to it and do nothing else
             }
             //  I dont have a path and my neighbors have different paths
             if (neighborPaths.length > 1) {
 
                 // does anyone have the same path
+                //  if so then that path wins and we all take that path
 
                 // worst case, they all have different paths each... :/
+                //  we pick one at random??
+
+                // Which path is more prevalent? That one wins,
+                //  if none maybe pick at random but now set all of us to it
             }
         } else if (pathColor.hasPath) {
             //  I have a path but my neighbors dont
             if (neighborPaths.isEmpty()) {
-
+                // Set my neighbors path to be the same as mine
             }
             //  I have a path and my neighbors also have the same path as me
             if (neighborPaths.length === 1 && neighborPaths[0].id === pathColor.pathId) {
-
+                // do nothing, this is correct behavior
             }
             //  I have a path and my neighbors have the same path as each other but not me
             if (neighborPaths.length === 1 && neighborPaths[0].id !== pathColor.pathId) {
-
+                // Set my path to theirs, I probably have the wrong path
             }
             //  I have a path and my neighbors have different paths from me and each other
             if (neighborPaths.length > 1) {
@@ -118,17 +124,24 @@ export class PathScanner {
 
                 // worst case, we all have different paths each... :/
 
+                // Which path is more prevalent? That one wins,
+                //  if none maybe pick at random but now set all of us to it
+                //  or mine because I'm probably right because of recursion order?
             }
         }
-
-        // Here we need to determine which path do I become and thus will tell the rest of
-        //  my neighborhood to become
 
         // When I set my path, I need to tell my neighbors to set themselves
         //  and their neighbors to that path (recursion)
 
-        // ensure that when a PathColor's path is reset it is also removed from that path
+        // ensure that when a PathColor's path is re-set it is also removed from that path
         //  by getting the path from the paths Map and changing its points
+
+        function resetPathColorPath(pathColor: PathColor, newPath: Path) {
+            const oldPath = paths.get(pathColor.pathId)
+            if (oldPath) oldPath.remove(pathColor)
+            pathColor.pathId = NO_ID
+            newPath.add(pathColor)
+        }
 
     }
 

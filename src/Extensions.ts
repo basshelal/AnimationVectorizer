@@ -121,7 +121,7 @@ function _array() {
     })
     protoExtension(Array, "distinct", function <T>(this: Array<T>): Array<T> {
         const result: Array<T> = []
-        const set = new Set(this)
+        const set = new Set<T>(this)
         for (let entry of set) result.push(entry)
         return result
     })
