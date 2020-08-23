@@ -464,6 +464,10 @@ export class Path {
             pathColor.pathId = NO_ID
         }
     }
+
+    removeAll(pathColors: Array<PathColor>) {
+        pathColors.forEach(pathColor => this.remove(pathColor))
+    }
 }
 
 export function matToColorGrid(mat: Mat): Grid<Color> {
