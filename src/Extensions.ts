@@ -22,6 +22,10 @@ declare global {
         flatten<R>(): Array<R>
 
         distinct(): Array<T>
+
+        countMap(): Map<T, number>
+
+        plus(element: T): Array<T>
     }
 
     interface ArrayConstructor {
@@ -124,6 +128,19 @@ function _array() {
         const set = new Set<T>(this)
         for (let entry of set) result.push(entry)
         return result
+    })
+    protoExtension(Array, "countMap", function <T>(this: Array<T>): Map<T, number> {
+        const result: Map<T, number> = new Map<T, number>()
+        this.forEach(element => {
+            const found: number | undefined = result.get(element)
+            if (found === undefined) result.set(element, 1)
+            else result.set(element, found + 1)
+        })
+        return result
+    })
+    protoExtension(Array, "plus", function <T>(this: Array<T>, element: T): Array<T> {
+        this.push(element)
+        return this
     })
 }
 

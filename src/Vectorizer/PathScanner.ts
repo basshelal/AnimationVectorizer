@@ -28,7 +28,7 @@ export class PathScanner {
         pointsGrid.forEach((column: Array<PathColor>) => {
             column.forEach((pathColor: PathColor) => {
                 if (pathColor.isNotNull) { // we are an edge pixel
-                    this.followPath_(pathColor, pointsGrid, paths, width, height, currentId)
+                    this.followPath(pathColor, pointsGrid, paths, width, height, currentId)
                 }
             })
         })
@@ -37,34 +37,9 @@ export class PathScanner {
         return paths
     }
 
-    // deprecated
-    static followPath_(pathColor: PathColor, pointsGrid: Grid<PathColor>, paths: Map<ID, Path>,
-                       width: number, height: number, currentId: NumberObject) {
-        logD(`Follow path: ${currentId.it}`)
-        const neighbors: Array<PathColor> =
-            AllDirections.map((dir: Direction) => pathColor.point.shifted(dir, 1))
-                .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
-                .map(point => pointsGrid[point.y][point.x])
-                .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero && !pathColor.hasPath)
-        if (neighbors.isEmpty()) return
-
-        if (!pathColor.hasPath && neighbors.isNotEmpty()) {
-            const newPath = new Path({id: currentId.it++})
-            newPath.add(pathColor)
-            newPath.addAll(neighbors)
-            paths.set(newPath.id, newPath)
-            this.followPath_(pathColor, pointsGrid, paths, width, height, currentId)
-        } else if (pathColor.hasPath && neighbors.isNotEmpty()) {
-            const path: Path | undefined = paths.get(pathColor.pathId)
-            if (!path) throw new Error(`Path at ${pathColor.pathId} not valid`)
-            path.addAll(neighbors)
-            this.followPath_(pathColor, pointsGrid, paths, width, height, currentId)
-        }
-    }
-
     static followPath(pathColor: PathColor, pointsGrid: Grid<PathColor>, paths: Map<ID, Path>,
                       width: number, height: number, currentId: NumberObject) {
-        logD(`Follow path: ${currentId.it}`)
+        // logD(`Follow path: ${currentId.it}`)
         // Check my neighbors and check their paths
         const neighbors: Array<PathColor> =
             AllDirections.map((dir: Direction) => pathColor.point.shifted(dir, 1))
@@ -85,64 +60,74 @@ export class PathScanner {
             //  I dont have a path and neither do any of my neighbors
             if (neighborPaths.isEmpty()) {
                 // Make a new path and set me and my neighbors to it
+                const newPath = new Path({id: currentId.it++})
+                this.resetPathColorPath(pathColor, newPath, paths)
+                paths.set(newPath.id, newPath)
+                neighbors.forEach(neighbor => {
+                    this.resetPathColorPath(neighbor, newPath, paths)
+                    this.followPath(neighbor, pointsGrid, paths, width, height, currentId)
+                })
             }
             //  I dont have a path but my neighbors have the same path
-            if (neighborPaths.length === 1) {
+            else if (neighborPaths.length === 1) {
                 // Set my path to it and do nothing else
+                const neighborPath = neighborPaths[0]
+                this.resetPathColorPath(pathColor, neighborPath, paths)
             }
             //  I dont have a path and my neighbors have different paths
-            if (neighborPaths.length > 1) {
+            else if (neighborPaths.length > 1) {
+                let maxEntry: { count: number, path: Path } = {count: 0, path: Path.NULL}
+                const countMap: Map<Path, number> = neighborPaths.countMap()
 
-                // does anyone have the same path
-                //  if so then that path wins and we all take that path
+                countMap.forEach((count: number, path: Path) => {
+                    if (count > maxEntry.count) maxEntry = {count: count, path: path}
+                })
 
-                // worst case, they all have different paths each... :/
-                //  we pick one at random??
-
-                // Which path is more prevalent? That one wins,
-                //  if none maybe pick at random but now set all of us to it
+                if (maxEntry.count > 1) {
+                    // does anyone have the same path
+                    //  if so then that path wins and we all take that path
+                    const path = maxEntry.path
+                    this.resetPathColorPath(pathColor, path, paths)
+                    neighbors.forEach(neighbor => {
+                        this.resetPathColorPath(neighbor, path, paths)
+                        this.followPath(neighbor, pointsGrid, paths, width, height, currentId)
+                    })
+                } else {
+                    // worst case, they all have different paths each... :/
+                    //  We pick the lowest ID one
+                    const lowestID = neighborPaths.map(it => it.id).sort()[0]
+                    const path = paths.get(lowestID)!!
+                    this.resetPathColorPath(pathColor, path, paths)
+                    neighbors.forEach(neighbor => {
+                        this.resetPathColorPath(neighbor, path, paths)
+                        this.followPath(neighbor, pointsGrid, paths, width, height, currentId)
+                    })
+                }
             }
         } else if (pathColor.hasPath) {
             //  I have a path but my neighbors dont
             if (neighborPaths.isEmpty()) {
                 // Set my neighbors path to be the same as mine
+                const path = paths.get(pathColor.pathId)!!
+                neighbors.forEach(neighbor => {
+                    this.resetPathColorPath(neighbor, path, paths)
+                    this.followPath(neighbor, pointsGrid, paths, width, height, currentId)
+                })
             }
-            //  I have a path and my neighbors also have the same path as me
-            if (neighborPaths.length === 1 && neighborPaths[0].id === pathColor.pathId) {
-                // do nothing, this is correct behavior
-            }
-            //  I have a path and my neighbors have the same path as each other but not me
-            if (neighborPaths.length === 1 && neighborPaths[0].id !== pathColor.pathId) {
-                // Set my path to theirs, I probably have the wrong path
-            }
-            //  I have a path and my neighbors have different paths from me and each other
-            if (neighborPaths.length > 1) {
+            //  I have a path and my neighbors have different paths from me
+            else if (neighborPaths.isNotEmpty()) {
+                const myPath = paths.get(pathColor.pathId)!!
+                const winningPath = neighborPaths.plus(myPath).sort((a, b) => a.id - b.id)[0]
 
-                // does anyone have my path?
+                // set all of us to the lowest ID path
 
-                // does anyone have the same path
-
-                // worst case, we all have different paths each... :/
-
-                // Which path is more prevalent? That one wins,
-                //  if none maybe pick at random but now set all of us to it
-                //  or mine because I'm probably right because of recursion order?
+                this.resetPathColorPath(pathColor, winningPath, paths)
+                neighbors.forEach(neighbor => {
+                    this.resetPathColorPath(neighbor, winningPath, paths)
+                    // this.followPath(neighbor, pointsGrid, paths, width, height, currentId)
+                })
             }
         }
-
-        // When I set my path, I need to tell my neighbors to set themselves
-        //  and their neighbors to that path (recursion)
-
-        // ensure that when a PathColor's path is re-set it is also removed from that path
-        //  by getting the path from the paths Map and changing its points
-
-        function resetPathColorPath(pathColor: PathColor, newPath: Path) {
-            const oldPath = paths.get(pathColor.pathId)
-            if (oldPath) oldPath.remove(pathColor)
-            pathColor.pathId = NO_ID
-            newPath.add(pathColor)
-        }
-
     }
 
     static pathsToColorGrid(paths: Array<Path>, width: number, height: number): Grid<Color> {
@@ -156,6 +141,15 @@ export class PathScanner {
                                          width: number, height: number, currentId: NumberObject) {
 
 
+    }
+
+    private static resetPathColorPath(pathColor: PathColor, newPath: Path, allPaths: Map<ID, Path>) {
+        // ensure that when a PathColor's path is re-set it is also removed from that path
+        //  by getting the path from the paths Map and changing its points
+        const oldPath = allPaths.get(pathColor.pathId)
+        if (oldPath) oldPath.remove(pathColor)
+        pathColor.pathId = NO_ID
+        newPath.add(pathColor)
     }
 
     // Idea!
