@@ -1,1 +1,4 @@
-export const Vectorizer = {}
+export class Vectorizer {
+    private constructor() {
+    }
+}

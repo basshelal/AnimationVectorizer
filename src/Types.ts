@@ -54,6 +54,10 @@ export class Point {
                 throw new Error(`Could not shift for direction ${direction} by amount ${a} in point ${this}`)
         }
     }
+
+    toString(): string {
+        return `{x: ${this.x}, y: ${this.y}}`
+    }
 }
 
 export type SVGPathCommand = "M" | "L" | "H" | "V" | "Z" | "C" | "S" | "Q" | "T" | "A"

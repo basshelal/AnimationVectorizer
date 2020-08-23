@@ -4,13 +4,17 @@ import {assert, logD} from "../Log";
 import {IKernelRunShortcut} from "gpu.js";
 import {gpu} from "../GPU";
 
-export const EdgeDetector = {
-    onImage({imagePath, minThreshold, maxThreshold, apertureSize = 3, L2gradient = false}: {
+export class EdgeDetector {
+
+    private constructor() {
+    }
+
+    static onImage({imagePath, minThreshold, maxThreshold, apertureSize = 3, L2gradient = false}: {
         imagePath: string, minThreshold: number, maxThreshold: number,
         apertureSize?: number, L2gradient?: boolean
     }): Mat {
         return imread(imagePath).canny(minThreshold, maxThreshold, apertureSize, L2gradient)
-    },
+    }
 
     // TODO This is good but not great, the bigger differentiating factor is the difference between the
     //  threshold not how far they reach, we should explore methods that have varying differences but also
@@ -18,7 +22,7 @@ export const EdgeDetector = {
     //  be invisible when averaging, instead we could just step over like 10 steps or so and the savings in
     //  time and memory we can use to have a variable difference (maxThreshold - minThreshold) to have more
     //  diverse sample set
-    loopOnImage({imagePath, iterations, minThresholdStart, maxThresholdStart, apertureSize = 3, L2gradient = false}: {
+    static loopOnImage({imagePath, iterations, minThresholdStart, maxThresholdStart, apertureSize = 3, L2gradient = false}: {
         imagePath: string,
         iterations: number,
         minThresholdStart: number, maxThresholdStart: number,
@@ -35,9 +39,9 @@ export const EdgeDetector = {
                 apertureSize: apertureSize,
                 L2gradient: L2gradient
             }))
-    },
+    }
 
-    averageEdgesGPU(mats: number[][][], chunkSize: number = 20): Mat {
+    static averageEdgesGPU(mats: number[][][], chunkSize: number = 20): Mat {
         const totalMats: number = mats.length
         const height: number = mats[0].length
         const width: number = mats[0][0].length
@@ -116,5 +120,5 @@ export const EdgeDetector = {
             `Mat rows: ${result.rows}`)
 
         return result
-    },
+    }
 }

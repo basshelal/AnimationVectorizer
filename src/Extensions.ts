@@ -20,6 +20,8 @@ declare global {
         pushAll(items: Iterable<T>): Array<T>
 
         flatten<R>(): Array<R>
+
+        distinct(): Array<T>
     }
 
     interface ArrayConstructor {
@@ -115,6 +117,12 @@ function _array() {
             if (it instanceof Array) it.flatten<R>().forEach(i => result.push(i))
             else result.push(it)
         })
+        return result
+    })
+    protoExtension(Array, "distinct", function <T>(this: Array<T>): Array<T> {
+        const result: Array<T> = []
+        const set = new Set(this)
+        for (let entry of set) result.push(entry)
         return result
     })
 }
