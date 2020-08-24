@@ -1,7 +1,7 @@
 import {Mat} from "opencv4nodejs";
-import {Color, Direction, Grid, ID, matToColorGrid, NO_ID, Path, PathColor} from "../Types";
+import {Color, Direction, Grid, ID, matToColorGrid, Path, PathColor} from "../Types";
 import {NumberObject} from "../Utils";
-import {logD, logE, writeLog} from "../Log";
+import {logD, writeLog} from "../Log";
 
 // Read this https://en.wikipedia.org/wiki/Connected-component_labeling
 export class PathScanner {
@@ -9,7 +9,7 @@ export class PathScanner {
     private constructor() {
     }
 
-    static parsePaths(mat: Mat, minThreshold: number = 40): Map<number, Path> {
+    static parsePaths(mat: Mat, minThreshold: number = 40): Map<ID, Path> {
         const pointsGrid: Grid<PathColor> = matToColorGrid(mat)
             .map((column: Array<Color>, y: number) =>
                 column.map((color: Color, x: number) => {
@@ -60,12 +60,6 @@ export class PathScanner {
                             previousNeighborIds.forEach(previousNeighborId => {
                                 if (previousNeighborId !== path.id) {
                                     const fromMap: Path = paths.get(previousNeighborId)!!
-                                    if (!fromMap) {
-                                        logE(path.id)
-                                        logE(previousNeighbors)
-                                        logE(previousNeighborId)
-                                        logE(paths.keysArray())
-                                    }
                                     // remove all the points from that path and add them to the new path
                                     const points: Array<PathColor> = Array.from(fromMap.points)
                                     fromMap.removeAll(points)
@@ -81,7 +75,7 @@ export class PathScanner {
             })
         })
 
-        writeLog(paths.valuesArray().map(it => it.points), `equivalentPaths`)
+        writeLog(paths.keysArray(), `equivalentPaths`)
 
         logD(`Paths: ${paths.size}`)
 
@@ -93,25 +87,4 @@ export class PathScanner {
         paths.forEach(path => path.points.forEach(pathColor => result[pathColor.y][pathColor.x] = pathColor))
         return result
     }
-
-    private static attachPathColorToPath(pathColor: PathColor, path: Path,
-                                         pointsGrid: Grid<PathColor>, paths: Map<ID, Path>,
-                                         width: number, height: number, currentId: NumberObject) {
-
-
-    }
-
-    private static resetPathColorPath(pathColor: PathColor, newPath: Path, allPaths: Map<ID, Path>) {
-        // ensure that when a PathColor's path is re-set it is also removed from that path
-        //  by getting the path from the paths Map and changing its points
-        const oldPath = allPaths.get(pathColor.pathId)
-        if (oldPath) oldPath.remove(pathColor)
-        pathColor.pathId = NO_ID
-        newPath.add(pathColor)
-    }
-
-    // Idea!
-    // Path merging, if Path Scanning still produced inconsistencies and faults, before any polygon detection
-    //  we can always iterate through all paths and check if paths can be merged to become one, this may be
-    //  expensive though
 }
