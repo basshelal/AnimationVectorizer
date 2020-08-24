@@ -53,22 +53,36 @@ export class PathScanner {
                         if (previousNeighborPaths.isNotEmpty()) {
                             // set my path to any one of these paths and if there are more than one then add them to the
                             // equivalent paths
-                            const previousNeighborIds: Array<ID> = previousNeighborPaths.map(it => it.id).sort(((a, b) => a - b))
-                            const path = paths.get(previousNeighborIds[0])!!
+                            const previousNeighborIds: Array<ID> = previousNeighborPaths.map(it => it.id)
+                            const path = paths.get(previousNeighborIds.first()!!)!!
                             path.add(pathColor)
                             paths.set(path.id, path)
                             if (previousNeighborPaths.length > 1) {
 
-                                //TODO something is wrong here, 52 and 54 appear in 2 lists in equivalentPaths
+                                const indicesOfPathsToMerge: Set<number> = new Set<number>()
 
-                                // See if equivalentPaths contains an array of ids that contains ANY of the neighborIds
-                                const found: Array<number> | undefined = equivalentPaths.find(ids => ids.find(id => previousNeighborIds.contains(id)) !== undefined)
+                                equivalentPaths.forEach((ids, index) => {
+                                    ids.forEach(id => {
+                                        if (previousNeighborIds.contains(id)) {
+                                            indicesOfPathsToMerge.add(index)
+                                        }
+                                    })
+                                })
 
-                                if (found === undefined) {
+                                if (indicesOfPathsToMerge.size === 0) {
                                     equivalentPaths.push(previousNeighborIds.distinct().sort(((a, b) => a - b)))
                                 } else {
-                                    equivalentPaths[equivalentPaths.indexOf(found)] =
-                                        found.pushAll(previousNeighborIds).distinct().sort(((a, b) => a - b))
+                                    const merged: Array<ID> = indicesOfPathsToMerge.valuesArray()
+                                        .map(index => equivalentPaths[index])
+                                        .plus(previousNeighborIds)
+                                        .flatten<ID>()
+                                        .distinct().sort(((a, b) => a - b))
+
+                                    indicesOfPathsToMerge.forEach(index => {
+                                        equivalentPaths.splice(index)
+                                    })
+
+                                    equivalentPaths.push(merged)
                                 }
                             }
                         }
@@ -84,21 +98,19 @@ export class PathScanner {
         // EquivalentPaths loop
         equivalentPaths.forEach((pathIdsList: Array<ID>) => {
             logD(`pathIdsList: ${pathIdsList}`)
-            const smallest: ID = pathIdsList[0] // because we sorted it earlier
-            const path: Path = paths.get(smallest)!!
+            const smallest: ID = pathIdsList.first()!! // because we sorted it earlier
+            const mergedPath: Path = paths.get(smallest)!!
             pathIdsList.forEach((pathId: ID) => {
                 if (pathId !== smallest) {
                     const pathToRemove = paths.get(pathId)!!
                     const points = pathToRemove.points
                     pathToRemove.removeAll(points)
-                    path.addAll(points)
+                    mergedPath.addAll(points)
                     paths.delete(pathId)
                 }
             })
-            paths.set(smallest, path)
+            paths.set(smallest, mergedPath)
         })
-
-        logD(`Paths: ${paths.size}`)
 
         return paths
     }

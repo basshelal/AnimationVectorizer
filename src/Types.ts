@@ -465,7 +465,7 @@ export class Path {
         }
     }
 
-    removeAll(pathColors: Array<PathColor>) {
+    removeAll(pathColors: Array<PathColor> = this.points) {
         pathColors.forEach(pathColor => this.remove(pathColor))
     }
 }

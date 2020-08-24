@@ -9,9 +9,13 @@ declare global {
 
         lastIndex(): number
 
-        last(): T
+        last(): T | undefined
+
+        first(): T | undefined
 
         remove(element: T): void
+
+        removeAll(items: Iterable<T>): Array<T>
 
         isEmpty(): boolean
 
@@ -26,6 +30,8 @@ declare global {
         countMap(): Map<T, number>
 
         plus(element: T): Array<T>
+
+        onEach(callback: (value: T, index: number, array: T[]) => void, thisArg?: any): Array<T>
     }
 
     interface ArrayConstructor {
@@ -38,6 +44,10 @@ declare global {
         keysArray(): Array<K>
 
         valuesArray(): Array<V>
+    }
+
+    interface Set<T> {
+        valuesArray(): Array<T>
     }
 
     interface Object {
@@ -90,14 +100,22 @@ function _array() {
             return this.length - 1
         })
     protoExtension(Array, "last",
-        function <T>(this: Array<T>): T {
+        function <T>(this: Array<T>): T | undefined {
             return this[this.length - 1]
+        })
+    protoExtension(Array, "first",
+        function <T>(this: Array<T>): T | undefined {
+            return this[0]
         })
     protoExtension(Array, "remove",
         function <T>(this: Array<T>, element: T) {
             const index = this.indexOf(element)
             if (index >= 0) this.splice(index)
         })
+    protoExtension(Array, "removeAll", function <T>(this: Array<T>, items: Iterable<T>): Array<T> {
+        for (let item of items) this.remove(item)
+        return this
+    })
     protoExtension(Array, "isEmpty",
         function (this: Array<any>) {
             return this.length === 0
@@ -142,6 +160,10 @@ function _array() {
         this.push(element)
         return this
     })
+    protoExtension(Array, "onEach", function <T>(this: Array<T>, callback: (value: T, index: number) => void): Array<T> {
+        this.forEach(callback)
+        return this
+    })
 }
 
 function _map() {
@@ -163,6 +185,14 @@ function _map() {
             for (let value of this.values()) result.push(value)
             return result
         })
+}
+
+function _set() {
+    protoExtension(Set, "valuesArray", function <T>(this: Set<T>): Array<T> {
+        const result: Array<T> = []
+        for (let value of this.values()) result.push(value)
+        return result
+    })
 }
 
 function _object() {
@@ -224,6 +254,7 @@ function _number() {
 export default function () {
     _array()
     _map()
+    _set()
     _object()
     _number()
 }
