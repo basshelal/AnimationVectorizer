@@ -19,12 +19,20 @@ export class ColorScanner {
 
         pointsGrid.forEach((column: Array<PathColor>) => {
             column.forEach((pathColor: PathColor) => {
+
+                // TODO here we need to take into account the actual value of this pixel,
+                //  as well as the values of previous pixels
+                //  thus we also need a function to determine whether 2 pixels are in the same region or not
+                //  or more likely, whether this pixel is TOO DIFFERENT from the previous to be considered in the
+                //  same neighborhood
+                //  Then in the end what is the ONE color of that region? Again could be done inline instead
+                //  of in a second pass as we did with Path merging
+
                 // Check my previous neighbors and check their paths
                 const previousNeighbors: Array<PathColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
                     .map(dir => pathColor.point.shifted(dir, 1))
                     .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
                     .map(point => pointsGrid[point.y][point.x])
-                    .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero)
 
                 // Don't have previous neighbors?
                 if (previousNeighbors.isEmpty()) {
