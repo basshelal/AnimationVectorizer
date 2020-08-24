@@ -448,7 +448,7 @@ export class Path {
     }
 
     add(pathColor: PathColor) {
-        if (!this.contains(pathColor) && !pathColor.hasPath) {
+        if (!this.contains(pathColor)) {
             this.points.push(pathColor)
             pathColor.pathId = this.id
         }

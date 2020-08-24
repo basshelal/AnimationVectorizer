@@ -1,7 +1,7 @@
 import {Mat} from "opencv4nodejs";
 import {Color, Direction, Grid, ID, matToColorGrid, NO_ID, Path, PathColor} from "../Types";
 import {NumberObject} from "../Utils";
-import {logE, writeLog} from "../Log";
+import {logD, logE, writeLog} from "../Log";
 
 // Read this https://en.wikipedia.org/wiki/Connected-component_labeling
 export class PathScanner {
@@ -28,13 +28,12 @@ export class PathScanner {
         pointsGrid.forEach((column: Array<PathColor>) => {
             column.forEach((pathColor: PathColor) => {
                 if (pathColor.isNotNull) { // we are an edge pixel
-                    const previousDirections: Array<Direction> = ["W", "NW", "N", "NE"]
                     // Check my previous neighbors and check their paths
-                    const previousNeighbors: Array<PathColor> =
-                        previousDirections.map((dir: Direction) => pathColor.point.shifted(dir, 1))
-                            .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
-                            .map(point => pointsGrid[point.y][point.x])
-                            .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero)
+                    const previousNeighbors: Array<PathColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
+                        .map(dir => pathColor.point.shifted(dir, 1))
+                        .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
+                        .map(point => pointsGrid[point.y][point.x])
+                        .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero)
 
                     // Don't have previous neighbors?
                     if (previousNeighbors.isEmpty()) {
@@ -48,10 +47,10 @@ export class PathScanner {
                         // Get their distinct Path Ids
                         const previousNeighborIds: Array<ID> = previousNeighbors.map(neighbor => neighbor.pathId)
                             .distinct()
+                            .sort(((a, b) => a - b))
 
                         // set my path to the first neighbor path
                         const path = paths.get(previousNeighborIds.first()!!)!!
-                        pathColor.pathId = NO_ID
                         path.add(pathColor)
                         paths.set(path.id, path)
                         // If there were more than one distinct previous neighbor paths then merge them all to
@@ -82,7 +81,9 @@ export class PathScanner {
             })
         })
 
-        writeLog(paths.valuesArray(), `equivalentPaths`)
+        writeLog(paths.valuesArray().map(it => it.points), `equivalentPaths`)
+
+        logD(`Paths: ${paths.size}`)
 
         return paths
     }
