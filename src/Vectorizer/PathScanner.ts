@@ -1,7 +1,7 @@
 import {Mat} from "opencv4nodejs";
 import {Color, Direction, Grid, ID, matToColorGrid, NO_ID, Path, PathColor} from "../Types";
-import {logD, writeLog} from "../Log";
 import {NumberObject} from "../Utils";
+import {logE, writeLog} from "../Log";
 
 // Read this https://en.wikipedia.org/wiki/Connected-component_labeling
 export class PathScanner {
@@ -24,7 +24,6 @@ export class PathScanner {
         const width = pointsGrid[0].length
         const paths = new Map<ID, Path>()
         const currentId: NumberObject = {it: 0}
-        const equivalentPaths: Array<Array<ID>> = []
 
         pointsGrid.forEach((column: Array<PathColor>) => {
             column.forEach((pathColor: PathColor) => {
@@ -37,80 +36,53 @@ export class PathScanner {
                             .map(point => pointsGrid[point.y][point.x])
                             .filter(pathColor => pathColor.isNotNull && pathColor.isNotZero)
 
-                    // Don't have previous neighbors? look a little further maybe???
+                    // Don't have previous neighbors?
                     if (previousNeighbors.isEmpty()) {
-                        // new Path!
+                        // new Path with just me!
                         const newPath = new Path({id: currentId.it++})
                         newPath.add(pathColor)
                         paths.set(newPath.id, newPath)
-                    } else {
-                        // Do have neighbors? Get their Paths
-                        const previousNeighborPaths: Array<Path> = previousNeighbors.map(neighbor => neighbor.pathId)
-                            .filter(id => id !== NO_ID)
-                            .map(id => paths.get(id)!!)
+                    }
+                    // Do have neighbors?
+                    else {
+                        // Get their distinct Path Ids
+                        const previousNeighborIds: Array<ID> = previousNeighbors.map(neighbor => neighbor.pathId)
                             .distinct()
 
-                        if (previousNeighborPaths.isNotEmpty()) {
-                            // set my path to any one of these paths and if there are more than one then add them to the
-                            // equivalent paths
-                            const previousNeighborIds: Array<ID> = previousNeighborPaths.map(it => it.id)
-                            const path = paths.get(previousNeighborIds.first()!!)!!
-                            path.add(pathColor)
-                            paths.set(path.id, path)
-                            if (previousNeighborPaths.length > 1) {
+                        // set my path to the first neighbor path
+                        const path = paths.get(previousNeighborIds.first()!!)!!
+                        pathColor.pathId = NO_ID
+                        path.add(pathColor)
+                        paths.set(path.id, path)
+                        // If there were more than one distinct previous neighbor paths then merge them all to
+                        // my path
+                        if (previousNeighborIds.length > 1) {
 
-                                const indicesOfPathsToMerge: Set<number> = new Set<number>()
-
-                                equivalentPaths.forEach((ids, index) => {
-                                    ids.forEach(id => {
-                                        if (previousNeighborIds.contains(id)) {
-                                            indicesOfPathsToMerge.add(index)
-                                        }
-                                    })
-                                })
-
-                                if (indicesOfPathsToMerge.size === 0) {
-                                    equivalentPaths.push(previousNeighborIds.distinct().sort(((a, b) => a - b)))
-                                } else {
-                                    const merged: Array<ID> = indicesOfPathsToMerge.valuesArray()
-                                        .map(index => equivalentPaths[index])
-                                        .plus(previousNeighborIds)
-                                        .flatten<ID>()
-                                        .distinct().sort(((a, b) => a - b))
-
-                                    indicesOfPathsToMerge.forEach(index => {
-                                        equivalentPaths.splice(index)
-                                    })
-
-                                    equivalentPaths.push(merged)
+                            previousNeighborIds.forEach(previousNeighborId => {
+                                if (previousNeighborId !== path.id) {
+                                    const fromMap: Path = paths.get(previousNeighborId)!!
+                                    if (!fromMap) {
+                                        logE(path.id)
+                                        logE(previousNeighbors)
+                                        logE(previousNeighborId)
+                                        logE(paths.keysArray())
+                                    }
+                                    // remove all the points from that path and add them to the new path
+                                    const points: Array<PathColor> = Array.from(fromMap.points)
+                                    fromMap.removeAll(points)
+                                    path.addAll(points)
+                                    // remove that old path from the Paths Map
+                                    paths.delete(fromMap.id)
+                                    paths.set(path.id, path)
                                 }
-                            }
+                            })
                         }
                     }
                 }
             })
         })
-        logD(`Paths: ${paths.size}`)
-        logD(`Equivalent Paths: ${equivalentPaths.length}`)
 
-        writeLog(equivalentPaths, `equivalentPaths`)
-
-        // EquivalentPaths loop
-        equivalentPaths.forEach((pathIdsList: Array<ID>) => {
-            logD(`pathIdsList: ${pathIdsList}`)
-            const smallest: ID = pathIdsList.first()!! // because we sorted it earlier
-            const mergedPath: Path = paths.get(smallest)!!
-            pathIdsList.forEach((pathId: ID) => {
-                if (pathId !== smallest) {
-                    const pathToRemove = paths.get(pathId)!!
-                    const points = pathToRemove.points
-                    pathToRemove.removeAll(points)
-                    mergedPath.addAll(points)
-                    paths.delete(pathId)
-                }
-            })
-            paths.set(smallest, mergedPath)
-        })
+        writeLog(paths.valuesArray(), `equivalentPaths`)
 
         return paths
     }
