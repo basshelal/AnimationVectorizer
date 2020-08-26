@@ -19,15 +19,6 @@ export class ColorScanner {
 
         colorGrid.forEach((column: Array<RegionColor>) => {
             column.forEach((regionColor: RegionColor) => {
-
-                // TODO here we need to take into account the actual value of this pixel,
-                //  as well as the values of previous pixels
-                //  thus we also need a function to determine whether 2 pixels are in the same region or not
-                //  or more likely, whether this pixel is TOO DIFFERENT from the previous to be considered in the
-                //  same neighborhood
-                //  Then in the end what is the ONE color of that region? Again could be done inline instead
-                //  of in a second pass as we did with Path merging
-
                 // Check my previous neighbors and check their colors
                 const previousNeighbors: Array<RegionColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
                     .map(dir => regionColor.point.shifted(dir, 1))
@@ -50,33 +41,27 @@ export class ColorScanner {
                         .filter(it => it !== undefined)
                         .map(it => it!!)
 
-                    /*// How different are these regions from each other, what do we merge?
 
-                    const regionsToMerge: Set<ColorRegion> = new Set<ColorRegion>()
-
-                    previousRegions.forEach(region1 => {
-                        previousRegions.forEach(region2 => {
-                            if (region1.averageColor.closeTo(region2.averageColor, delta)) {
-                                regionsToMerge.addAll(region1, region2)
-                            }
-                        })
-                    })
-
-                    // Merge regions and recalculate their average
-                    regionsToMerge.forEach(region => {
-
-                    })*/
-
-                    let bestFit: ColorRegion | null = null
-                    let bestDelta =
-                        {r: Number.MAX_VALUE, g: Number.MAX_VALUE, b: Number.MAX_VALUE, a: Number.MAX_VALUE}
-
-                    previousRegions.forEach(previousRegion => {
-                        regionColor.difference(previousRegion.averageColor)
-                    })
-
+                    // TODO we need to merge any regions that are too close to each other here,
                     // After merging, which one best fits me?
 
+                    let bestFit: ColorRegion | null = null
+                    let lowestDelta = Number.MAX_VALUE
+
+                    previousRegions.forEach(region => {
+                        const diff = regionColor.difference(region.averageColor)
+                        const delta = diff.r + diff.g + diff.b + diff.a
+                        if (delta < lowestDelta) {
+                            lowestDelta = delta
+                            bestFit = region
+                        }
+                    })
+
+                    // I have a best fit, is it within delta?
+                    if (bestFit !== null) {
+                        if (!regionColor.closeTo(bestFit!!.averageColor, delta)) bestFit = null
+                        else bestFit!!.add(regionColor)
+                    }
                     // None fit me? then a new region for myself
                     if (bestFit === null) {
                         const newRegion = new ColorRegion({id: currentId.it++})
@@ -89,7 +74,9 @@ export class ColorScanner {
 
         writeLog(regions.keysArray(), `regions`)
 
+        logD(`Initial Pixels: ${imageData.totalPixels}`)
         logD(`Regions: ${regions.size}`)
+        logD(`Ratio: ${(regions.size / imageData.totalPixels).roundToDec(3)}`)
 
         return regions
     }

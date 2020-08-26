@@ -274,7 +274,7 @@ export class ImageData {
     }
 
     get pixelsGrid(): Grid<Color> {
-        const result: Grid<Color> = []
+        const result: Grid<Color> = Array.init(this.height, () => Array.init(this.width, () => Color.ZERO))
         this.forEachPixel((y, x, color) => {
             result[y][x] = color
         })

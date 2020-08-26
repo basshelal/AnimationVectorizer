@@ -64,7 +64,9 @@ async function test() {
 
     const png: PNGImageData = await readPNG(`./out/frames/1.png`)
 
-    const colors = ColorScanner.parseColorRegions(PNGImageDataToImageData(png))
+    const imageData = PNGImageDataToImageData(png)
+
+    const colors = ColorScanner.parseColorRegions(imageData)
 
     const colorGrid = ColorScanner.regionsToColorGrid(colors.valuesArray(), png.width, png.height)
 
