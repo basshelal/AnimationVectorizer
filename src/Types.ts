@@ -207,6 +207,16 @@ export class Color {
         this.a = this.a.round()
     }
 
+    static ZERO = new Color({r: 0, g: 0, b: 0, a: 0})
+
+    closeTo(otherColor: Color, delta: number, includeAlpha: boolean = false): boolean {
+        return ((this.r - otherColor.r).abs() <= delta &&
+            (this.g - otherColor.g).abs() <= delta &&
+            (this.b - otherColor.b).abs() <= delta &&
+            (includeAlpha ? (this.a - otherColor.a).abs() <= delta : true)
+        )
+    }
+
     static random(includeAlpha: boolean = false): Color {
         return new Color({
             r: (random() * 255).roundToDec(0),
@@ -214,6 +224,15 @@ export class Color {
             b: (random() * 255).roundToDec(0),
             a: includeAlpha ? (random() * 255).roundToDec(0) : 255
         })
+    }
+
+    difference(otherColor: Color): { r: number, g: number, b: number, a: number } {
+        return {
+            r: this.r - otherColor.r,
+            g: this.g - otherColor.g,
+            b: this.b - otherColor.b,
+            a: this.a - otherColor.a
+        }
     }
 }
 
@@ -467,6 +486,118 @@ export class Path {
 
     removeAll(pathColors: Array<PathColor> = this.points) {
         pathColors.forEach(pathColor => this.remove(pathColor))
+    }
+}
+
+export class RegionColor extends IndexedColor {
+
+    static NULL = new RegionColor({regionId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+    regionId: ID = NO_ID
+
+    constructor({regionId, x, y, r, g, b, a}: {
+        regionId: number, x: number, y: number,
+        r: number, g: number, b: number, a?: number
+    }) {
+        super({x, y, r, g, b, a})
+        this.regionId = regionId
+    }
+
+    get hasRegion(): boolean {
+        return this.regionId !== NO_ID
+    }
+
+    get isNull(): boolean {
+        return this === RegionColor.NULL
+    }
+
+    get isNotNull(): boolean {
+        return this !== RegionColor.NULL
+    }
+
+    static fromColor({regionId = NO_ID, x, y}: { regionId?: number, x: number, y: number }, color: Color): RegionColor {
+        return new RegionColor({
+            regionId: regionId, x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
+        })
+    }
+
+    static fromIndexedColor(regionId: number, indexedColor: IndexedColor): RegionColor {
+        return RegionColor.fromColor({regionId: regionId, x: indexedColor.x, y: indexedColor.y}, indexedColor)
+    }
+
+    toString(): string {
+        return JSON.stringify(this)
+    }
+}
+
+export class ColorRegion {
+
+    static NULL = new ColorRegion({id: NO_ID, points: []})
+    id: ID = NO_ID
+    pixels: Array<RegionColor> = []
+    averageColor: Color = new Color()
+
+    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<RegionColor> }) {
+        this.id = id
+        this.pixels = points
+    }
+
+    get isEmpty(): boolean {
+        return this.pixels.isEmpty()
+    }
+
+    contains(pathColor: RegionColor): boolean {
+        return this.pixels.contains(pathColor)
+    }
+
+    pointAt({x, y}: { x: number, y: number }): RegionColor | null {
+        const result: RegionColor | undefined =
+            this.pixels.find(pathColor => pathColor.x === x && pathColor.y === y)
+        return result ? result : null
+    }
+
+    add(pathColor: RegionColor) {
+        if (!this.contains(pathColor)) {
+            this.pixels.push(pathColor)
+            pathColor.regionId = this.id
+        }
+    }
+
+    addAll(pathColors: Array<RegionColor>) {
+        pathColors.forEach(pathColor => this.add(pathColor))
+    }
+
+    remove(pathColor: RegionColor) {
+        if (this.contains(pathColor)) {
+            this.pixels.remove(pathColor)
+            pathColor.regionId = NO_ID
+        }
+    }
+
+    removeAll(pathColors: Array<RegionColor> = this.pixels) {
+        pathColors.forEach(pathColor => this.remove(pathColor))
+    }
+
+    calculateAndSetAverageColor(): ColorRegion {
+        if (this.pixels.isNotEmpty()) {
+            const total = this.pixels.length
+            let r: number = 0
+            let g: number = 0
+            let b: number = 0
+            let a: number = 0
+            this.pixels.forEach(pixel => {
+                r += pixel.r
+                g += pixel.g
+                b += pixel.b
+                a += pixel.a
+            })
+            this.averageColor.data = {
+                r: (r / total).floor(),
+                g: (g / total).floor(),
+                b: (b / total).floor(),
+                a: (a / total).floor(),
+            }
+        }
+        return this
     }
 }
 

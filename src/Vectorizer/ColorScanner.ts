@@ -1,4 +1,4 @@
-import {Color, Direction, Grid, ID, ImageData, Path, PathColor} from "../Types";
+import {Color, ColorRegion, Direction, Grid, ID, ImageData, RegionColor} from "../Types";
 import {NumberObject} from "../Utils";
 import {logD, writeLog} from "../Log";
 
@@ -6,19 +6,19 @@ export class ColorScanner {
     private constructor() {
     }
 
-    static parseColorRegions(imageData: ImageData): Map<ID, Path> {
-        const pointsGrid: Grid<PathColor> = imageData.pixelsGrid
+    static parseColorRegions(imageData: ImageData, delta: number = 25): Map<ID, ColorRegion> {
+        const colorGrid: Grid<RegionColor> = imageData.pixelsGrid
             .map((column: Array<Color>, y: number) =>
                 column.map((color: Color, x: number) =>
-                    PathColor.fromColor({x: x, y: y}, color)))
+                    RegionColor.fromColor({x: x, y: y}, color)))
 
         const height = imageData.height
         const width = imageData.width
-        const paths = new Map<ID, Path>()
+        const regions = new Map<ID, ColorRegion>()
         const currentId: NumberObject = {it: 0}
 
-        pointsGrid.forEach((column: Array<PathColor>) => {
-            column.forEach((pathColor: PathColor) => {
+        colorGrid.forEach((column: Array<RegionColor>) => {
+            column.forEach((regionColor: RegionColor) => {
 
                 // TODO here we need to take into account the actual value of this pixel,
                 //  as well as the values of previous pixels
@@ -28,56 +28,76 @@ export class ColorScanner {
                 //  Then in the end what is the ONE color of that region? Again could be done inline instead
                 //  of in a second pass as we did with Path merging
 
-                // Check my previous neighbors and check their paths
-                const previousNeighbors: Array<PathColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
-                    .map(dir => pathColor.point.shifted(dir, 1))
+                // Check my previous neighbors and check their colors
+                const previousNeighbors: Array<RegionColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
+                    .map(dir => regionColor.point.shifted(dir, 1))
                     .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
-                    .map(point => pointsGrid[point.y][point.x])
+                    .map(point => colorGrid[point.y][point.x])
 
                 // Don't have previous neighbors?
                 if (previousNeighbors.isEmpty()) {
-                    // new Path with just me!
-                    const newPath = new Path({id: currentId.it++})
-                    newPath.add(pathColor)
-                    paths.set(newPath.id, newPath)
+                    // new region with just me! No need to check anything since no neighbors
+                    const newRegion = new ColorRegion({id: currentId.it++})
+                    newRegion.add(regionColor)
+                    regions.set(newRegion.id, newRegion)
                 }
                 // Do have neighbors?
                 else {
-                    // Get their distinct Path Ids
-                    const previousNeighborIds: Array<ID> = previousNeighbors.map(neighbor => neighbor.pathId)
+                    // Get their distinct regions
+                    const previousRegions: Array<ColorRegion> = previousNeighbors.map(neighbor => neighbor.regionId)
                         .distinct()
-                        .sort(((a, b) => a - b))
+                        .map(id => regions.get(id))
+                        .filter(it => it !== undefined)
+                        .map(it => it!!)
 
-                    // set my path to the first neighbor path
-                    const path = paths.get(previousNeighborIds.first()!!)!!
-                    path.add(pathColor)
-                    paths.set(path.id, path)
-                    // If there were more than one distinct previous neighbor paths then merge them all to
-                    // my path
-                    if (previousNeighborIds.length > 1) {
+                    /*// How different are these regions from each other, what do we merge?
 
-                        previousNeighborIds.forEach(previousNeighborId => {
-                            if (previousNeighborId !== path.id) {
-                                const fromMap: Path = paths.get(previousNeighborId)!!
-                                // remove all the points from that path and add them to the new path
-                                const points: Array<PathColor> = Array.from(fromMap.points)
-                                fromMap.removeAll(points)
-                                path.addAll(points)
-                                // remove that old path from the Paths Map
-                                paths.delete(fromMap.id)
-                                paths.set(path.id, path)
+                    const regionsToMerge: Set<ColorRegion> = new Set<ColorRegion>()
+
+                    previousRegions.forEach(region1 => {
+                        previousRegions.forEach(region2 => {
+                            if (region1.averageColor.closeTo(region2.averageColor, delta)) {
+                                regionsToMerge.addAll(region1, region2)
                             }
                         })
+                    })
+
+                    // Merge regions and recalculate their average
+                    regionsToMerge.forEach(region => {
+
+                    })*/
+
+                    let bestFit: ColorRegion | null = null
+                    let bestDelta =
+                        {r: Number.MAX_VALUE, g: Number.MAX_VALUE, b: Number.MAX_VALUE, a: Number.MAX_VALUE}
+
+                    previousRegions.forEach(previousRegion => {
+                        regionColor.difference(previousRegion.averageColor)
+                    })
+
+                    // After merging, which one best fits me?
+
+                    // None fit me? then a new region for myself
+                    if (bestFit === null) {
+                        const newRegion = new ColorRegion({id: currentId.it++})
+                        newRegion.add(regionColor)
+                        regions.set(newRegion.id, newRegion)
                     }
                 }
             })
         })
 
-        writeLog(paths.keysArray(), `equivalentPaths`)
+        writeLog(regions.keysArray(), `regions`)
 
-        logD(`Paths: ${paths.size}`)
+        logD(`Regions: ${regions.size}`)
 
-        return paths
+        return regions
+    }
+
+    static regionsToColorGrid(paths: Array<ColorRegion>, width: number, height: number): Grid<Color> {
+        const result = Array.init(height, y => Array.init(width, x => new Color({r: 0, g: 0, b: 0, a: 255})))
+        paths.forEach(path => path.pixels.forEach(pixel => result[pixel.y][pixel.x] = pixel))
+        return result
     }
 
 }

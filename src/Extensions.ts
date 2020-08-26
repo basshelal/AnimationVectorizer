@@ -48,6 +48,8 @@ declare global {
 
     interface Set<T> {
         valuesArray(): Array<T>
+
+        addAll(...values: T[]): Set<T>
     }
 
     interface Object {
@@ -192,6 +194,10 @@ function _set() {
         const result: Array<T> = []
         for (let value of this.values()) result.push(value)
         return result
+    })
+    protoExtension(Set, "addAll", function <T>(this: Set<T>, ...values: T[]): Set<T> {
+        for (let value of values) this.add(value)
+        return this
     })
 }
 

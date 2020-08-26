@@ -1,13 +1,11 @@
 import extensions from "./Extensions";
-import {logD, logW, writeLog} from "./Log";
+import {logD, logW} from "./Log";
 import {now} from "./Utils";
 import moment, {duration} from "moment";
-import {imwrite, Mat} from "opencv4nodejs";
-import {EdgeDetector} from "./Vectorizer/EdgeDetector";
-import {Color, ImageData, matDataTo2DArray} from "./Types";
-import {PathScanner} from "./Vectorizer/PathScanner";
 import * as v8 from "v8";
-import {writeImage} from "./PNG";
+import {PNGImageData, PNGImageDataToImageData, readPNG, writeImage} from "./PNG";
+import {ColorScanner} from "./Vectorizer/ColorScanner";
+import {ImageData} from "./Types";
 
 extensions()
 
@@ -20,7 +18,7 @@ async function test() {
 
     logW(`Running NodeJS with ${totalMemoryGB} GB of available memory...`)
 
-    logD(`Edge Detection looping...`)
+    /*logD(`Edge Detection looping...`)
 
     const images: Array<Mat> = EdgeDetector.loopOnImage({
         imagePath: "./out/frames/1.png",
@@ -62,7 +60,15 @@ async function test() {
 
     const pathsColorGrid = PathScanner.pathsToColorGrid(randomized, avg.cols, avg.rows)
 
-    writeImage(`./out/test/paths.png`, ImageData.fromPixelsGrid(pathsColorGrid))
+    writeImage(`./out/test/paths.png`, ImageData.fromPixelsGrid(pathsColorGrid))*/
+
+    const png: PNGImageData = await readPNG(`./out/frames/1.png`)
+
+    const colors = ColorScanner.parseColorRegions(PNGImageDataToImageData(png))
+
+    const colorGrid = ColorScanner.regionsToColorGrid(colors.valuesArray(), png.width, png.height)
+
+    await writeImage(`./out/colors.png`, ImageData.fromPixelsGrid(colorGrid))
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +
