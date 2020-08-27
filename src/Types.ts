@@ -1,6 +1,6 @@
 import {from, json, random} from "./Utils";
 import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
-import {assert, logD} from "./Log";
+import {assert} from "./Log";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Color>
@@ -137,12 +137,6 @@ export class Color {
         return [this.r, this.g, this.b, this.r + this.g + this.b]
     }
 
-    private static hex(channelValue: number): string {
-        let hex = Number(channelValue).toString(16)
-        if (hex.length < 2) hex = "0" + hex
-        return hex
-    }
-
     set data(color: { r: number, g: number, b: number, a: number }) {
         this.r = color.r
         this.g = color.g
@@ -207,23 +201,26 @@ export class Color {
         this.a = this.a.round()
     }
 
-    static ZERO = new Color({r: 0, g: 0, b: 0, a: 0})
-
-    closeTo(otherColor: Color, delta: number, includeAlpha: boolean = false): boolean {
-        return ((this.r - otherColor.r).abs() <= delta &&
-            (this.g - otherColor.g).abs() <= delta &&
-            (this.b - otherColor.b).abs() <= delta &&
-            (includeAlpha ? (this.a - otherColor.a).abs() <= delta : true)
-        )
+    static fromRGBAString(rgbaString: string): Color {
+        const regexp = rgbaString.match(/[^\srgba,()]\d*\d*\d*/g)
+        if (!regexp) throw Error()
+        const r = regexp[0]
+        const g = regexp[1]
+        const b = regexp[2]
+        const a = regexp[3]
+        if (!r || !g || !b || !a) throw Error(`RGBA parsing failed, provided:\n${rgbaString}\nregexp:\n${json(regexp)}`)
+        return new Color({
+            r: parseInt(r),
+            g: parseInt(g),
+            b: parseInt(b),
+            a: parseInt(a),
+        })
     }
 
-    static random(includeAlpha: boolean = false): Color {
-        return new Color({
-            r: (random() * 255).roundToDec(0),
-            g: (random() * 255).roundToDec(0),
-            b: (random() * 255).roundToDec(0),
-            a: includeAlpha ? (random() * 255).roundToDec(0) : 255
-        })
+    private static hex(channelValue: number): string {
+        let hex = Number(channelValue).toString(16)
+        if (hex.length < 2) hex = "0" + hex
+        return hex
     }
 
     difference(otherColor: Color): { r: number, g: number, b: number, a: number } {
@@ -234,6 +231,26 @@ export class Color {
             a: this.a - otherColor.a
         }
     }
+
+    static ZERO = new Color({r: 0, g: 0, b: 0, a: 0})
+
+    static random(includeAlpha: boolean = false): Color {
+        return new Color({
+            r: (random() * 255).roundToDec(0),
+            g: (random() * 255).roundToDec(0),
+            b: (random() * 255).roundToDec(0),
+            a: includeAlpha ? (random() * 255).roundToDec(0) : 255
+        })
+    }
+
+    closeTo(otherColor: Color, delta: number, includeAlpha: boolean = false): boolean {
+        return ((this.r - otherColor.r).abs() <= delta &&
+            (this.g - otherColor.g).abs() <= delta &&
+            (this.b - otherColor.b).abs() <= delta &&
+            (includeAlpha ? (this.a - otherColor.a).abs() <= delta : true)
+        )
+    }
+
 }
 
 export class ImageData {
@@ -282,7 +299,7 @@ export class ImageData {
     }
 
     get uniqueColors(): Array<Color> {
-        return Array.from(new Set(this.pixels))
+        return this.pixels.map(it => it.toRGBA).distinct().map(it => Color.fromRGBAString(it))
     }
 
     static fromPixels(pixels: Array<Color>, width?: number, height?: number): ImageData {
@@ -303,7 +320,6 @@ export class ImageData {
     static fromPixelsGrid(grid: Grid<Color>): ImageData {
         const height = grid.length
         const width = grid[0].length
-        logD(`height: ${height}, width: ${width} buffer size: ${height * width * 4}`)
         const buffer = Buffer.alloc(height * width * 4)
         grid.forEach((row, y) => {
             row.forEach((color, x) => {
@@ -538,7 +554,7 @@ export class ColorRegion {
 
     constructor({id = NO_ID, points = []}: { id?: number, points?: Array<RegionColor> }) {
         this.id = id
-        this.pixels = points
+        this.addAll(points)
     }
 
     get isEmpty(): boolean {
@@ -560,6 +576,7 @@ export class ColorRegion {
             this.pixels.push(pathColor)
             pathColor.regionId = this.id
         }
+        this.calculateAndSetAverageColor()
     }
 
     addAll(pathColors: Array<RegionColor>) {
@@ -571,6 +588,7 @@ export class ColorRegion {
             this.pixels.remove(pathColor)
             pathColor.regionId = NO_ID
         }
+        this.calculateAndSetAverageColor()
     }
 
     removeAll(pathColors: Array<RegionColor> = this.pixels) {

@@ -75,15 +75,16 @@ export class ColorScanner {
         writeLog(regions.keysArray(), `regions`)
 
         logD(`Initial Pixels: ${imageData.totalPixels}`)
+        logD(`Unique Colors: ${imageData.uniqueColors.length}`)
         logD(`Regions: ${regions.size}`)
         logD(`Ratio: ${(regions.size / imageData.totalPixels).roundToDec(3)}`)
 
         return regions
     }
 
-    static regionsToColorGrid(paths: Array<ColorRegion>, width: number, height: number): Grid<Color> {
+    static regionsToColorGrid(regions: Array<ColorRegion>, width: number, height: number): Grid<Color> {
         const result = Array.init(height, y => Array.init(width, x => new Color({r: 0, g: 0, b: 0, a: 255})))
-        paths.forEach(path => path.pixels.forEach(pixel => result[pixel.y][pixel.x] = pixel))
+        regions.forEach(region => region.pixels.forEach(pixel => result[pixel.y][pixel.x] = region.averageColor))
         return result
     }
 
