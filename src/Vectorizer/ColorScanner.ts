@@ -14,7 +14,7 @@ export class ColorScanner {
 
         const height = imageData.height
         const width = imageData.width
-        const regions = new Map<ID, ColorRegion>()
+        const regionsMap = new Map<ID, ColorRegion>()
         const currentId: NumberObject = {it: 0}
 
         colorGrid.forEach((column: Array<RegionColor>) => {
@@ -30,23 +30,53 @@ export class ColorScanner {
                     // new region with just me! No need to check anything since no neighbors
                     const newRegion = new ColorRegion({id: currentId.it++})
                     newRegion.add(regionColor)
-                    regions.set(newRegion.id, newRegion)
+                    regionsMap.set(newRegion.id, newRegion)
                 }
                 // Do have neighbors?
                 else {
                     // Get their distinct regions
-                    const previousRegions: Array<ColorRegion> = previousNeighbors.map(neighbor => neighbor.regionId)
+                    let previousRegions: Array<ColorRegion> = previousNeighbors.map(neighbor => neighbor.regionId)
                         .distinct()
-                        .map(id => regions.get(id))
+                        .map(id => regionsMap.get(id))
                         .filter(it => it !== undefined)
                         .map(it => it!!)
 
-
                     // TODO we need to merge any regions that are too close to each other here,
+                    //  is anyone mergeable with me? If so let's merge as many of us as possible
+                    //  but if not then no merges even if some are mergeable because they need a link?
+                    //  this is actually impossible because we would have already made a pass that checks
+                    //  those guys
+
+                    const toMerge: Array<ColorRegion> = []
+
+                    previousRegions.forEach(previousRegion => {
+                        if (previousRegion.averageColor.closeTo(regionColor, delta))
+                            toMerge.push(previousRegion)
+                    })
+
+                    // Let's merge!
+                    if (toMerge.isNotEmpty()) {
+                        // Pick a master, the one with the lowest ID
+                        const master = toMerge.sort((a, b) => a.id - b.id).first()!!
+                        toMerge.forEach(colorRegionToMerge => {
+                            if (colorRegionToMerge !== master) {
+                                master.takeAllColorsFrom(colorRegionToMerge)
+                                regionsMap.set(master.id, master)
+                                regionsMap.delete(colorRegionToMerge.id)
+                            }
+                        })
+                    }
+
                     // After merging, which one best fits me?
 
                     let bestFit: ColorRegion | null = null
                     let lowestDelta = Number.MAX_VALUE
+
+                    previousRegions = previousNeighbors.map(neighbor => neighbor.regionId)
+                        .distinct()
+                        .map(id => regionsMap.get(id))
+                        .filter(it => it !== undefined)
+                        .map(it => it!!)
 
                     previousRegions.forEach(region => {
                         const diff = regionColor.difference(region.averageColor)
@@ -66,20 +96,20 @@ export class ColorScanner {
                     if (bestFit === null) {
                         const newRegion = new ColorRegion({id: currentId.it++})
                         newRegion.add(regionColor)
-                        regions.set(newRegion.id, newRegion)
+                        regionsMap.set(newRegion.id, newRegion)
                     }
                 }
             })
         })
 
-        writeLog(regions.keysArray(), `regions`)
+        writeLog(regionsMap.keysArray(), `regions`)
 
-        logD(`Initial Pixels: ${imageData.totalPixels}`)
-        logD(`Unique Colors: ${imageData.uniqueColors.length}`)
-        logD(`Regions: ${regions.size}`)
-        logD(`Ratio: ${(regions.size / imageData.totalPixels).roundToDec(3)}`)
+        logD(`Initial Pixels: ${imageData.totalPixels.comma()}`)
+        logD(`Unique Colors: ${imageData.uniqueColors.length.comma()}`)
+        logD(`Regions: ${regionsMap.size.comma()}`)
+        logD(`Ratio: ${(regionsMap.size / imageData.totalPixels).roundToDec(3)}`)
 
-        return regions
+        return regionsMap
     }
 
     static regionsToColorGrid(regions: Array<ColorRegion>, width: number, height: number): Grid<Color> {

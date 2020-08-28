@@ -571,32 +571,39 @@ export class ColorRegion {
         return result ? result : null
     }
 
-    add(pathColor: RegionColor) {
+    add(pathColor: RegionColor, recalculate: boolean = true) {
         if (!this.contains(pathColor)) {
             this.pixels.push(pathColor)
             pathColor.regionId = this.id
         }
-        this.calculateAndSetAverageColor()
+        if (recalculate) this.calculateAndSetAverageColor()
     }
 
     addAll(pathColors: Array<RegionColor>) {
-        pathColors.forEach(pathColor => this.add(pathColor))
+        pathColors.forEach(pathColor => this.add(pathColor, false))
+        this.calculateAndSetAverageColor()
     }
 
-    remove(pathColor: RegionColor) {
+    takeAllColorsFrom(other: ColorRegion) {
+        this.addAll(other.pixels)
+        other.removeAll()
+    }
+
+    remove(pathColor: RegionColor, recalculate: boolean = true) {
         if (this.contains(pathColor)) {
             this.pixels.remove(pathColor)
             pathColor.regionId = NO_ID
         }
-        this.calculateAndSetAverageColor()
+        if (recalculate) this.calculateAndSetAverageColor()
     }
 
     removeAll(pathColors: Array<RegionColor> = this.pixels) {
-        pathColors.forEach(pathColor => this.remove(pathColor))
+        pathColors.forEach(pathColor => this.remove(pathColor, false))
+        this.calculateAndSetAverageColor()
     }
 
     calculateAndSetAverageColor(): ColorRegion {
-        if (this.pixels.isNotEmpty()) {
+        if (this.pixels.length !== 0) {
             const total = this.pixels.length
             let r: number = 0
             let g: number = 0
