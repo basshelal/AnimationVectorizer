@@ -41,18 +41,9 @@ export class ColorScanner {
                         .filter(it => it !== undefined)
                         .map(it => it!!)
 
-                    // TODO we need to merge any regions that are too close to each other here,
-                    //  is anyone mergeable with me? If so let's merge as many of us as possible
-                    //  but if not then no merges even if some are mergeable because they need a link?
-                    //  this is actually impossible because we would have already made a pass that checks
-                    //  those guys
-
-                    const toMerge: Array<ColorRegion> = []
-
-                    previousRegions.forEach(previousRegion => {
-                        if (previousRegion.averageColor.closeTo(regionColor, delta))
-                            toMerge.push(previousRegion)
-                    })
+                    // Anyone close enough to me so that we can merge?
+                    const toMerge: Array<ColorRegion> = previousRegions
+                        .filter(previousRegion => previousRegion.averageColor.closeTo(regionColor, delta))
 
                     // Let's merge!
                     if (toMerge.isNotEmpty()) {
@@ -65,18 +56,17 @@ export class ColorScanner {
                                 regionsMap.delete(colorRegionToMerge.id)
                             }
                         })
+                        // Re-set previousRegions after the merge because regionsMap has changed its contents
+                        previousRegions = previousNeighbors.map(neighbor => neighbor.regionId)
+                            .distinct()
+                            .map(id => regionsMap.get(id))
+                            .filter(it => it !== undefined)
+                            .map(it => it!!)
                     }
 
-                    // After merging, which one best fits me?
-
-                    let bestFit: ColorRegion | null = null
+                    // After merging, which region best fits me?
+                    let bestFit: ColorRegion = ColorRegion.NULL
                     let lowestDelta = Number.MAX_VALUE
-
-                    previousRegions = previousNeighbors.map(neighbor => neighbor.regionId)
-                        .distinct()
-                        .map(id => regionsMap.get(id))
-                        .filter(it => it !== undefined)
-                        .map(it => it!!)
 
                     previousRegions.forEach(region => {
                         const diff = regionColor.difference(region.averageColor)
@@ -88,12 +78,11 @@ export class ColorScanner {
                     })
 
                     // I have a best fit, is it within delta?
-                    if (bestFit !== null) {
-                        if (!bestFit!!.averageColor.closeTo(regionColor, delta)) bestFit = null
-                        else bestFit!!.add(regionColor)
+                    if (bestFit !== ColorRegion.NULL && bestFit.averageColor.closeTo(regionColor, delta)) {
+                        bestFit.add(regionColor)
                     }
-                    // None fit me? then a new region for myself
-                    if (bestFit === null) {
+                    // None fit me or the delta is too big? Then a new region for myself
+                    else {
                         const newRegion = new ColorRegion({id: currentId.it++})
                         newRegion.add(regionColor)
                         regionsMap.set(newRegion.id, newRegion)
