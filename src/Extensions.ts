@@ -32,6 +32,8 @@ declare global {
         plus(element: T): Array<T>
 
         onEach(callback: (value: T, index: number, array: T[]) => void, thisArg?: any): Array<T>
+
+        sorted(): Array<number>
     }
 
     interface ArrayConstructor {
@@ -165,6 +167,9 @@ function _array() {
     protoExtension(Array, "onEach", function <T>(this: Array<T>, callback: (value: T, index: number) => void): Array<T> {
         this.forEach(callback)
         return this
+    })
+    protoExtension(Array, "sorted", function (this: Array<number>): Array<number> {
+        return this.sort((a, b) => a - b)
     })
 }
 

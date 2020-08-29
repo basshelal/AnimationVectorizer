@@ -39,6 +39,12 @@ export function random(): number {
     return Math.random()
 }
 
+export function average(...values: Array<number>): number {
+    if (values.isNotEmpty()) {
+        return values.reduce(((prev, curr) => prev + curr), 0) / values.length
+    } else return 0
+}
+
 export class NumberRangeIterator implements Iterator<number> {
 
     private current: number = 0

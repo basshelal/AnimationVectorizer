@@ -1,12 +1,12 @@
 import {Color, ColorRegion, Direction, Grid, ID, ImageData, RegionColor} from "../Types";
-import {NumberObject} from "../Utils";
+import {average, NumberObject} from "../Utils";
 import {logD, writeLog} from "../Log";
 
 export class ColorScanner {
     private constructor() {
     }
 
-    static parseColorRegions(imageData: ImageData, delta: number = 25): Map<ID, ColorRegion> {
+    static parseColorRegions(imageData: ImageData, delta: number = 20): Map<ID, ColorRegion> {
         const colorGrid: Grid<RegionColor> = imageData.pixelsGrid
             .map((column: Array<Color>, y: number) =>
                 column.map((color: Color, x: number) =>
@@ -80,7 +80,7 @@ export class ColorScanner {
 
                     previousRegions.forEach(region => {
                         const diff = regionColor.difference(region.averageColor)
-                        const delta = diff.r + diff.g + diff.b + diff.a
+                        const delta = average(diff.r, diff.g, diff.b, diff.a)
                         if (delta < lowestDelta) {
                             lowestDelta = delta
                             bestFit = region
@@ -89,7 +89,7 @@ export class ColorScanner {
 
                     // I have a best fit, is it within delta?
                     if (bestFit !== null) {
-                        if (!regionColor.closeTo(bestFit!!.averageColor, delta)) bestFit = null
+                        if (!bestFit!!.averageColor.closeTo(regionColor, delta)) bestFit = null
                         else bestFit!!.add(regionColor)
                     }
                     // None fit me? then a new region for myself
@@ -102,12 +102,27 @@ export class ColorScanner {
             })
         })
 
-        writeLog(regionsMap.keysArray(), `regions`)
+        writeLog(regionsMap.valuesArray().sort((a, b) => a.pixels.length - b.pixels.length), `regions`)
 
         logD(`Initial Pixels: ${imageData.totalPixels.comma()}`)
         logD(`Unique Colors: ${imageData.uniqueColors.length.comma()}`)
         logD(`Regions: ${regionsMap.size.comma()}`)
         logD(`Ratio: ${(regionsMap.size / imageData.totalPixels).roundToDec(3)}`)
+
+        const idLengthArray: Array<{ id: number, length: number }> = regionsMap.valuesArray().map(r => {
+            return {id: r.id, length: r.pixels.length}
+        })
+
+        writeLog(idLengthArray, `idLengthArray`)
+
+        logD(`1 pixel regions: ${idLengthArray.filter(r => r.length === 1).length.comma()}`)
+        logD(`2 pixel regions: ${idLengthArray.filter(r => r.length === 2).length.comma()}`)
+        logD(`3 pixel regions: ${idLengthArray.filter(r => r.length === 3).length.comma()}`)
+        logD(`4 pixel regions: ${idLengthArray.filter(r => r.length === 4).length.comma()}`)
+        logD(`5 pixel regions: ${idLengthArray.filter(r => r.length === 5).length.comma()}`)
+        logD(`Regions < 5 pixels large: ${idLengthArray.filter(r => r.length < 5).length.comma()}`)
+        logD(`Regions >= 8 pixels large: ${idLengthArray.filter(r => r.length >= 8).length.comma()}`)
+        logD(`Regions >= 16 pixels large: ${idLengthArray.filter(r => r.length >= 16).length.comma()}`)
 
         return regionsMap
     }
