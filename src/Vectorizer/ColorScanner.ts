@@ -121,11 +121,15 @@ export class ColorScanner {
         logD(`Regions Grid NO_ID: ${regionsGrid.filter(it => it.filter(id => id === NO_ID).isNotEmpty()).length}`)
 
         await this.writeImage(`./out/beforeReduce.png`, regionsMap, width, height)
+        await this.writeImageCondition(`./out/beforeReduceLarge.png`, regionsMap, width, height, r => r.totalPixels >= 9)
+        await this.writeImageCondition(`./out/beforeReduceSmall.png`, regionsMap, width, height, r => r.totalPixels < 9)
         await this.writeImageRandomized(`./out/beforeReduceRandom.png`, regionsMap, width, height)
 
         const reduced = this.reduceColorRegions(regionsMap, regionsGrid)
 
         await this.writeImage(`./out/afterReduce.png`, reduced, width, height)
+        await this.writeImageCondition(`./out/afterReduceLarge.png`, regionsMap, width, height, r => r.totalPixels >= 9)
+        await this.writeImageCondition(`./out/afterReduceSmall.png`, regionsMap, width, height, r => r.totalPixels < 9)
         await this.writeImageRandomized(`./out/afterReduceRandom.png`, reduced, width, height)
 
         logD(`Regions: ${reduced.size.comma()}`)
@@ -142,7 +146,7 @@ export class ColorScanner {
                 // I am a region that needs to be merged
                 if (region && region.totalPixels < minRegionSize) {
                     // Get my neighbors
-                    const neighbors: Array<ColorRegion> = Array.from<Direction>(AllDirections)
+                    const neighbors: Array<ColorRegion> = AllDirections
                         .map(dir => new Point({x: x, y: y}).shifted(dir, 1))
                         .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
                         .map(point => regionsMap.get(regionsGrid[point.y][point.x]))
@@ -169,6 +173,21 @@ export class ColorScanner {
         return regionsMap
     }
 
+    // TOO SLOW!
+    static regionsToPolygons(regions: Array<ColorRegion>): Array<ColorRegion> {
+        regions.forEach((region: ColorRegion) => {
+            const toRemove: Array<RegionColor> = []
+            region.pixels.forEach((pixel: RegionColor) => {
+                const points = region.pixels.map(it => it.point)
+                const neighbors: Array<Point> = AllDirections.map(dir => pixel.point.shifted(dir, 1))
+                const shouldRemove: boolean = neighbors.every(neighbor => points.contains(neighbor))
+                if (shouldRemove) toRemove.push(pixel)
+            })
+            region.pixels.removeAll(toRemove)
+        })
+        return regions
+    }
+
     static regionsToColorGrid(regions: Array<ColorRegion>, width: number, height: number): Grid<Color> {
         const result = Array.init(height, () => Array.init(width, () => Color.ZERO))
         regions.forEach(region => region.pixels.forEach(pixel => result[pixel.y][pixel.x] = region.averageColor))
@@ -180,9 +199,14 @@ export class ColorScanner {
     }
 
     static async writeImageRandomized(path: string, regions: Map<ID, ColorRegion>, width: number, height: number) {
-        await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray()
+        await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray().copy()
             .onEach(r => r.averageColor = Color.random()), width, height))
         )
+    }
+
+    static async writeImageCondition(path: string, regions: Map<ID, ColorRegion>, width: number, height: number,
+                                     condition: (r: ColorRegion) => boolean) {
+        await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray().filter(condition), width, height)))
     }
 
 }
