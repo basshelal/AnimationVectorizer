@@ -1,4 +1,4 @@
-import {from, json, random} from "./Utils";
+import {average, from, json, random} from "./Utils";
 import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
 import {assert} from "./Log";
 
@@ -223,16 +223,22 @@ export class Color {
         return hex
     }
 
-    difference(otherColor: Color): { r: number, g: number, b: number, a: number } {
-        return {
-            r: this.r - otherColor.r,
-            g: this.g - otherColor.g,
-            b: this.b - otherColor.b,
-            a: this.a - otherColor.a
-        }
-    }
+    static WHITE = new Color({r: 255, g: 255, b: 255, a: 255})
 
     static ZERO = new Color({r: 0, g: 0, b: 0, a: 0})
+    static BLACK = new Color({r: 0, g: 0, b: 0, a: 255})
+    static RED = new Color({r: 255, g: 0, b: 0, a: 255})
+    static GREEN = new Color({r: 0, g: 255, b: 0, a: 255})
+    static BLUE = new Color({r: 0, g: 0, b: 255, a: 255})
+    static MAGENTA = new Color({r: 255, g: 0, b: 255, a: 255})
+
+    difference(otherColor: Color): { r: number, g: number, b: number, a: number, average: number } {
+        const r = this.r - otherColor.r
+        const g = this.g - otherColor.g
+        const b = this.b - otherColor.b
+        const a = this.a - otherColor.a
+        return {r: r, g: g, b: b, a: a, average: average(r, g, b, a)}
+    }
 
     static random(includeAlpha: boolean = false): Color {
         return new Color({
@@ -559,6 +565,10 @@ export class ColorRegion {
 
     get isEmpty(): boolean {
         return this.pixels.isEmpty()
+    }
+
+    get totalPixels(): number {
+        return this.pixels.length
     }
 
     contains(pathColor: RegionColor): boolean {

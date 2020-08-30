@@ -3,9 +3,8 @@ import {logD, logW} from "./Log";
 import {now} from "./Utils";
 import moment, {duration} from "moment";
 import * as v8 from "v8";
-import {PNGImageData, PNGImageDataToImageData, readPNG, writeImage} from "./PNG";
+import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG";
 import {ColorScanner} from "./Vectorizer/ColorScanner";
-import {Color, ImageData} from "./Types";
 
 extensions()
 
@@ -66,17 +65,7 @@ async function test() {
 
     const imageData = PNGImageDataToImageData(png)
 
-    const colors = ColorScanner.parseColorRegions(imageData)
-
-    const colorGrid = ColorScanner.regionsToColorGrid(colors.valuesArray(), png.width, png.height)
-
-    await writeImage(`./out/colors.png`, ImageData.fromPixelsGrid(colorGrid))
-
-    await writeImage(`./out/random.png`, ImageData.fromPixelsGrid(
-        ColorScanner.regionsToColorGrid(colors.valuesArray().onEach(region => {
-            region.averageColor = Color.random()
-        }), png.width, png.height)
-    ))
+    await ColorScanner.parseColorRegions(imageData)
 
     const finish = moment()
     logD(`Finished at ${now()}\n` +

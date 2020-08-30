@@ -25,8 +25,8 @@ export class PathScanner {
         const paths = new Map<ID, Path>()
         const currentId: NumberObject = {it: 0}
 
-        pointsGrid.forEach((column: Array<PathColor>) => {
-            column.forEach((pathColor: PathColor) => {
+        pointsGrid.forEach((row: Array<PathColor>) => {
+            row.forEach((pathColor: PathColor) => {
                 if (pathColor.isNotNull) { // we are an edge pixel
                     // Check my previous neighbors and check their paths
                     const previousNeighbors: Array<PathColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
