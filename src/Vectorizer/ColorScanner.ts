@@ -133,7 +133,7 @@ export class ColorScanner {
         return reduced
     }
 
-    static reduceColorRegions(regionsMap: Map<ID, ColorRegion>, regionsGrid: Grid<ID>, minRegionSize: number = 6): Map<ID, ColorRegion> {
+    static reduceColorRegions(regionsMap: Map<ID, ColorRegion>, regionsGrid: Grid<ID>, minRegionSize: number = 9): Map<ID, ColorRegion> {
         const height = regionsGrid.length
         const width = regionsGrid[0].length
         regionsGrid.forEach((row: Array<ID>, y: number) => {
