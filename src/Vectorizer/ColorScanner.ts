@@ -128,11 +128,11 @@ export class ColorScanner {
         const reduced = this.reduceColorRegions(regionsMap, regionsGrid)
 
         await this.writeImage(`./out/afterReduce.png`, reduced, width, height)
-        await this.writeImageCondition(`./out/afterReduceLarge.png`, regionsMap, width, height, r => r.totalPixels >= 9)
-        await this.writeImageCondition(`./out/afterReduceSmall.png`, regionsMap, width, height, r => r.totalPixels < 9)
+        await this.writeImageCondition(`./out/afterReduceLarge.png`, reduced, width, height, r => r.totalPixels >= 9)
+        await this.writeImageCondition(`./out/afterReduceSmall.png`, reduced, width, height, r => r.totalPixels < 9)
         await this.writeImageRandomized(`./out/afterReduceRandom.png`, reduced, width, height)
 
-        logD(`Regions: ${reduced.size.comma()}`)
+        logD(`Reduced Regions: ${reduced.size.comma()}`)
 
         return reduced
     }
