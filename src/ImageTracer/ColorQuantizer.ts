@@ -1,6 +1,6 @@
 // Octree Color Quantization from this excellent article https://observablehq.com/@tmcw/octree-color-quantization
 
-import {Color, Grid, Palette} from "../Types";
+import {Grid, Palette, Pixel} from "../Types";
 import {from} from "../Utils";
 
 const MAX_DEPTH = 8
@@ -9,7 +9,7 @@ export class ColorQuantizer {
     levels: Grid<Node>
     root: Node
 
-    constructor(colors?: Array<Color>) {
+    constructor(colors?: Array<Pixel>) {
         this.levels = Array.init(MAX_DEPTH, () => [])
         this.root = new Node(0, this)
         if (colors) colors.forEach(c => this.addColor(c))
@@ -19,7 +19,7 @@ export class ColorQuantizer {
         return this.root.leafNodes
     }
 
-    addColor(color: Color) {
+    addColor(color: Pixel) {
         this.root.addColor(color, 0, this)
     }
 
@@ -50,7 +50,7 @@ export class ColorQuantizer {
         this.levels[level].push(node)
     }
 
-    getPaletteIndex(color: Color): number {
+    getPaletteIndex(color: Pixel): number {
         return this.root.getPaletteIndex(color, 0)
     }
 }
@@ -61,16 +61,16 @@ export class Node {
     children: Array<Node>
 
     constructor(level: number, parent: ColorQuantizer) {
-        this._color = new Color({r: 0, g: 0, b: 0})
+        this._color = new Pixel({r: 0, g: 0, b: 0})
         this.pixelCount = 0
         this.paletteIndex = 0
         this.children = []
         if (level < MAX_DEPTH - 1) parent.addLevelNode(level, this)
     }
 
-    _color: Color
+    _color: Pixel
 
-    get color(): Color {
+    get color(): Pixel {
         return this._color.normalized(this.pixelCount)
     }
 
@@ -91,7 +91,7 @@ export class Node {
         return leafNodes
     }
 
-    addColor(color: Color, level: number, parent: ColorQuantizer) {
+    addColor(color: Pixel, level: number, parent: ColorQuantizer) {
         if (level >= MAX_DEPTH) {
             this._color.add(color)
             this.pixelCount++
@@ -104,7 +104,7 @@ export class Node {
         this.children[index].addColor(color, level + 1, parent)
     }
 
-    getPaletteIndex(color: Color, level: number): number {
+    getPaletteIndex(color: Pixel, level: number): number {
         if (this.isLeaf) {
             return this.paletteIndex
         }
@@ -129,7 +129,7 @@ export class Node {
 }
 
 // level is from 0 to 7 inclusive for 8 max levels
-function getColorIndex(color: Color, level: number): number {
+function getColorIndex(color: Pixel, level: number): number {
     let index = 0
     // 128 right shifted by level digits
     const mask: number = 0b10000000 >> level

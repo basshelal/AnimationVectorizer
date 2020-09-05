@@ -1,4 +1,4 @@
-import {AllDirections, Color, ColorRegion, Direction, Grid, ID, ImageData, NO_ID, Point, RegionColor} from "../Types";
+import {AllDirections, ColorRegion, Direction, Grid, ID, ImageData, NO_ID, Pixel, Point, RegionPixel} from "../Types";
 import {NumberObject} from "../Utils";
 import {logD, writeLog} from "../Log";
 import {writeImage} from "../PNG";
@@ -8,10 +8,10 @@ export class ColorScanner {
     }
 
     static async parseColorRegions(imageData: ImageData, delta: number = 20): Promise<Map<ID, ColorRegion>> {
-        const colorGrid: Grid<RegionColor> = imageData.pixelsGrid
-            .map((column: Array<Color>, y: number) =>
-                column.map((color: Color, x: number) =>
-                    RegionColor.fromColor({x: x, y: y}, color)))
+        const colorGrid: Grid<RegionPixel> = imageData.pixelsGrid
+            .map((column: Array<Pixel>, y: number) =>
+                column.map((color: Pixel, x: number) =>
+                    RegionPixel.fromPixel({x: x, y: y}, color)))
 
         const height = imageData.height
         const width = imageData.width
@@ -19,11 +19,11 @@ export class ColorScanner {
         const regionsGrid: Grid<ID> = Array.init(height, () => Array.init(width, () => NO_ID))
         const currentId: NumberObject = {it: 0}
 
-        colorGrid.forEach((row: Array<RegionColor>, y: number) => {
-            row.forEach((regionColor: RegionColor, x: number) => {
+        colorGrid.forEach((row: Array<RegionPixel>, y: number) => {
+            row.forEach((regionPixel: RegionPixel, x: number) => {
                 // Check my previous neighbors and check their colors
-                const previousNeighbors: Array<RegionColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
-                    .map(dir => regionColor.point.shifted(dir, 1))
+                const previousNeighbors: Array<RegionPixel> = Array.from<Direction>(["W", "NW", "N", "NE"])
+                    .map(dir => regionPixel.point.shifted(dir, 1))
                     .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
                     .map(point => colorGrid[point.y][point.x])
 
@@ -31,8 +31,8 @@ export class ColorScanner {
                 if (previousNeighbors.isEmpty()) {
                     // new region with just me! No need to check anything since no neighbors
                     const newRegion = new ColorRegion({id: currentId.it++})
-                    regionColor.isEdgePixel = true
-                    newRegion.add(regionColor)
+                    regionPixel.isEdgePixel = true
+                    newRegion.add(regionPixel)
                     regionsMap.set(newRegion.id, newRegion)
                     regionsGrid[y][x] = newRegion.id
                 }
@@ -47,7 +47,7 @@ export class ColorScanner {
 
                     // Anyone close enough to me so that we can merge?
                     const toMerge: Array<ColorRegion> = previousRegions
-                        .filter(previousRegion => previousRegion.averageColor.closeTo(regionColor, delta))
+                        .filter(previousRegion => previousRegion.averageColor.closeTo(regionPixel, delta))
 
                     // There is? Then let's merge!
                     if (toMerge.isNotEmpty()) {
@@ -75,7 +75,7 @@ export class ColorScanner {
                     let bestFit: ColorRegion = ColorRegion.NULL
                     let lowestDelta = Number.MAX_VALUE
                     previousRegions.forEach(region => {
-                        const delta = regionColor.difference(region.averageColor).average
+                        const delta = regionPixel.difference(region.averageColor).average
                         if (delta < lowestDelta) {
                             lowestDelta = delta
                             bestFit = region
@@ -83,16 +83,16 @@ export class ColorScanner {
                     })
 
                     // I have a best fit, is it within delta?
-                    if (bestFit !== ColorRegion.NULL && bestFit.averageColor.closeTo(regionColor, delta)) {
-                        bestFit.add(regionColor)
+                    if (bestFit !== ColorRegion.NULL && bestFit.averageColor.closeTo(regionPixel, delta)) {
+                        bestFit.add(regionPixel)
                         regionsMap.set(bestFit.id, bestFit)
                         regionsGrid[y][x] = bestFit.id
                     }
                     // None fit me or the delta is too big? Then a new region for myself
                     else {
                         const newRegion = new ColorRegion({id: currentId.it++})
-                        regionColor.isEdgePixel = true
-                        newRegion.add(regionColor)
+                        regionPixel.isEdgePixel = true
+                        newRegion.add(regionPixel)
                         regionsMap.set(newRegion.id, newRegion)
                         regionsGrid[y][x] = newRegion.id
                     }
@@ -181,8 +181,8 @@ export class ColorScanner {
     // TOO SLOW!
     static regionsToPolygons(regions: Array<ColorRegion>): Array<ColorRegion> {
         regions.forEach((region: ColorRegion) => {
-            const toRemove: Array<RegionColor> = []
-            region.pixels.forEach((pixel: RegionColor) => {
+            const toRemove: Array<RegionPixel> = []
+            region.pixels.forEach((pixel: RegionPixel) => {
                 const points = region.pixels.map(it => it.point)
                 const neighbors: Array<Point> = AllDirections.map(dir => pixel.point.shifted(dir, 1))
                 const shouldRemove: boolean = neighbors.every(neighbor => points.contains(neighbor))
@@ -193,8 +193,8 @@ export class ColorScanner {
         return regions
     }
 
-    static regionsToColorGrid(regions: Array<ColorRegion>, width: number, height: number): Grid<Color> {
-        const result = Array.init(height, () => Array.init(width, () => Color.ZERO))
+    static regionsToColorGrid(regions: Array<ColorRegion>, width: number, height: number): Grid<Pixel> {
+        const result = Array.init(height, () => Array.init(width, () => Pixel.ZERO))
         regions.forEach(region => region.pixels.forEach(pixel => result[pixel.y][pixel.x] = region.averageColor))
         return result
     }
@@ -205,7 +205,7 @@ export class ColorScanner {
 
     static async writeImageRandomized(path: string, regions: Map<ID, ColorRegion>, width: number, height: number) {
         await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray().copy()
-            .onEach(r => r.averageColor = Color.random()), width, height))
+            .onEach(r => r.averageColor = Pixel.random()), width, height))
         )
     }
 

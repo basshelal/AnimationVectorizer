@@ -1,4 +1,4 @@
-import {Color, ImageData} from "./Types";
+import {ImageData, Pixel} from "./Types";
 import {writeImage} from "./PNG";
 import {writeFileSync} from "fs";
 import {json, now} from "./Utils";
@@ -44,7 +44,7 @@ export function assert(condition: boolean, message: string, args?: IArguments, f
     }
 }
 
-export async function writePixels(pixels: Array<Color>, fileName: string) {
+export async function writePixels(pixels: Array<Pixel>, fileName: string) {
     if (logOptions.enabled)
         await writeImage(`./logs/${fileName}.png`, ImageData.fromPixels(pixels))
 }

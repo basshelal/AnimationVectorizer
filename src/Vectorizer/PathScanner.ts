@@ -1,5 +1,5 @@
 import {Mat} from "opencv4nodejs";
-import {Color, Direction, Grid, ID, matToColorGrid, Path, PathColor} from "../Types";
+import {Direction, Grid, ID, matToColorGrid, Path, PathPixel, Pixel} from "../Types";
 import {NumberObject} from "../Utils";
 import {logD, writeLog} from "../Log";
 
@@ -10,13 +10,13 @@ export class PathScanner {
     }
 
     static parsePaths(mat: Mat, minThreshold: number = 40): Map<ID, Path> {
-        const pointsGrid: Grid<PathColor> = matToColorGrid(mat)
-            .map((column: Array<Color>, y: number) =>
-                column.map((color: Color, x: number) => {
+        const pointsGrid: Grid<PathPixel> = matToColorGrid(mat)
+            .map((column: Array<Pixel>, y: number) =>
+                column.map((color: Pixel, x: number) => {
                     if (color.isNotZero && (
                         color.r > minThreshold || color.g > minThreshold || color.b > minThreshold))
-                        return PathColor.fromColor({x: x, y: y}, color)
-                    else return PathColor.NULL
+                        return PathPixel.fromPixel({x: x, y: y}, color)
+                    else return PathPixel.NULL
                 })
             )
 
@@ -25,11 +25,11 @@ export class PathScanner {
         const paths = new Map<ID, Path>()
         const currentId: NumberObject = {it: 0}
 
-        pointsGrid.forEach((row: Array<PathColor>) => {
-            row.forEach((pathColor: PathColor) => {
+        pointsGrid.forEach((row: Array<PathPixel>) => {
+            row.forEach((pathColor: PathPixel) => {
                 if (pathColor.isNotNull) { // we are an edge pixel
                     // Check my previous neighbors and check their paths
-                    const previousNeighbors: Array<PathColor> = Array.from<Direction>(["W", "NW", "N", "NE"])
+                    const previousNeighbors: Array<PathPixel> = Array.from<Direction>(["W", "NW", "N", "NE"])
                         .map(dir => pathColor.point.shifted(dir, 1))
                         .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
                         .map(point => pointsGrid[point.y][point.x])
@@ -61,7 +61,7 @@ export class PathScanner {
                                 if (previousNeighborId !== path.id) {
                                     const fromMap: Path = paths.get(previousNeighborId)!!
                                     // remove all the points from that path and add them to the new path
-                                    const points: Array<PathColor> = Array.from(fromMap.points)
+                                    const points: Array<PathPixel> = Array.from(fromMap.points)
                                     fromMap.removeAll(points)
                                     path.addAll(points)
                                     // remove that old path from the Paths Map
@@ -82,8 +82,8 @@ export class PathScanner {
         return paths
     }
 
-    static pathsToColorGrid(paths: Array<Path>, width: number, height: number): Grid<Color> {
-        const result = Array.init(height, y => Array.init(width, x => new Color({r: 0, g: 0, b: 0, a: 255})))
+    static pathsToColorGrid(paths: Array<Path>, width: number, height: number): Grid<Pixel> {
+        const result = Array.init(height, y => Array.init(width, x => new Pixel({r: 0, g: 0, b: 0, a: 255})))
         paths.forEach(path => path.points.forEach(pathColor => result[pathColor.y][pathColor.x] = pathColor))
         return result
     }

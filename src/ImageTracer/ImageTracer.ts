@@ -3,7 +3,7 @@
 import {Options} from "./Options";
 import {floor, from, random} from "../Utils";
 import {ColorQuantizer} from "./ColorQuantizer";
-import {BoundingBox, Color, Direction, Grid, ImageData, IndexedImage, Palette, Point, SVGPathCommand} from "../Types";
+import {BoundingBox, Direction, Grid, ImageData, IndexedImage, Palette, Pixel, Point, SVGPathCommand} from "../Types";
 import {logD, logW, writeLog, writeLogImage, writePixels} from "../Log";
 
 let iterationCount: number = 0
@@ -53,8 +53,8 @@ export function imageDataToTraceData(imageData: ImageData, options: Options): Tr
     // Loop to trace each color layer
     // TODO parellelizable! A thread for every color since they don't need any communication
     const layers: Grid<SegmentPath> = []
-    const colorPaths: Array<{ color: Color, pointPaths: Array<PointPath> }> = []
-    indexedImage.palette.forEach((color: Color, colorIndex: number) => {
+    const colorPaths: Array<{ color: Pixel, pointPaths: Array<PointPath> }> = []
+    indexedImage.palette.forEach((color: Pixel, colorIndex: number) => {
             iterationCount++
             const edges: Grid<number> = edgeDetection(indexedImage, colorIndex)
             const paths: Array<PointPath> = pathScan(edges, options.pathOmit)
@@ -111,7 +111,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 iterationCount++
                 // averaging
                 if (paletteSum[k].n > 0) {
-                    palette[k] = new Color({
+                    palette[k] = new Pixel({
                         r: floor(paletteSum[k].r / paletteSum[k].n),
                         g: floor(paletteSum[k].g / paletteSum[k].n),
                         b: floor(paletteSum[k].b / paletteSum[k].n),
@@ -124,7 +124,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
                 if ((paletteSum[k].n / imageData.totalPixels < 0) &&
                     (cycle < options.colorQuantCycles - 1)) {
                     logW("Randomizing a palette color!")
-                    palette[k] = new Color({
+                    palette[k] = new Pixel({
                         r: floor(random() * 255),
                         g: floor(random() * 255),
                         b: floor(random() * 255),
@@ -146,7 +146,7 @@ function colorQuantization(imageData: ImageData, options: Options): IndexedImage
             let colorIndex = 0
             let lastMinDistance = imageData.isRGBA ? (256 * 4) : (256 * 3) // 4 * 256 is the maximum RGBA distance
 
-            palette.forEach((paletteColor: Color, index: number) => {
+            palette.forEach((paletteColor: Pixel, index: number) => {
                 iterationCount++
                 // In my experience, https://en.wikipedia.org/wiki/Rectilinear_distance works better than https://en.wikipedia.org/wiki/Euclidean_distance
                 const distance = (paletteColor.r - imageColor.r).abs() +

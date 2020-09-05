@@ -3,7 +3,7 @@ import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
 import {assert} from "./Log";
 
 export type Grid<T> = Array<Array<T>>
-export type Palette = Array<Color>
+export type Palette = Array<Pixel>
 
 export class Point {
     x: number
@@ -109,15 +109,11 @@ export class IndexedImage {
     }
 }
 
-// TODO Technically this is also a representation of Pixel, should we change its name to that?
-export class Color {
-
+export class Pixel {
     r: number
     g: number
     b: number
     a: number
-
-    // TODO we should remove alpha at some point when we understand how everything works because we don't need it
 
     constructor(color?: { r: number, g: number, b: number, a?: number }) {
         if (color) {
@@ -161,7 +157,7 @@ export class Color {
     }
 
     toHex(ignoreAlpha: boolean = true): string {
-        return `#${Color.hex(this.r)}${Color.hex(this.g)}${Color.hex(this.b)}${!ignoreAlpha ? Color.hex(this.a) : ""}`
+        return `#${Pixel.hex(this.r)}${Pixel.hex(this.g)}${Pixel.hex(this.b)}${!ignoreAlpha ? Pixel.hex(this.a) : ""}`
     }
 
     get toCSS(): string {
@@ -176,19 +172,15 @@ export class Color {
         return !this.isZero
     }
 
-    clone(): Color {
-        return new Color({r: this.r, g: this.g, b: this.b, a: this.a})
-    }
-
-    normalized(pixelCount: number): Color {
-        return new Color({
+    normalized(pixelCount: number): Pixel {
+        return new Pixel({
             r: this.r / pixelCount,
             g: this.g / pixelCount,
             b: this.b / pixelCount
         })
     }
 
-    add(color: Color) {
+    add(color: Pixel) {
         this.r += color.r
         this.g += color.g
         this.b += color.b
@@ -201,38 +193,7 @@ export class Color {
         this.a = this.a.round()
     }
 
-    static fromRGBAString(rgbaString: string): Color {
-        const regexp = rgbaString.match(/[^\srgba,()]\d*\d*\d*/g)
-        if (!regexp) throw Error()
-        const r = regexp[0]
-        const g = regexp[1]
-        const b = regexp[2]
-        const a = regexp[3]
-        if (!r || !g || !b || !a) throw Error(`RGBA parsing failed, provided:\n${rgbaString}\nregexp:\n${json(regexp)}`)
-        return new Color({
-            r: parseInt(r),
-            g: parseInt(g),
-            b: parseInt(b),
-            a: parseInt(a),
-        })
-    }
-
-    private static hex(channelValue: number): string {
-        let hex = Number(channelValue).toString(16)
-        if (hex.length < 2) hex = "0" + hex
-        return hex
-    }
-
-    static WHITE = new Color({r: 255, g: 255, b: 255, a: 255})
-
-    static ZERO = new Color({r: 0, g: 0, b: 0, a: 0})
-    static BLACK = new Color({r: 0, g: 0, b: 0, a: 255})
-    static RED = new Color({r: 255, g: 0, b: 0, a: 255})
-    static GREEN = new Color({r: 0, g: 255, b: 0, a: 255})
-    static BLUE = new Color({r: 0, g: 0, b: 255, a: 255})
-    static MAGENTA = new Color({r: 255, g: 0, b: 255, a: 255})
-
-    difference(otherColor: Color): { r: number, g: number, b: number, a: number, average: number } {
+    difference(otherColor: Pixel): { r: number, g: number, b: number, a: number, average: number } {
         const r = this.r - otherColor.r
         const g = this.g - otherColor.g
         const b = this.b - otherColor.b
@@ -240,8 +201,44 @@ export class Color {
         return {r: r, g: g, b: b, a: a, average: average(r, g, b, a)}
     }
 
-    static random(includeAlpha: boolean = false): Color {
-        return new Color({
+    closeTo(otherColor: Pixel, delta: number, includeAlpha: boolean = false): boolean {
+        return ((this.r - otherColor.r).abs() <= delta &&
+            (this.g - otherColor.g).abs() <= delta &&
+            (this.b - otherColor.b).abs() <= delta &&
+            (includeAlpha ? (this.a - otherColor.a).abs() <= delta : true)
+        )
+    }
+
+    copy(): Pixel {
+        return new Pixel(this)
+    }
+
+    // region static {...}
+
+    static fromRGBAString(rgbaString: string): Pixel {
+        const regexp = rgbaString.match(/[^\srgba,()]\d*\d*\d*/g)
+        if (!regexp) throw Error()
+        const r = regexp[0]
+        const g = regexp[1]
+        const b = regexp[2]
+        const a = regexp[3]
+        if (!r || !g || !b || !a) throw Error(`RGBA parsing failed, provided:\n${rgbaString}\nregexp:\n${json(regexp)}`)
+        return new Pixel({
+            r: parseInt(r),
+            g: parseInt(g),
+            b: parseInt(b),
+            a: parseInt(a),
+        })
+    }
+
+    static hex(channelValue: number): string {
+        let hex = Number(channelValue).toString(16)
+        if (hex.length < 2) hex = "0" + hex
+        return hex
+    }
+
+    static random(includeAlpha: boolean = false): Pixel {
+        return new Pixel({
             r: (random() * 255).roundToDec(0),
             g: (random() * 255).roundToDec(0),
             b: (random() * 255).roundToDec(0),
@@ -249,13 +246,15 @@ export class Color {
         })
     }
 
-    closeTo(otherColor: Color, delta: number, includeAlpha: boolean = false): boolean {
-        return ((this.r - otherColor.r).abs() <= delta &&
-            (this.g - otherColor.g).abs() <= delta &&
-            (this.b - otherColor.b).abs() <= delta &&
-            (includeAlpha ? (this.a - otherColor.a).abs() <= delta : true)
-        )
-    }
+    static WHITE = new Pixel({r: 255, g: 255, b: 255, a: 255})
+    static ZERO = new Pixel({r: 0, g: 0, b: 0, a: 0})
+    static BLACK = new Pixel({r: 0, g: 0, b: 0, a: 255})
+    static RED = new Pixel({r: 255, g: 0, b: 0, a: 255})
+    static GREEN = new Pixel({r: 0, g: 255, b: 0, a: 255})
+    static BLUE = new Pixel({r: 0, g: 0, b: 255, a: 255})
+    static MAGENTA = new Pixel({r: 255, g: 0, b: 255, a: 255})
+
+    // endregion static {...}
 
 }
 
@@ -280,12 +279,12 @@ export class ImageData {
         return this.data.length < this.totalPixels * 4
     }
 
-    get pixels(): Array<Color> {
+    get pixels(): Array<Pixel> {
         this.ensureRGBA()
-        const result: Array<Color> = []
+        const result: Array<Pixel> = []
         let pxIndex = 0
         from(0).to(this.data.length).step(4).forEach(dataIndex => {
-            result[pxIndex] = new Color({
+            result[pxIndex] = new Pixel({
                 r: this.data[dataIndex],
                 g: this.data[dataIndex + 1],
                 b: this.data[dataIndex + 2],
@@ -296,60 +295,16 @@ export class ImageData {
         return result
     }
 
-    get pixelsGrid(): Grid<Color> {
-        const result: Grid<Color> = Array.init(this.height, () => Array.init(this.width, () => Color.ZERO))
+    get pixelsGrid(): Grid<Pixel> {
+        const result: Grid<Pixel> = Array.init(this.height, () => Array.init(this.width, () => Pixel.ZERO))
         this.forEachPixel((y, x, color) => {
             result[y][x] = color
         })
         return result
     }
 
-    get uniqueColors(): Array<Color> {
-        return this.pixels.map(it => it.toRGBA).distinct().map(it => Color.fromRGBAString(it))
-    }
-
-    static fromPixels(pixels: Array<Color>, width?: number, height?: number): ImageData {
-        const buffer = Buffer.alloc(pixels.length * 4)
-        pixels.forEach((color: Color, index: number) => {
-            buffer[index * 4] = color.r
-            buffer[index * 4 + 1] = color.g
-            buffer[index * 4 + 2] = color.b
-            buffer[index * 4 + 3] = color.a
-        })
-        return new ImageData({
-            data: buffer,
-            width: (width ? width : pixels.length.sqrt().ceil()),
-            height: (height ? height : pixels.length.sqrt().ceil())
-        })
-    }
-
-    static fromPixelsGrid(grid: Grid<Color>): ImageData {
-        const height = grid.length
-        const width = grid[0].length
-        const buffer = Buffer.alloc(height * width * 4)
-        grid.forEach((row, y) => {
-            row.forEach((color, x) => {
-                const index = (width * y) + x
-                buffer[index * 4] = color.r
-                buffer[index * 4 + 1] = color.g
-                buffer[index * 4 + 2] = color.b
-                buffer[index * 4 + 3] = color.a
-            })
-        })
-        return new ImageData({
-            data: buffer,
-            width: width,
-            height: height
-        })
-    }
-
-    static fromIndexedImage(indexedImage: IndexedImage): ImageData {
-        const flat: Array<number> = []
-        indexedImage.grid.forEach(array => array.forEach(num => flat.push(num)))
-        return ImageData.fromPixels(
-            flat.map(number => number !== -1 ? indexedImage.palette[number] : new Color()),
-            indexedImage.width, indexedImage.height
-        )
+    get uniqueColors(): Array<Pixel> {
+        return this.pixels.map(it => it.toRGBA).distinct().map(it => Pixel.fromRGBAString(it))
     }
 
     ensureRGB(): ImageData {
@@ -365,11 +320,11 @@ export class ImageData {
         return this
     }
 
-    forEachPixel(func: (y: number, x: number, color: Color) => void): ImageData {
+    forEachPixel(func: (y: number, x: number, pixel: Pixel) => void): ImageData {
         from(0).to(this.height).forEach(y => {
             from(0).to(this.width).forEach(x => {
                 const index = 4 * (y * this.width + x)
-                func(y, x, new Color({
+                func(y, x, new Pixel({
                     r: this.data[index],
                     g: this.data[index + 1],
                     b: this.data[index + 2],
@@ -393,14 +348,62 @@ export class ImageData {
         }
         return this
     }
+
+    // region static {...}
+
+    static fromPixels(pixels: Array<Pixel>, width?: number, height?: number): ImageData {
+        const buffer = Buffer.alloc(pixels.length * 4)
+        pixels.forEach((color: Pixel, index: number) => {
+            buffer[index * 4] = color.r
+            buffer[index * 4 + 1] = color.g
+            buffer[index * 4 + 2] = color.b
+            buffer[index * 4 + 3] = color.a
+        })
+        return new ImageData({
+            data: buffer,
+            width: (width ? width : pixels.length.sqrt().ceil()),
+            height: (height ? height : pixels.length.sqrt().ceil())
+        })
+    }
+
+    static fromPixelsGrid(grid: Grid<Pixel>): ImageData {
+        const height = grid.length
+        const width = grid[0].length
+        const buffer = Buffer.alloc(height * width * 4)
+        grid.forEach((row, y) => {
+            row.forEach((color, x) => {
+                const index = (width * y) + x
+                buffer[index * 4] = color.r
+                buffer[index * 4 + 1] = color.g
+                buffer[index * 4 + 2] = color.b
+                buffer[index * 4 + 3] = color.a
+            })
+        })
+        return new ImageData({
+            data: buffer,
+            width: width,
+            height: height
+        })
+    }
+
+    static fromIndexedImage(indexedImage: IndexedImage): ImageData {
+        const flat: Array<number> = []
+        indexedImage.grid.forEach(array => array.forEach(num => flat.push(num)))
+        return ImageData.fromPixels(
+            flat.map(number => number !== -1 ? indexedImage.palette[number] : new Pixel()),
+            indexedImage.width, indexedImage.height
+        )
+    }
+
+    // endregion static {...}
 }
 
-export class IndexedColor extends Color {
+export class IndexedPixel extends Pixel {
 
     x: number
     y: number
 
-    static NULL = new IndexedColor({x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+    static NULL = new IndexedPixel({x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
 
     constructor({x, y, r, g, b, a}: { x: number, y: number, r: number, g: number, b: number, a?: number }) {
         super({r, g, b, a})
@@ -408,23 +411,27 @@ export class IndexedColor extends Color {
         this.y = y
     }
 
-    static fromColor({x, y}: { x: number, y: number }, color: Color): IndexedColor {
-        return new IndexedColor({
-            x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
+    static fromPixel({x, y}: { x: number, y: number }, pixel: Pixel): IndexedPixel {
+        return new IndexedPixel({
+            x: x, y: y, r: pixel.r, g: pixel.g, b: pixel.b, a: pixel.a
         })
     }
 
     get point(): Point {
         return new Point({x: this.x, y: this.y})
     }
+
+    copy(): Pixel {
+        return new IndexedPixel(this)
+    }
 }
 
 export type ID = number // cuz readability
 export const NO_ID = -1
 
-export class PathColor extends IndexedColor {
+export class PathPixel extends IndexedPixel {
 
-    static NULL = new PathColor({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+    static NULL = new PathPixel({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
     pathId: ID = NO_ID
 
     constructor({pathId, x, y, r, g, b, a}: {
@@ -440,36 +447,44 @@ export class PathColor extends IndexedColor {
     }
 
     get isNull(): boolean {
-        return this === PathColor.NULL
+        return this === PathPixel.NULL
     }
 
     get isNotNull(): boolean {
-        return this !== PathColor.NULL
-    }
-
-    static fromColor({pathId = NO_ID, x, y}: { pathId?: number, x: number, y: number }, color: Color): PathColor {
-        return new PathColor({
-            pathId: pathId, x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
-        })
-    }
-
-    static fromIndexedColor(pathId: number, indexedColor: IndexedColor): PathColor {
-        return PathColor.fromColor({pathId: pathId, x: indexedColor.x, y: indexedColor.y}, indexedColor)
+        return this !== PathPixel.NULL
     }
 
     toString(): string {
         return JSON.stringify(this)
     }
+
+    copy(): Pixel {
+        return new PathPixel(this)
+    }
+
+    // region static {...}
+
+    static fromPixel({pathId = NO_ID, x, y}: { pathId?: number, x: number, y: number }, pixel: Pixel): PathPixel {
+        return new PathPixel({
+            pathId: pathId, x: x, y: y, r: pixel.r, g: pixel.g, b: pixel.b, a: pixel.a
+        })
+    }
+
+    static fromIndexedPixel(pathId: number, indexedPixel: IndexedPixel): PathPixel {
+        return PathPixel.fromPixel({pathId: pathId, x: indexedPixel.x, y: indexedPixel.y}, indexedPixel)
+    }
+
+    // endregion static {...}
 }
 
 export class Path {
 
     static NULL = new Path({id: NO_ID, points: []})
     id: ID = NO_ID
-    points: Array<PathColor> = []
+    points: Array<PathPixel> = []
     formsPolygon: boolean = false
 
-    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathColor> }) {
+    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<PathPixel> }) {
         this.id = id
         this.points = points
     }
@@ -478,42 +493,42 @@ export class Path {
         return this.points.isEmpty()
     }
 
-    contains(pathColor: PathColor): boolean {
+    contains(pathColor: PathPixel): boolean {
         return this.points.contains(pathColor)
     }
 
-    pointAt({x, y}: { x: number, y: number }): PathColor | null {
-        const result: PathColor | undefined =
+    pointAt({x, y}: { x: number, y: number }): PathPixel | null {
+        const result: PathPixel | undefined =
             this.points.find(pathColor => pathColor.x === x && pathColor.y === y)
         return result ? result : null
     }
 
-    add(pathColor: PathColor) {
+    add(pathColor: PathPixel) {
         if (!this.contains(pathColor)) {
             this.points.push(pathColor)
             pathColor.pathId = this.id
         }
     }
 
-    addAll(pathColors: Array<PathColor>) {
+    addAll(pathColors: Array<PathPixel>) {
         pathColors.forEach(pathColor => this.add(pathColor))
     }
 
-    remove(pathColor: PathColor) {
+    remove(pathColor: PathPixel) {
         if (this.contains(pathColor)) {
             this.points.remove(pathColor)
             pathColor.pathId = NO_ID
         }
     }
 
-    removeAll(pathColors: Array<PathColor> = this.points) {
+    removeAll(pathColors: Array<PathPixel> = this.points) {
         pathColors.forEach(pathColor => this.remove(pathColor))
     }
 }
 
-export class RegionColor extends IndexedColor {
+export class RegionPixel extends IndexedPixel {
 
-    static NULL = new RegionColor({regionId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+    static NULL = new RegionPixel({regionId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
     regionId: ID = NO_ID
     isEdgePixel: boolean = false
 
@@ -530,36 +545,44 @@ export class RegionColor extends IndexedColor {
     }
 
     get isNull(): boolean {
-        return this === RegionColor.NULL
+        return this === RegionPixel.NULL
     }
 
     get isNotNull(): boolean {
-        return this !== RegionColor.NULL
-    }
-
-    static fromColor({regionId = NO_ID, x, y}: { regionId?: number, x: number, y: number }, color: Color): RegionColor {
-        return new RegionColor({
-            regionId: regionId, x: x, y: y, r: color.r, g: color.g, b: color.b, a: color.a
-        })
-    }
-
-    static fromIndexedColor(regionId: number, indexedColor: IndexedColor): RegionColor {
-        return RegionColor.fromColor({regionId: regionId, x: indexedColor.x, y: indexedColor.y}, indexedColor)
+        return this !== RegionPixel.NULL
     }
 
     toString(): string {
         return JSON.stringify(this)
     }
+
+    copy(): Pixel {
+        return new RegionPixel(this)
+    }
+
+    // region static {...}
+
+    static fromPixel({regionId = NO_ID, x, y}: { regionId?: number, x: number, y: number }, pixel: Pixel): RegionPixel {
+        return new RegionPixel({
+            regionId: regionId, x: x, y: y, r: pixel.r, g: pixel.g, b: pixel.b, a: pixel.a
+        })
+    }
+
+    static fromIndexedPixel(regionId: number, indexedPixel: IndexedPixel): RegionPixel {
+        return RegionPixel.fromPixel({regionId: regionId, x: indexedPixel.x, y: indexedPixel.y}, indexedPixel)
+    }
+
+    // endregion static {...}
 }
 
 export class ColorRegion {
 
     static NULL = new ColorRegion({id: NO_ID, points: []})
     id: ID = NO_ID
-    pixels: Array<RegionColor> = []
-    averageColor: Color = new Color()
+    pixels: Array<RegionPixel> = []
+    averageColor: Pixel = new Pixel()
 
-    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<RegionColor> }) {
+    constructor({id = NO_ID, points = []}: { id?: number, points?: Array<RegionPixel> }) {
         this.id = id
         this.addAll(points)
     }
@@ -572,26 +595,26 @@ export class ColorRegion {
         return this.pixels.length
     }
 
-    contains(pathColor: RegionColor): boolean {
-        return this.pixels.contains(pathColor)
+    contains(regionPixel: RegionPixel): boolean {
+        return this.pixels.contains(regionPixel)
     }
 
-    pointAt({x, y}: { x: number, y: number }): RegionColor | null {
-        const result: RegionColor | undefined =
+    pointAt({x, y}: { x: number, y: number }): RegionPixel | null {
+        const result: RegionPixel | undefined =
             this.pixels.find(pathColor => pathColor.x === x && pathColor.y === y)
         return result ? result : null
     }
 
-    add(pathColor: RegionColor, recalculate: boolean = true) {
-        if (!this.contains(pathColor)) {
-            this.pixels.push(pathColor)
-            pathColor.regionId = this.id
+    add(regionPixel: RegionPixel, recalculate: boolean = true) {
+        if (!this.contains(regionPixel)) {
+            this.pixels.push(regionPixel)
+            regionPixel.regionId = this.id
         }
         if (recalculate) this.calculateAndSetAverageColor()
     }
 
-    addAll(pathColors: Array<RegionColor>) {
-        pathColors.forEach(pathColor => this.add(pathColor, false))
+    addAll(regionPixels: Array<RegionPixel>) {
+        regionPixels.forEach(pixel => this.add(pixel, false))
         this.calculateAndSetAverageColor()
     }
 
@@ -600,7 +623,7 @@ export class ColorRegion {
         other.removeAll()
     }
 
-    remove(pathColor: RegionColor, recalculate: boolean = true) {
+    remove(pathColor: RegionPixel, recalculate: boolean = true) {
         if (this.contains(pathColor)) {
             this.pixels.remove(pathColor)
             pathColor.regionId = NO_ID
@@ -608,8 +631,8 @@ export class ColorRegion {
         if (recalculate) this.calculateAndSetAverageColor()
     }
 
-    removeAll(pathColors: Array<RegionColor> = this.pixels) {
-        pathColors.forEach(pathColor => this.remove(pathColor, false))
+    removeAll(regionPixels: Array<RegionPixel> = this.pixels) {
+        regionPixels.forEach(pixel => this.remove(pixel, false))
         this.calculateAndSetAverageColor()
     }
 
@@ -635,12 +658,16 @@ export class ColorRegion {
         }
         return this
     }
+
+    copy(): ColorRegion {
+        return new ColorRegion(this)
+    }
 }
 
-export function matToColorGrid(mat: Mat): Grid<Color> {
+export function matToColorGrid(mat: Mat): Grid<Pixel> {
     const height: number = mat.rows
     const width: number = mat.cols
-    const result: Grid<Color> = Array.init(height, () => Array.init(width, () => new Color()))
+    const result: Grid<Pixel> = Array.init(height, () => Array.init(width, () => new Pixel()))
     let converted: Mat
     if (mat.channels === 1) {
         converted = mat.cvtColor(COLOR_GRAY2RGB).convertTo(CV_8UC3)
@@ -652,7 +679,7 @@ export function matToColorGrid(mat: Mat): Grid<Color> {
     const data = converted.getDataAsArray() as unknown as number [][][]
     data.forEach((column, y) => {
         column.forEach((value, x) => {
-            result[y][x] = new Color({r: value[0], g: value[1], b: value[2]})
+            result[y][x] = new Pixel({r: value[0], g: value[1], b: value[2]})
         })
     })
     assert(result.length === height && result[0].length === width,
