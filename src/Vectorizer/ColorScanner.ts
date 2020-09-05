@@ -31,6 +31,7 @@ export class ColorScanner {
                 if (previousNeighbors.isEmpty()) {
                     // new region with just me! No need to check anything since no neighbors
                     const newRegion = new ColorRegion({id: currentId.it++})
+                    regionColor.isEdgePixel = true
                     newRegion.add(regionColor)
                     regionsMap.set(newRegion.id, newRegion)
                     regionsGrid[y][x] = newRegion.id
@@ -51,14 +52,17 @@ export class ColorScanner {
                     // There is? Then let's merge!
                     if (toMerge.isNotEmpty()) {
                         // Pick a master, the one with the lowest ID
-                        const master = toMerge.sort((a, b) => a.id - b.id).first()!!
-                        toMerge.forEach(colorRegionToMerge => {
-                            if (colorRegionToMerge !== master) {
-                                master.takeAllColorsFrom(colorRegionToMerge)
-                                regionsMap.set(master.id, master)
-                                regionsMap.delete(colorRegionToMerge.id)
-                            }
-                        })
+                        const master = toMerge.sort((a, b) => a.id - b.id).first()
+                        if (master) {
+                            toMerge.forEach(colorRegionToMerge => {
+                                if (colorRegionToMerge !== master) {
+                                    colorRegionToMerge.pixels.forEach(it => it.isEdgePixel = false)
+                                    master.takeAllColorsFrom(colorRegionToMerge)
+                                    regionsMap.set(master.id, master)
+                                    regionsMap.delete(colorRegionToMerge.id)
+                                }
+                            })
+                        }
                         // Re-set previousRegions after the merge because regionsMap has changed its contents
                         previousRegions = previousNeighbors.map(neighbor => neighbor.regionId)
                             .distinct()
@@ -87,6 +91,7 @@ export class ColorScanner {
                     // None fit me or the delta is too big? Then a new region for myself
                     else {
                         const newRegion = new ColorRegion({id: currentId.it++})
+                        regionColor.isEdgePixel = true
                         newRegion.add(regionColor)
                         regionsMap.set(newRegion.id, newRegion)
                         regionsGrid[y][x] = newRegion.id
