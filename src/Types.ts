@@ -433,7 +433,6 @@ export const NO_ID = -1
 
 export class PathPixel extends IndexedPixel {
 
-    static NULL = new PathPixel({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
     pathId: ID = NO_ID
 
     constructor({pathId, x, y, r, g, b, a}: {
@@ -465,6 +464,8 @@ export class PathPixel extends IndexedPixel {
     }
 
     // region static {...}
+
+    static NULL = new PathPixel({pathId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
 
     static fromPixel({pathId = NO_ID, x, y}: { pathId?: number, x: number, y: number }, pixel: Pixel): PathPixel {
         return new PathPixel({
@@ -530,7 +531,7 @@ export class Path {
 
 export class RegionPixel extends IndexedPixel {
 
-    static NULL = new RegionPixel({regionId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+
     regionId: ID = NO_ID
 
     constructor({regionId, x, y, r, g, b, a}: {
@@ -563,6 +564,8 @@ export class RegionPixel extends IndexedPixel {
 
     // region static {...}
 
+    static NULL = new RegionPixel({regionId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
+
     static fromPixel({regionId = NO_ID, x, y}: { regionId?: number, x: number, y: number }, pixel: Pixel): RegionPixel {
         return new RegionPixel({
             regionId: regionId, x: x, y: y, r: pixel.r, g: pixel.g, b: pixel.b, a: pixel.a
@@ -582,6 +585,7 @@ export class ColorRegion {
     id: ID = NO_ID
     pixels: Array<RegionPixel> = []
     averageColor: Pixel = new Pixel()
+    edgePixels: Array<RegionPixel> = []
 
     constructor({id = NO_ID, points = []}: { id?: number, points?: Array<RegionPixel> }) {
         this.id = id
@@ -600,10 +604,8 @@ export class ColorRegion {
         return this.pixels.contains(regionPixel)
     }
 
-    pointAt({x, y}: { x: number, y: number }): RegionPixel | null {
-        const result: RegionPixel | undefined =
-            this.pixels.find(pathColor => pathColor.x === x && pathColor.y === y)
-        return result ? result : null
+    pointAt({x, y}: { x: number, y: number }): RegionPixel | undefined {
+        return this.pixels.find(pixel => pixel.x === x && pixel.y === y)
     }
 
     add(regionPixel: RegionPixel, recalculate: boolean = true) {
@@ -611,12 +613,12 @@ export class ColorRegion {
             this.pixels.push(regionPixel)
             regionPixel.regionId = this.id
         }
-        if (recalculate) this.calculateAndSetAverageColor()
+        if (recalculate) this.calculateAverageColor()
     }
 
     addAll(regionPixels: Array<RegionPixel>) {
         regionPixels.forEach(pixel => this.add(pixel, false))
-        this.calculateAndSetAverageColor()
+        this.calculateAverageColor()
     }
 
     takeAllColorsFrom(other: ColorRegion) {
@@ -629,15 +631,15 @@ export class ColorRegion {
             this.pixels.remove(pathColor)
             pathColor.regionId = NO_ID
         }
-        if (recalculate) this.calculateAndSetAverageColor()
+        if (recalculate) this.calculateAverageColor()
     }
 
     removeAll(regionPixels: Array<RegionPixel> = this.pixels) {
         regionPixels.forEach(pixel => this.remove(pixel, false))
-        this.calculateAndSetAverageColor()
+        this.calculateAverageColor()
     }
 
-    calculateAndSetAverageColor(): ColorRegion {
+    calculateAverageColor(): Pixel {
         if (this.pixels.length !== 0) {
             const total = this.pixels.length
             let r: number = 0
@@ -657,12 +659,22 @@ export class ColorRegion {
                 a: (a / total).floor(),
             }
         }
-        return this
+        return this.averageColor
+    }
+
+    calculateEdgePixels(): Array<RegionPixel> {
+        this.pixels.forEach((pixel: RegionPixel) => {
+            const neighbors: Array<Point> = AllDirections.map(dir => pixel.point.shifted(dir))
+            const isEdgePixel = !neighbors.every(neighbor => this.pointAt(neighbor) !== undefined)
+            if (isEdgePixel) this.edgePixels.push(pixel)
+        })
+        return this.edgePixels
     }
 
     copy(): ColorRegion {
         const result = new ColorRegion({id: this.id})
         result.pixels = this.pixels.map(it => it.copy() as RegionPixel)
+        result.edgePixels = this.edgePixels
         result.averageColor = this.averageColor
         return result
     }

@@ -143,6 +143,8 @@ export class ColorScanner {
         })
         await this.writeImage(`./out/beforeReduceRandom.png`, regionsMap, width, height, r => r.averageColor = Pixel.random())
 
+        await this.writeImageRegionEdges(`./out/beforeEdges.png`, regionsMap, width, height)
+
         const reduced = this.reduceColorRegions(regionsMap, regionsGrid)
 
         await this.writeImage(`./out/afterReduce.png`, reduced, width, height)
@@ -153,6 +155,8 @@ export class ColorScanner {
             if (r.totalPixels >= 9) r.averageColor = Pixel.ZERO
         })
         await this.writeImage(`./out/afterReduceRandom.png`, reduced, width, height, r => r.averageColor = Pixel.random())
+
+        await this.writeImageRegionEdges(`./out/afterEdges.png`, reduced, width, height)
 
         logD(`Reduced Regions: ${reduced.size.comma()}`)
 
@@ -199,19 +203,15 @@ export class ColorScanner {
     //  this way we're not forcing merges we're just slowly pushing them in that direction so that we can still
     //  have small-ish regions but hopefully ones that make sense
 
-    // TOO SLOW!
     static regionsToPolygons(regions: Array<ColorRegion>): Array<ColorRegion> {
-        regions.forEach((region: ColorRegion) => {
-            const toRemove: Array<RegionPixel> = []
-            region.pixels.forEach((pixel: RegionPixel) => {
-                const points = region.pixels.map(it => it.point)
-                const neighbors: Array<Point> = AllDirections.map(dir => pixel.point.shifted(dir, 1))
-                const shouldRemove: boolean = neighbors.every(neighbor => points.contains(neighbor))
-                if (shouldRemove) toRemove.push(pixel)
-            })
-            region.pixels.removeAll(toRemove)
-        })
-        return regions
+        return regions.onEach(region => region.calculateEdgePixels())
+    }
+
+    static async writeImageRegionEdges(path: string, regions: Map<ID, ColorRegion>, width: number, height: number) {
+        this.regionsToPolygons(regions.valuesArray())
+        const grid: Grid<Pixel> = Array.init(height, () => Array.init(width, () => Pixel.ZERO))
+        regions.forEach(region => region.edgePixels.forEach(pixel => grid[pixel.y][pixel.x] = region.averageColor))
+        await writeImage(path, ImageData.fromPixelsGrid(grid))
     }
 
     static regionsToColorGrid(regions: Array<ColorRegion>, width: number, height: number): Grid<Pixel> {
