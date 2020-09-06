@@ -4,6 +4,8 @@ import {assert} from "./Log";
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Pixel>
+export const emptyFunction = () => {
+}
 
 export class Point {
     x: number
@@ -659,7 +661,10 @@ export class ColorRegion {
     }
 
     copy(): ColorRegion {
-        return new ColorRegion(this)
+        const result = new ColorRegion({id: this.id})
+        result.pixels = this.pixels.map(it => it.copy() as RegionPixel)
+        result.averageColor = this.averageColor
+        return result
     }
 }
 

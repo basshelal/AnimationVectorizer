@@ -104,9 +104,15 @@ For qualitative we can actually do a file transfer speed comparison to prove tha
 
 GPU acceleration is hard but improves speed shockingly well
 
+Node sucks for concurrency and doesn't have true multi-threading
+
 ## Challenges
 
 ## Reflection
+
+## Future Work
+
+Use better tools that allow for native multi-threading, faster execution and easier and direct access to GPU
 
 ## Conclusion
 

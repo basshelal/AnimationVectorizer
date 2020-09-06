@@ -1,4 +1,16 @@
-import {AllDirections, ColorRegion, Direction, Grid, ID, ImageData, NO_ID, Pixel, Point, RegionPixel} from "../Types";
+import {
+    AllDirections,
+    ColorRegion,
+    Direction,
+    emptyFunction,
+    Grid,
+    ID,
+    ImageData,
+    NO_ID,
+    Pixel,
+    Point,
+    RegionPixel
+} from "../Types";
 import {NumberObject} from "../Utils";
 import {logD, writeLog} from "../Log";
 import {writeImage} from "../PNG";
@@ -123,16 +135,24 @@ export class ColorScanner {
         logD(`Regions Grid NO_ID: ${regionsGrid.filter(it => it.filter(id => id === NO_ID).isNotEmpty()).length}`)
 
         await this.writeImage(`./out/beforeReduce.png`, regionsMap, width, height)
-        await this.writeImageCondition(`./out/beforeReduceLarge.png`, regionsMap, width, height, r => r.totalPixels >= 9)
-        await this.writeImageCondition(`./out/beforeReduceSmall.png`, regionsMap, width, height, r => r.totalPixels < 9)
-       // await this.writeImageRandomized(`./out/beforeReduceRandom.png`, regionsMap, width, height)
+        await this.writeImage(`./out/beforeReduceLarge.png`, regionsMap, width, height, r => {
+            if (r.totalPixels < 9) r.averageColor = Pixel.MAGENTA
+        })
+        await this.writeImage(`./out/beforeReduceSmall.png`, regionsMap, width, height, r => {
+            if (r.totalPixels >= 9) r.averageColor = Pixel.ZERO
+        })
+        await this.writeImage(`./out/beforeReduceRandom.png`, regionsMap, width, height, r => r.averageColor = Pixel.random())
 
         const reduced = this.reduceColorRegions(regionsMap, regionsGrid)
 
         await this.writeImage(`./out/afterReduce.png`, reduced, width, height)
-        await this.writeImageCondition(`./out/afterReduceLarge.png`, reduced, width, height, r => r.totalPixels >= 9)
-        await this.writeImageCondition(`./out/afterReduceSmall.png`, reduced, width, height, r => r.totalPixels < 9)
-        // await this.writeImageRandomized(`./out/afterReduceRandom.png`, reduced, width, height)
+        await this.writeImage(`./out/afterReduceLarge.png`, reduced, width, height, r => {
+            if (r.totalPixels < 9) r.averageColor = Pixel.MAGENTA
+        })
+        await this.writeImage(`./out/afterReduceSmall.png`, reduced, width, height, r => {
+            if (r.totalPixels >= 9) r.averageColor = Pixel.ZERO
+        })
+        await this.writeImage(`./out/afterReduceRandom.png`, reduced, width, height, r => r.averageColor = Pixel.random())
 
         logD(`Reduced Regions: ${reduced.size.comma()}`)
 
@@ -175,6 +195,10 @@ export class ColorScanner {
         return regionsMap
     }
 
+    // TODO new way of reduce is instead to re-run the region parser but have higher delta thresholds
+    //  this way we're not forcing merges we're just slowly pushing them in that direction so that we can still
+    //  have small-ish regions but hopefully ones that make sense
+
     // TOO SLOW!
     static regionsToPolygons(regions: Array<ColorRegion>): Array<ColorRegion> {
         regions.forEach((region: ColorRegion) => {
@@ -196,19 +220,11 @@ export class ColorScanner {
         return result
     }
 
-    static async writeImage(path: string, regions: Map<ID, ColorRegion>, width: number, height: number) {
-        await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray(), width, height)))
-    }
-
-    static async writeImageRandomized(path: string, regions: Map<ID, ColorRegion>, width: number, height: number) {
-        await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray().copy()
-            .onEach(r => r.averageColor = Pixel.random()), width, height))
+    static async writeImage(path: string, regions: Map<ID, ColorRegion>, width: number, height: number,
+                            onEach: (r: ColorRegion) => any = emptyFunction) {
+        await writeImage(path,
+            ImageData.fromPixelsGrid(
+                this.regionsToColorGrid(regions.valuesArray().map(r => r.copy()).onEach(r => onEach(r)), width, height))
         )
     }
-
-    static async writeImageCondition(path: string, regions: Map<ID, ColorRegion>, width: number, height: number,
-                                     condition: (r: ColorRegion) => boolean) {
-        await writeImage(path, ImageData.fromPixelsGrid(this.regionsToColorGrid(regions.valuesArray().filter(condition), width, height)))
-    }
-
 }
