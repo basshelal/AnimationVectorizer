@@ -1,5 +1,6 @@
 import {abs, ceil, floor, pow, round, sqrt} from "./Utils";
 import {comma} from "number-magic";
+import {assert} from "./Log";
 
 declare global {
     interface Array<T> {
@@ -36,6 +37,10 @@ declare global {
         sorted(): Array<number>
 
         copy(): Array<T>
+
+        shiftRight(fromIndex: number, byAmount: number): Array<T>
+
+        addAt(index: number, element: T): Array<T>
     }
 
     interface ArrayConstructor {
@@ -171,10 +176,29 @@ function _array() {
         return this
     })
     protoExtension(Array, "sorted", function (this: Array<number>): Array<number> {
-        return this.sort((a, b) => a - b)
+        if (this.isNotEmpty() && typeof this[0] === "number")
+            return this.sort((a, b) => a - b)
+        else return this
     })
     protoExtension(Array, "copy", function <T>(this: Array<T>): Array<T> {
         return Array.from(this)
+    })
+    protoExtension(Array, "shiftRight", function <T>(this: Array<T>, index: number, amount: number = 1): Array<T> {
+        // TODO check this properly
+        assert(index <= this.lastIndex() && index >= 0,
+            `Index to move must be within inclusive bounds 0 - ${this.lastIndex()}, passed in ${index}`,
+            arguments, this.shiftRight)
+        const toMove: Array<T> = this.slice(index, this.length)
+        for (let i = index + amount, toMoveIndex = 0;
+             i < this.length + amount; i++, toMoveIndex++) {
+            this[i] = toMove[toMoveIndex]
+        }
+        return this
+    })
+    protoExtension(Array, "addAt", function <T>(this: Array<T>, index: number, element: T): Array<T> {
+        this.shiftRight(index, 1)
+        this[index] = element
+        return this
     })
 }
 

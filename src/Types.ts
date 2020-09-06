@@ -530,7 +530,6 @@ export class RegionPixel extends IndexedPixel {
 
     static NULL = new RegionPixel({regionId: NO_ID, x: -1, y: -1, r: -1, g: -1, b: -1, a: -1})
     regionId: ID = NO_ID
-    isEdgePixel: boolean = false
 
     constructor({regionId, x, y, r, g, b, a}: {
         regionId: number, x: number, y: number,

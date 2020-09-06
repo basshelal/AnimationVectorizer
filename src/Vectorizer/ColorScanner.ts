@@ -31,7 +31,6 @@ export class ColorScanner {
                 if (previousNeighbors.isEmpty()) {
                     // new region with just me! No need to check anything since no neighbors
                     const newRegion = new ColorRegion({id: currentId.it++})
-                    regionPixel.isEdgePixel = true
                     newRegion.add(regionPixel)
                     regionsMap.set(newRegion.id, newRegion)
                     regionsGrid[y][x] = newRegion.id
@@ -56,7 +55,6 @@ export class ColorScanner {
                         if (master) {
                             toMerge.forEach(colorRegionToMerge => {
                                 if (colorRegionToMerge !== master) {
-                                    colorRegionToMerge.pixels.forEach(it => it.isEdgePixel = false)
                                     master.takeAllColorsFrom(colorRegionToMerge)
                                     regionsMap.set(master.id, master)
                                     regionsMap.delete(colorRegionToMerge.id)
@@ -91,7 +89,6 @@ export class ColorScanner {
                     // None fit me or the delta is too big? Then a new region for myself
                     else {
                         const newRegion = new ColorRegion({id: currentId.it++})
-                        regionPixel.isEdgePixel = true
                         newRegion.add(regionPixel)
                         regionsMap.set(newRegion.id, newRegion)
                         regionsGrid[y][x] = newRegion.id
@@ -128,14 +125,14 @@ export class ColorScanner {
         await this.writeImage(`./out/beforeReduce.png`, regionsMap, width, height)
         await this.writeImageCondition(`./out/beforeReduceLarge.png`, regionsMap, width, height, r => r.totalPixels >= 9)
         await this.writeImageCondition(`./out/beforeReduceSmall.png`, regionsMap, width, height, r => r.totalPixels < 9)
-        await this.writeImageRandomized(`./out/beforeReduceRandom.png`, regionsMap, width, height)
+       // await this.writeImageRandomized(`./out/beforeReduceRandom.png`, regionsMap, width, height)
 
         const reduced = this.reduceColorRegions(regionsMap, regionsGrid)
 
         await this.writeImage(`./out/afterReduce.png`, reduced, width, height)
         await this.writeImageCondition(`./out/afterReduceLarge.png`, reduced, width, height, r => r.totalPixels >= 9)
         await this.writeImageCondition(`./out/afterReduceSmall.png`, reduced, width, height, r => r.totalPixels < 9)
-        await this.writeImageRandomized(`./out/afterReduceRandom.png`, reduced, width, height)
+        // await this.writeImageRandomized(`./out/afterReduceRandom.png`, reduced, width, height)
 
         logD(`Reduced Regions: ${reduced.size.comma()}`)
 
