@@ -30,6 +30,8 @@ export class Point {
         return isIn
     }
 
+    get allNeighbors(): Array<Point> {return AllDirections.map(dir => this.shifted(dir, 1))}
+
     shifted(direction: Direction, amount: number = 1): Point {
         const x = this.x
         const y = this.y
@@ -413,7 +415,13 @@ export class IndexedPixel extends Pixel {
 
     get point(): Point {return new Point({x: this.x, y: this.y})}
 
-    copy(): Pixel {return new IndexedPixel(this)}
+    copy(): IndexedPixel {return new IndexedPixel(this)}
+
+    equals(other: object): boolean {
+        return super.equals(other) &&
+            other instanceof IndexedPixel &&
+            other.x === this.x && other.y === this.y
+    }
 }
 
 export type ID = number // cuz readability
@@ -439,7 +447,13 @@ export class PathPixel extends IndexedPixel {
 
     toString(): string {return JSON.stringify(this)}
 
-    copy(): Pixel {return new PathPixel(this)}
+    copy(): PathPixel {return new PathPixel(this)}
+
+    equals(other: object): boolean {
+        return super.equals(other) &&
+            other instanceof PathPixel &&
+            other.pathId === this.pathId
+    }
 
     // region static {...}
 
@@ -509,7 +523,6 @@ export class Path {
 
 export class RegionPixel extends IndexedPixel {
 
-
     regionId: ID = NO_ID
 
     constructor({regionId, x, y, r, g, b, a}: {
@@ -528,7 +541,13 @@ export class RegionPixel extends IndexedPixel {
 
     toString(): string {return JSON.stringify(this)}
 
-    copy(): Pixel {return new RegionPixel(this)}
+    copy(): RegionPixel {return new RegionPixel(this)}
+
+    equals(other: object): boolean {
+        return super.equals(other) &&
+            other instanceof RegionPixel &&
+            other.regionId === this.regionId
+    }
 
     // region static {...}
 
@@ -626,8 +645,7 @@ export class ColorRegion {
 
     calculateEdgePixels(): Array<RegionPixel> {
         this.pixels.forEach((pixel: RegionPixel) => {
-            const neighbors: Array<Point> = AllDirections.map(dir => pixel.point.shifted(dir))
-            const isEdgePixel = !neighbors.every(neighbor => this.pointAt(neighbor) !== undefined)
+            const isEdgePixel = !pixel.point.allNeighbors.every(neighbor => this.pointAt(neighbor) !== undefined)
             if (isEdgePixel) this.edgePixels.push(pixel)
         })
         return this.edgePixels
@@ -636,8 +654,15 @@ export class ColorRegion {
     sortEdgePixels(): Array<RegionPixel> {
         return this.edgePixels.sort((a, b) => {
             // sort by y first then by x
-            return 0
+            if (a.y === b.y) return a.x - b.x
+            else return a.y - b.y
         })
+    }
+
+    edgePixelsToSVGPaths(): Array<SVGPath> {
+        // TODO
+        //  Very similar to PathScanner
+        return []
     }
 
     copy(): ColorRegion {
@@ -646,6 +671,31 @@ export class ColorRegion {
         result.edgePixels = this.edgePixels
         result.averageColor = this.averageColor
         return result
+    }
+}
+
+export class SVGPoint extends Point {
+
+    pathId: ID = NO_ID
+
+    constructor({x, y, pathId = NO_ID}: { x: number, y: number, pathId?: ID }) {
+        super({x, y})
+        this.pathId = pathId
+    }
+
+    get hasPath(): boolean {return this.pathId !== NO_ID}
+}
+
+export class SVGPath {
+
+    id: ID = NO_ID
+    fillColor: Pixel = Pixel.ZERO
+    points: Array<SVGPoint> = []
+
+    constructor({id = NO_ID, fillColor = Pixel.ZERO, points = []}: { id?: ID, fillColor?: Pixel, points?: Array<SVGPoint> }) {
+        this.fillColor = fillColor
+        this.points = points
+        this.id = id
     }
 }
 

@@ -1,16 +1,4 @@
-import {
-    AllDirections,
-    ColorRegion,
-    Direction,
-    emptyFunction,
-    Grid,
-    ID,
-    ImageData,
-    NO_ID,
-    Pixel,
-    Point,
-    RegionPixel
-} from "../Types"
+import {ColorRegion, Direction, emptyFunction, Grid, ID, ImageData, NO_ID, Pixel, Point, RegionPixel} from "../Types"
 import {NumberObject} from "../Utils"
 import {logD, writeLog} from "../Log"
 import {writeImage} from "../PNG"
@@ -171,8 +159,7 @@ export class ColorScanner {
                 // I am a region that needs to be merged
                 if (region && region.totalPixels < minRegionSize) {
                     // Get my neighbors
-                    const neighbors: Array<ColorRegion> = AllDirections
-                        .map(dir => new Point({x: x, y: y}).shifted(dir, 1))
+                    const neighbors: Array<ColorRegion> = new Point({x: x, y: y}).allNeighbors
                         .filter(point => point.x >= 0 && point.x < width && point.y >= 0 && point.y < height)
                         .map(point => regionsMap.get(regionsGrid[point.y][point.x]))
                         .filter(it => it !== undefined).map(it => it!!)
