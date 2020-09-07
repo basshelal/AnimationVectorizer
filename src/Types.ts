@@ -646,7 +646,8 @@ export class ColorRegion {
     calculateEdgePixels(): Array<RegionPixel> {
         this.pixels.forEach((pixel: RegionPixel) => {
             const isEdgePixel = !pixel.point.allNeighbors.every(neighbor => this.pointAt(neighbor) !== undefined)
-            if (isEdgePixel) this.edgePixels.push(pixel)
+            if (isEdgePixel && !this.edgePixels.find(it => it.equals(pixel)))
+                this.edgePixels.push(pixel)
         })
         return this.edgePixels
     }

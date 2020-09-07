@@ -2,6 +2,8 @@ import {ColorRegion, Direction, emptyFunction, Grid, ID, ImageData, NO_ID, Pixel
 import {NumberObject} from "../Utils"
 import {logD, writeLog} from "../Log"
 import {writeImage} from "../PNG"
+import {SVG} from "../SVG/SVG"
+import {writeFileSync} from "fs"
 
 export class ColorScanner {
     private constructor() {}
@@ -121,6 +123,8 @@ export class ColorScanner {
         logD(`Regions Grid width: ${regionsGrid[0].length}`)
         logD(`Regions Grid NO_ID: ${regionsGrid.filter(it => it.filter(id => id === NO_ID).isNotEmpty()).length}`)
 
+        logD(`Writing Before Reduce Images...`)
+
         await this.writeImage(`./out/beforeReduce.png`, regionsMap, width, height)
         await this.writeImage(`./out/beforeReduceLarge.png`, regionsMap, width, height, r => {
             if (r.totalPixels < 9) r.averageColor = Pixel.MAGENTA
@@ -130,9 +134,21 @@ export class ColorScanner {
         })
         await this.writeImage(`./out/beforeReduceRandom.png`, regionsMap, width, height, r => r.averageColor = Pixel.random())
 
+        logD(`Writing Before Reduce Edges...`)
+
         await this.writeImageRegionEdges(`./out/beforeEdges.png`, regionsMap, width, height)
 
+        logD(`Writing Before Reduce SVG...`)
+
+        writeFileSync(`./out/before.svg`, SVG.colorRegionsToSVG(regionsMap.valuesArray(), height, width))
+
+        logD(`Reducing...`)
+
         const reduced = this.reduceColorRegions(regionsMap, regionsGrid)
+
+        logD(`Reduced Regions: ${reduced.size.comma()}`)
+
+        logD(`Writing After Reduce Images...`)
 
         await this.writeImage(`./out/afterReduce.png`, reduced, width, height)
         await this.writeImage(`./out/afterReduceLarge.png`, reduced, width, height, r => {
@@ -143,9 +159,13 @@ export class ColorScanner {
         })
         await this.writeImage(`./out/afterReduceRandom.png`, reduced, width, height, r => r.averageColor = Pixel.random())
 
+        logD(`Writing After Reduce Edges...`)
+
         await this.writeImageRegionEdges(`./out/afterEdges.png`, reduced, width, height)
 
-        logD(`Reduced Regions: ${reduced.size.comma()}`)
+        logD(`Writing After Reduce SVG...`)
+
+        writeFileSync(`./out/after.svg`, SVG.colorRegionsToSVG(reduced.valuesArray(), height, width))
 
         return reduced
     }
