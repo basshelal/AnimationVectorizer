@@ -1,6 +1,6 @@
-import {abs, ceil, floor, pow, round, sqrt} from "./Utils";
-import {comma} from "number-magic";
-import {assert} from "./Log";
+import {abs, ceil, floor, pow, round, sqrt} from "./Utils"
+import {comma} from "number-magic"
+import {assert} from "./Log"
 
 declare global {
     interface Array<T> {

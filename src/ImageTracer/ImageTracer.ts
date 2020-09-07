@@ -1,10 +1,10 @@
 // Original Library https://github.com/jankovicsandras/imagetracerjs
 
-import {Options} from "./Options";
-import {floor, from, random} from "../Utils";
-import {ColorQuantizer} from "./ColorQuantizer";
-import {BoundingBox, Direction, Grid, ImageData, IndexedImage, Palette, Pixel, Point, SVGPathCommand} from "../Types";
-import {logD, logW, writeLog, writeLogImage, writePixels} from "../Log";
+import {Options} from "./Options"
+import {floor, from, random} from "../Utils"
+import {ColorQuantizer} from "./ColorQuantizer"
+import {BoundingBox, Direction, Grid, ImageData, IndexedImage, Palette, Pixel, Point, SVGPathCommand} from "../Types"
+import {logD, logW, writeLog, writeLogImage, writePixels} from "../Log"
 
 let iterationCount: number = 0
 
@@ -297,7 +297,7 @@ function pathScan(edges: Grid<number>, pathOmit: number): Array<PointPath> {
                                         parentbbox.includes(pointPaths[parent].boundingBox) &&
                                         pointPaths[pathCount].points[0].isInPolygon(pointPaths[parent].points)
                                     ) {
-                                        parentIndex = parent;
+                                        parentIndex = parent
                                         parentbbox = pointPaths[parent].boundingBox
                                     }
                                 })
@@ -388,7 +388,7 @@ function testRightAngle(path: PointPath, idx1: number, idx2: number, idx3: numbe
             (path.points[idx3].x === path.points[idx4].x) &&
             (path.points[idx3].x === path.points[idx5].x)
         )
-    );
+    )
 }
 
 // 5. tracePath() : recursively trying to fit straight and quadratic spline segments on the 8 direction internode path
@@ -480,26 +480,26 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     let pcnt = (seqstart + 1) % path.points.length, pl
     while (pcnt != seqend) {
         iterationCount++
-        pl = pcnt - seqstart;
+        pl = pcnt - seqstart
         if (pl < 0) {
-            pl += path.points.length;
+            pl += path.points.length
         }
-        px = path.points[seqstart].x + vx * pl;
-        py = path.points[seqstart].y + vy * pl;
-        dist2 = (path.points[pcnt].x - px) * (path.points[pcnt].x - px) + (path.points[pcnt].y - py) * (path.points[pcnt].y - py);
+        px = path.points[seqstart].x + vx * pl
+        py = path.points[seqstart].y + vy * pl
+        dist2 = (path.points[pcnt].x - px) * (path.points[pcnt].x - px) + (path.points[pcnt].y - py) * (path.points[pcnt].y - py)
         if (dist2 > ltres) {
-            curvepass = false;
+            curvepass = false
         }
         if (dist2 > errorval) {
-            errorpoint = pcnt;
-            errorval = dist2;
+            errorpoint = pcnt
+            errorval = dist2
         }
-        pcnt = (pcnt + 1) % path.points.length;
+        pcnt = (pcnt + 1) % path.points.length
     }
     // return straight line if fits
     if (curvepass) {
         return [new Segment({
-            type: 'L',
+            type: "L",
             x1: path.points[seqstart].x,
             y1: path.points[seqstart].y,
             x2: path.points[seqend].x,
@@ -508,9 +508,9 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     }
 
     // 5.3. If the straight line fails (distance error>ltres), find the point with the biggest error
-    let fitpoint = errorpoint;
-    curvepass = true;
-    errorval = 0;
+    let fitpoint = errorpoint
+    curvepass = true
+    errorval = 0
 
     // 5.4. Fit a quadratic spline through this point, measure errors on every point in the sequence
     // helpers and projecting to get control point
@@ -519,33 +519,33 @@ function fitSeq(path: PointPath, ltres: number, qtres: number, seqstart: number,
     let t2 = 2 * (1 - t) * t
     let t3 = t * t
     let cpx = (t1 * path.points[seqstart].x + t3 * path.points[seqend].x - path.points[fitpoint].x) / -t2,
-        cpy = (t1 * path.points[seqstart].y + t3 * path.points[seqend].y - path.points[fitpoint].y) / -t2;
+        cpy = (t1 * path.points[seqstart].y + t3 * path.points[seqend].y - path.points[fitpoint].y) / -t2
 
     // Check every point
-    pcnt = seqstart + 1;
+    pcnt = seqstart + 1
     while (pcnt != seqend) {
-        t = (pcnt - seqstart) / tl;
-        t1 = (1 - t) * (1 - t);
-        t2 = 2 * (1 - t) * t;
-        t3 = t * t;
-        px = t1 * path.points[seqstart].x + t2 * cpx + t3 * path.points[seqend].x;
-        py = t1 * path.points[seqstart].y + t2 * cpy + t3 * path.points[seqend].y;
+        t = (pcnt - seqstart) / tl
+        t1 = (1 - t) * (1 - t)
+        t2 = 2 * (1 - t) * t
+        t3 = t * t
+        px = t1 * path.points[seqstart].x + t2 * cpx + t3 * path.points[seqend].x
+        py = t1 * path.points[seqstart].y + t2 * cpy + t3 * path.points[seqend].y
 
-        dist2 = (path.points[pcnt].x - px) * (path.points[pcnt].x - px) + (path.points[pcnt].y - py) * (path.points[pcnt].y - py);
+        dist2 = (path.points[pcnt].x - px) * (path.points[pcnt].x - px) + (path.points[pcnt].y - py) * (path.points[pcnt].y - py)
 
         if (dist2 > qtres) {
-            curvepass = false;
+            curvepass = false
         }
         if (dist2 > errorval) {
-            errorpoint = pcnt;
-            errorval = dist2;
+            errorpoint = pcnt
+            errorval = dist2
         }
-        pcnt = (pcnt + 1) % path.points.length;
+        pcnt = (pcnt + 1) % path.points.length
     }
     // return spline if fits
     if (curvepass) {
         return [new Segment({
-            type: 'Q',
+            type: "Q",
             x1: path.points[seqstart].x,
             y1: path.points[seqstart].y,
             x2: cpx,
@@ -652,9 +652,9 @@ class ImageTracerPath {
         holeChildren: Array<number>,
         isHolePath: boolean
     }) {
-        this.boundingBox = boundingBox;
-        this.holeChildren = holeChildren;
-        this.isHolePath = isHolePath;
+        this.boundingBox = boundingBox
+        this.holeChildren = holeChildren
+        this.isHolePath = isHolePath
     }
 }
 

@@ -10,14 +10,13 @@ import {
     Pixel,
     Point,
     RegionPixel
-} from "../Types";
-import {NumberObject} from "../Utils";
-import {logD, writeLog} from "../Log";
-import {writeImage} from "../PNG";
+} from "../Types"
+import {NumberObject} from "../Utils"
+import {logD, writeLog} from "../Log"
+import {writeImage} from "../PNG"
 
 export class ColorScanner {
-    private constructor() {
-    }
+    private constructor() {}
 
     static async parseColorRegions(imageData: ImageData, delta: number = 20): Promise<Map<ID, ColorRegion>> {
         const colorGrid: Grid<RegionPixel> = imageData.pixelsGrid

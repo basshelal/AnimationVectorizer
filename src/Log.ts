@@ -1,9 +1,9 @@
-import {ImageData, Pixel} from "./Types";
-import {writeImage} from "./PNG";
-import {writeFileSync} from "fs";
-import {json, now} from "./Utils";
-import chalk from "chalk";
-import {AssertionError} from "assert";
+import {ImageData, Pixel} from "./Types"
+import {writeImage} from "./PNG"
+import {writeFileSync} from "fs"
+import {json, now} from "./Utils"
+import chalk from "chalk"
+import {AssertionError} from "assert"
 
 export const logOptions = {
     enabled: true

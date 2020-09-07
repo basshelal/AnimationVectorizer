@@ -1,7 +1,7 @@
 // Octree Color Quantization from this excellent article https://observablehq.com/@tmcw/octree-color-quantization
 
-import {Grid, Palette, Pixel} from "../Types";
-import {from} from "../Utils";
+import {Grid, Palette, Pixel} from "../Types"
+import {from} from "../Utils"
 
 const MAX_DEPTH = 8
 
@@ -75,7 +75,7 @@ export class Node {
     }
 
     get isLeaf(): boolean {
-        return this.pixelCount > 0;
+        return this.pixelCount > 0
     }
 
     get leafNodes(): Array<Node> {

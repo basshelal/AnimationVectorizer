@@ -1,13 +1,12 @@
-import {CV_8UC1, imread, Mat} from "opencv4nodejs";
-import {from} from "../Utils";
-import {assert, logD} from "../Log";
-import {IKernelRunShortcut} from "gpu.js";
-import {gpu} from "../GPU";
+import {CV_8UC1, imread, Mat} from "opencv4nodejs"
+import {from} from "../Utils"
+import {assert, logD} from "../Log"
+import {IKernelRunShortcut} from "gpu.js"
+import {gpu} from "../GPU"
 
 export class EdgeDetector {
 
-    private constructor() {
-    }
+    private constructor() {}
 
     static onImage({imagePath, minThreshold, maxThreshold, apertureSize = 3, L2gradient = false}: {
         imagePath: string, minThreshold: number, maxThreshold: number,

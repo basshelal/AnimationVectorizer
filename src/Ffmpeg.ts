@@ -1,8 +1,8 @@
-import * as cp from "child_process";
-import {ChildProcess} from "child_process";
-import * as electron from "electron";
-import * as path from "path";
-import {logD, logE} from "./Log";
+import * as cp from "child_process"
+import {ChildProcess} from "child_process"
+import * as electron from "electron"
+import * as path from "path"
+import {logD, logE} from "./Log"
 
 export default async function (...args: Array<string>): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -14,7 +14,7 @@ export default async function (...args: Array<string>): Promise<void> {
         ffmpeg.on("error", (msg) => {
             logE(`ffmpeg error: ${msg}`)
             reject(msg)
-        });
+        })
         ffmpeg.on("close", (status) => {
             if (status !== 0) {
                 logE(`ffmpeg closed with status ${status}`)
@@ -26,5 +26,5 @@ export default async function (...args: Array<string>): Promise<void> {
 
         if (ffmpeg.stdout) ffmpeg.stdout.on("data", (data) => logD(`ffmpeg stdout: ${data}`))
         if (ffmpeg.stderr) ffmpeg.stderr.on("data", (data) => logE(`ffmpeg stderr: ${data}`))
-    });
+    })
 }

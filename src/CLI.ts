@@ -1,10 +1,10 @@
-import extensions from "./Extensions";
-import {logD, logW} from "./Log";
-import {now} from "./Utils";
-import moment, {duration} from "moment";
-import * as v8 from "v8";
-import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG";
-import {ColorScanner} from "./Vectorizer/ColorScanner";
+import extensions from "./Extensions"
+import {logD, logW} from "./Log"
+import {now} from "./Utils"
+import moment, {duration} from "moment"
+import * as v8 from "v8"
+import {PNGImageData, PNGImageDataToImageData, readPNG} from "./PNG"
+import {ColorScanner} from "./Vectorizer/ColorScanner"
 
 extensions()
 

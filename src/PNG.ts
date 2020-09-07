@@ -1,5 +1,5 @@
-import {readFileSync, writeFileSync} from "fs";
-import {ImageData} from "./Types";
+import {readFileSync, writeFileSync} from "fs"
+import {ImageData} from "./Types"
 
 const lib = require("pngjs").PNG
 

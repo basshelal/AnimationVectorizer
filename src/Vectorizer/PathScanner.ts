@@ -1,13 +1,12 @@
-import {Mat} from "opencv4nodejs";
-import {Direction, Grid, ID, matToColorGrid, Path, PathPixel, Pixel} from "../Types";
-import {NumberObject} from "../Utils";
-import {logD, writeLog} from "../Log";
+import {Mat} from "opencv4nodejs"
+import {Direction, Grid, ID, matToColorGrid, Path, PathPixel, Pixel} from "../Types"
+import {NumberObject} from "../Utils"
+import {logD, writeLog} from "../Log"
 
 // Read this https://en.wikipedia.org/wiki/Connected-component_labeling
 export class PathScanner {
 
-    private constructor() {
-    }
+    private constructor() {}
 
     static parsePaths(mat: Mat, minThreshold: number = 40): Map<ID, Path> {
         const pointsGrid: Grid<PathPixel> = matToColorGrid(mat)

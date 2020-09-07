@@ -1,11 +1,10 @@
-import {average, from, json, random} from "./Utils";
-import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs";
-import {assert} from "./Log";
+import {average, from, json, random} from "./Utils"
+import {COLOR_BGRA2RGB, COLOR_GRAY2RGB, CV_8UC3, Mat} from "opencv4nodejs"
+import {assert} from "./Log"
 
 export type Grid<T> = Array<Array<T>>
 export type Palette = Array<Pixel>
-export const emptyFunction = () => {
-}
+export const emptyFunction = () => {}
 
 export class Point {
     x: number
@@ -122,7 +121,8 @@ export class Pixel {
             this.r = color.r
             this.g = color.g
             this.b = color.b
-            if (color.a) this.a = color.a; else this.a = 255
+            if (color.a) this.a = color.a
+            else this.a = 255
         } else {
             this.r = 0
             this.g = 0
@@ -131,9 +131,7 @@ export class Pixel {
         }
     }
 
-    get array(): Array<number> {
-        return [this.r, this.g, this.b, this.r + this.g + this.b]
-    }
+    get array(): Array<number> {return [this.r, this.g, this.b, this.r + this.g + this.b]}
 
     set data(color: { r: number, g: number, b: number, a: number }) {
         this.r = color.r
@@ -142,37 +140,23 @@ export class Pixel {
         this.a = color.a
     }
 
-    get toRGB(): string {
-        return `rgb(${this.r},${this.g},${this.b})`
-    }
+    get toRGB(): string {return `rgb(${this.r},${this.g},${this.b})`}
 
-    get toRGBA(): string {
-        return `rgba(${this.r},${this.g},${this.b},${this.a})`
-    }
+    get toRGBA(): string {return `rgba(${this.r},${this.g},${this.b},${this.a})`}
 
-    get toSVG(): string {
-        return `fill="${this.toHex()}" stroke="${this.toHex()}"`
-    }
+    get toSVG(): string {return `fill="${this.toHex()}" stroke="${this.toHex()}"`}
 
-    get toSVGEdge(): string {
-        return `fill="#ffffff" stroke="#000000" stroke-width="0.25" stroke-opacity="0.5"`
-    }
+    get toSVGEdge(): string {return `fill="#ffffff" stroke="#000000" stroke-width="0.25" stroke-opacity="0.5"`}
 
     toHex(ignoreAlpha: boolean = true): string {
         return `#${Pixel.hex(this.r)}${Pixel.hex(this.g)}${Pixel.hex(this.b)}${!ignoreAlpha ? Pixel.hex(this.a) : ""}`
     }
 
-    get toCSS(): string {
-        return `rgb(${this.r.floor()},${this.g.floor()},${this.b.floor()})`
-    }
+    get toCSS(): string {return `rgb(${this.r.floor()},${this.g.floor()},${this.b.floor()})`}
 
-    get isZero(): boolean {
-        return this.r === 0 && this.g === 0 && this.b === 0
-    }
+    get isZero(): boolean {return this.r === 0 && this.g === 0 && this.b === 0}
 
-    get isNotZero(): boolean {
-        return !this.isZero
-    }
+    get isNotZero(): boolean {return !this.isZero}
 
     normalized(pixelCount: number): Pixel {
         return new Pixel({
@@ -211,8 +195,14 @@ export class Pixel {
         )
     }
 
-    copy(): Pixel {
-        return new Pixel(this)
+    copy(): Pixel {return new Pixel(this)}
+
+    equals(other: object): boolean {
+        return other instanceof Pixel &&
+            other.r === this.r &&
+            other.g === this.g &&
+            other.b === this.b &&
+            other.a === this.a
     }
 
     // region static {...}
@@ -229,7 +219,7 @@ export class Pixel {
             r: parseInt(r),
             g: parseInt(g),
             b: parseInt(b),
-            a: parseInt(a),
+            a: parseInt(a)
         })
     }
 
@@ -248,13 +238,19 @@ export class Pixel {
         })
     }
 
-    static WHITE = new Pixel({r: 255, g: 255, b: 255, a: 255})
-    static ZERO = new Pixel({r: 0, g: 0, b: 0, a: 0})
-    static BLACK = new Pixel({r: 0, g: 0, b: 0, a: 255})
-    static RED = new Pixel({r: 255, g: 0, b: 0, a: 255})
-    static GREEN = new Pixel({r: 0, g: 255, b: 0, a: 255})
-    static BLUE = new Pixel({r: 0, g: 0, b: 255, a: 255})
-    static MAGENTA = new Pixel({r: 255, g: 0, b: 255, a: 255})
+    static get WHITE(): Pixel { return new Pixel({r: 255, g: 255, b: 255, a: 255})}
+
+    static get ZERO(): Pixel { return new Pixel({r: 0, g: 0, b: 0, a: 0})}
+
+    static get BLACK(): Pixel { return new Pixel({r: 0, g: 0, b: 0, a: 255})}
+
+    static get RED(): Pixel { return new Pixel({r: 255, g: 0, b: 0, a: 255})}
+
+    static get GREEN(): Pixel { return new Pixel({r: 0, g: 255, b: 0, a: 255})}
+
+    static get BLUE(): Pixel { return new Pixel({r: 0, g: 0, b: 255, a: 255})}
+
+    static get MAGENTA(): Pixel { return new Pixel({r: 255, g: 0, b: 255, a: 255})}
 
     // endregion static {...}
 
@@ -273,13 +269,9 @@ export class ImageData {
         this.totalPixels = this.width * this.height
     }
 
-    get isRGBA(): boolean {
-        return this.data.length > this.totalPixels * 3
-    }
+    get isRGBA(): boolean {return this.data.length > this.totalPixels * 3}
 
-    get isRGB(): boolean {
-        return this.data.length < this.totalPixels * 4
-    }
+    get isRGB(): boolean {return this.data.length < this.totalPixels * 4}
 
     get pixels(): Array<Pixel> {
         this.ensureRGBA()
@@ -330,7 +322,7 @@ export class ImageData {
                     r: this.data[index],
                     g: this.data[index + 1],
                     b: this.data[index + 2],
-                    a: this.data[index + 3],
+                    a: this.data[index + 3]
                 }))
             })
         })
@@ -419,13 +411,9 @@ export class IndexedPixel extends Pixel {
         })
     }
 
-    get point(): Point {
-        return new Point({x: this.x, y: this.y})
-    }
+    get point(): Point {return new Point({x: this.x, y: this.y})}
 
-    copy(): Pixel {
-        return new IndexedPixel(this)
-    }
+    copy(): Pixel {return new IndexedPixel(this)}
 }
 
 export type ID = number // cuz readability
@@ -443,25 +431,15 @@ export class PathPixel extends IndexedPixel {
         this.pathId = pathId
     }
 
-    get hasPath(): boolean {
-        return this.pathId !== NO_ID
-    }
+    get hasPath(): boolean {return this.pathId !== NO_ID}
 
-    get isNull(): boolean {
-        return this === PathPixel.NULL
-    }
+    get isNull(): boolean {return this === PathPixel.NULL}
 
-    get isNotNull(): boolean {
-        return this !== PathPixel.NULL
-    }
+    get isNotNull(): boolean {return this !== PathPixel.NULL}
 
-    toString(): string {
-        return JSON.stringify(this)
-    }
+    toString(): string {return JSON.stringify(this)}
 
-    copy(): Pixel {
-        return new PathPixel(this)
-    }
+    copy(): Pixel {return new PathPixel(this)}
 
     // region static {...}
 
@@ -542,25 +520,15 @@ export class RegionPixel extends IndexedPixel {
         this.regionId = regionId
     }
 
-    get hasRegion(): boolean {
-        return this.regionId !== NO_ID
-    }
+    get hasRegion(): boolean {return this.regionId !== NO_ID}
 
-    get isNull(): boolean {
-        return this === RegionPixel.NULL
-    }
+    get isNull(): boolean {return this === RegionPixel.NULL}
 
-    get isNotNull(): boolean {
-        return this !== RegionPixel.NULL
-    }
+    get isNotNull(): boolean {return this !== RegionPixel.NULL}
 
-    toString(): string {
-        return JSON.stringify(this)
-    }
+    toString(): string {return JSON.stringify(this)}
 
-    copy(): Pixel {
-        return new RegionPixel(this)
-    }
+    copy(): Pixel {return new RegionPixel(this)}
 
     // region static {...}
 
@@ -592,17 +560,11 @@ export class ColorRegion {
         this.addAll(points)
     }
 
-    get isEmpty(): boolean {
-        return this.pixels.isEmpty()
-    }
+    get isEmpty(): boolean {return this.pixels.isEmpty()}
 
-    get totalPixels(): number {
-        return this.pixels.length
-    }
+    get totalPixels(): number {return this.pixels.length}
 
-    contains(regionPixel: RegionPixel): boolean {
-        return this.pixels.contains(regionPixel)
-    }
+    contains(regionPixel: RegionPixel): boolean {return this.pixels.contains(regionPixel)}
 
     pointAt({x, y}: { x: number, y: number }): RegionPixel | undefined {
         return this.pixels.find(pixel => pixel.x === x && pixel.y === y)
@@ -656,7 +618,7 @@ export class ColorRegion {
                 r: (r / total).floor(),
                 g: (g / total).floor(),
                 b: (b / total).floor(),
-                a: (a / total).floor(),
+                a: (a / total).floor()
             }
         }
         return this.averageColor
@@ -669,6 +631,13 @@ export class ColorRegion {
             if (isEdgePixel) this.edgePixels.push(pixel)
         })
         return this.edgePixels
+    }
+
+    sortEdgePixels(): Array<RegionPixel> {
+        return this.edgePixels.sort((a, b) => {
+            // sort by y first then by x
+            return 0
+        })
     }
 
     copy(): ColorRegion {
