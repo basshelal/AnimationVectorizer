@@ -22,6 +22,7 @@ export class SVG {
             path += `" fill="${colorRegion.averageColor.toHex()}"/>`
             svg += path
         })
+        // TODO convert to bmp for no compression
         svg += `</svg>`
         return svg
     }
