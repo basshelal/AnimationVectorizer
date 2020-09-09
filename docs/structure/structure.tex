@@ -1,0 +1,335 @@
+\documentclass[14pt]{article}
+\usepackage[document]{ragged2e}
+\usepackage{geometry}
+\geometry{
+a4paper,
+left=30mm,
+top=30mm,
+right=30mm,
+bottom=40mm
+}
+\begin{document}
+
+    \section{Introduction}
+
+    \begin{itemize}
+        \item Project Description
+        \item Motivation
+        \item Existing Literature
+        \item Limitations of the literature that we will attempt to tackle
+        \item Aims and Objectives
+        \item Discoveries and results we found after our attempts
+        \item Section Signposting
+    \end{itemize}
+
+
+    \section{Background}
+
+    Remember reader may have weak background!
+    \linebreak
+    Drive home the point that video is expensive (size and internet bandwidth) but very popular
+
+    \begin{itemize}
+        \item Signposting
+    \end{itemize}
+
+    \subsection{Raster Graphics}
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item Pixels, Bitmaps, Image Data Buffers: basically the bare must knows about Raster Graphics
+        \item Advantages and popularity of Raster Graphics
+        \item Disadvantages like upscaling, pixelation, size issues with high resolution
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+    \subsection{Vector Graphics}
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item Declarative vs Imperative ie WYSIWYG vs WYSIWYM, describing the image using primitive geometry
+        \item Advantages of Vector especially in contrast to Raster (size and scalability), mention uses and popularity
+        \item Disadvantages like portability and light technical stuff like gradients and photographs
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+    We can make a small table comparing Raster \& Vector Graphics for the attributes like size, scalability etc
+
+    \subsection{Image Compression}
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item Fundamentals of Compression (type-agnostic) things like compression rate and lossy-ness or accuracy
+        \item Lossless Image Compression (PNG, BMP etc)
+        \item Lossy Image Compression (JPEG, GIF etc)
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+    We can have an image comparing popular image file types with regards to compression
+
+    \subsection{Video Graphics}
+
+    This section may be quite short
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item How video is stored and how it relates to Images (mostly the same)
+        \item Common file types and how they compress and store video data (MP4, MKV, H265 etc)
+        \item Evidence and proof of why video is expensive (and also popular)
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+
+    \section{Related Work}
+
+    Here we throw a lot of the current stuff from both research and industry and show their flaws and limitations
+    (which we may or may not have tackled)
+
+    \subsection{Current Research}
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item New Machine Learning methods for Vectorization
+        \item New Machine Learning methods for Compression
+        \item Novel approaches and ideas within Vectorization such as mesh gradients etc (no ML)
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+    \subsection{Current Applications}
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item Adobe Illustrator, Logos, Topography, Medical stuff like X rays etc Potrace
+        \item Animations and Games using Vector as the development method
+        \item Current Image \& Video compression algorithms such as PNG, H265 and H266 (no ML)
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+    \subsection{Limitations}
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item Why ML is absolute hot trash
+        \item Show off the flaws with existing technologies while showing how we tackled (and hopefully beat) them
+        \item Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+
+    \section{Implementation}
+
+    This may get long and technical, we should try to keep things fairly high level as much as possible,
+    we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level details
+
+    \subsection{Pipeline}
+
+    The very basic common high level pipeline demonstrating the input, the processing, and the output
+
+    \subsubsection{Input}
+
+    An animated cartoon video, particularly one with vectorizable qualities, which we will further detail
+    \begin{itemize}
+        \item Low or no use of gradients so it has discrete colors
+        \item Low or no noise
+        \item No 3D stuff like shadows and reflections
+    \end{itemize}
+
+    \subsubsection{Processing}
+
+    We have tried multiple processes which we further explain in the approaches section, but here
+    we should go over the general idea of what is necessary so:
+    \begin{itemize}
+        \item Frame extraction
+        \item Conversion of each Frame to an SVG which will have a single SVG Path element for each color
+        \item SVG Frame Joining which will have some smart compression built-in
+    \end{itemize}
+
+    \subsubsection{Output}
+
+    An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
+    very minimal data loss
+
+    \subsection{Toolchain}
+
+    No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them.
+    This makes the reader brace themselves for what we did without actually telling them just yet.
+
+    \subsection{Approaches}
+
+    Here we will explain our story of the last few months, the many approaches and their failures. This section
+    should implicitly show the reader that the problem is very hard, harder than initially thought to be. If
+    we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
+    that we tried something difficult
+
+    \subsubsection{Color Quantization Approach}
+
+    From the general process of the library ImageTracer.js
+
+    \begin{itemize}
+        \item Explain Color Quantization
+        \item Advantages (very accurate, fast, good for logos and web based stuff)
+        \item Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of colors)
+        \item Show pictures of original vs some different results from this approach (to show why it fails)
+    \end{itemize}
+
+    \subsubsection{Connected Component Labelling (CCL)}
+
+    Using Connected Component Labelling (CCL) to create discrete but adjacent components
+
+    \begin{itemize}
+        \item Explain CCL
+        \item Reasoning behind approach
+        \item Possible disadvantages
+        \item Signpost for the following approaches
+    \end{itemize}
+
+    \subsubsection{Edge Based CCL Approach}
+
+    Using OpenCV Canny Edge detection
+
+    \begin{itemize}
+        \item Explain OpenCV and Canny Edge Detection
+        \item Reasoning behind approach (edges should form polygons which will be color regions) and the expected result
+        \item Advantages (fast, easy, accurate for edge detection)
+        \item Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
+    \end{itemize}
+
+    \subsubsection{Pixel Based CCL Approach}
+
+    Using the color of each pixel to form regions with close enough or similar colors
+
+    \begin{itemize}
+        \item Explain pixel data (RGBA) and what it means to be close to a neighboring pixel
+        \item Reasoning behind approach (an image can be a partition of several color regions)
+        \item Advantages (surprisingly accurate, little data loss, huge size savings)
+        \item Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
+    \end{itemize}
+
+    \subsection{Limitations \& Drawbacks}
+
+    Here we explain the overall limitations of all the processes we used and really any future process because
+    of the nature of Vectorization of Raster data
+
+    \begin{itemize}
+        \item Brief summary of what we will go over (signposting)
+        \item Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
+        \item Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization
+        artifacts
+        \item Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
+        \item Brief summary of everything we just mentioned
+    \end{itemize}
+
+
+    \section{Software Engineering}
+
+    Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
+
+    \subsection{Methodology}
+
+    Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
+    \linebreak
+    Here we can show how the poor results affected our schedule and how things shifted because of unexpected results,
+    we can definitely show that this is common in real life and is a good representation and preparation of the real world
+    which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
+
+    \subsection{Schedule (Gantt Chart)}
+
+    Followed it well but started falling apart towards the end, very accurate to the real world :D
+    \linebreak
+    Mention that we started dissertation somewhat early to avoid the risk of running out of time
+
+    \subsection{Risks}
+
+    Time Time Time!!!
+
+    \subsection{Testing?}
+
+    Do we need this section?
+    \linebreak
+    Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
+
+
+    \section{Evaluation}
+
+    Two main angles, accuracy to the original and compression rate from the original
+    \linebreak
+    As much as possible we need to emphasize that we have done something great,
+    no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we
+    have accomplished something meaningful
+
+    \subsection{Accuracy}
+
+    \begin{itemize}
+        \item Define accuracy (aka lossy-ness or how much data is lost from original)
+        \item Quantitative methods (compare each pixel to itself), and compare with other compression methods like JPEG
+        \item Qualitative methods (human eye side by side) and compare with other methods like JPEG
+    \end{itemize}
+
+    \subsection{Compression}
+
+    \begin{itemize}
+        \item Define compression rate (aka how smaller is the result compared to original or some other)
+        \item Quantitative methods (compare against original, AND against others including upscaled and uncompressed)
+        \item Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
+    \end{itemize}
+
+
+    \section{Results \& Findings}
+
+    Here we show both the results of our development but also our own personal findings that someone who
+    wants to research this kind of thing should be aware of that I discovered
+
+    \subsection{Results}
+
+    TODO
+    \linebreak
+    The good, the bad and the ugly (with detailed explanations :D)
+
+    \subsection{Findings}
+
+    \begin{itemize}
+        \item This is a very difficult problem, more difficult than initially thought to be
+        \item GPU acceleration is very hard but improves speed shockingly well
+        \item Node sucks for concurrency and doesn't have true multi-threading
+        \item Differing input will have different results because of the limitations of vectorization
+    \end{itemize}
+
+
+    \section{Challenges}
+
+    \begin{itemize}
+        \item Toolchain used was not very mature or helpful sometimes
+        \item GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
+        \item Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
+        \item Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not ML based and produces very accurate results is very difficult
+    \end{itemize}
+
+
+    \section{Reflection}
+
+    \begin{itemize}
+        \item How would you do it differently if to start from scratch (Use JVM or Native and optimize for GPU early)
+        \item Project Management (Fairly good given the circumstances)
+        \item So much new knowledge about many different things
+        \item Very difficult but very mentally stimulating and rewarding project that I really enjoyed
+    \end{itemize}
+
+
+    \section{Future Work}
+
+    \begin{itemize}
+        \item Use better tools that allow for native multi-threading and easier and direct access to GPU
+        \item Better optimizations and better compression
+        \item Explore having a mixed raster and vector solution to solve the areas where vector fails
+        \item Buy better hardware for faster development :D
+    \end{itemize}
+
+
+    \section{Conclusion}
+
+    \begin{itemize}
+        \item Summarize everything we said
+        \item Conclude with final thoughts about the good, the bad and how this can further improve the world etc
+    \end{itemize}
+
+\end{document}

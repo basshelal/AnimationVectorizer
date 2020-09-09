@@ -150,7 +150,7 @@ Using OpenCV Canny Edge detection
 * Advantages (fast, easy, accurate for edge detection)
 * Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
 
-### Pixel Based
+#### Pixel Based
 
 Using the color of each pixel to form regions with close enough or similar colors
 
