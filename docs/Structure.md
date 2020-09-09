@@ -1,8 +1,6 @@
-# Dissertation Draft
+# Abstract
 
-## Abstract
-
-## Introduction
+# Introduction
 
 * Project Description
 * Motivation
@@ -12,45 +10,61 @@
 * Discoveries and results we found after our attempts (Mini Results and Findings)
 * Section Signposting
 
-## Background
+# Background
 
-In this section we need to explain to the reader how most current graphics data is represented, ie raster graphics
-in a high level way and explain the advantages and disadvantages of this approach. Then, begin explaining the 
-alternative, declarative approach Vector Graphics again in a high level way and how it compares to raster graphics, 
-advantages and disadvantages etc. Then get into compression, Gary wants us to get deep on this, depends on how 
-much we focus on the compression aspect of it, I think we should because it's interesting and complicated but it *is* 
-complicated. The compression aspect we can explain image and video compression on a somewhat high level. At the end 
-we can tie it all to videos and how basically anything that applies to images will 99% apply to video as well, hence 
-we treat them the same. Remember that the reader may not be familiar with any graphics (or even programming) stuff, 
-so it's important to keep things high level and unassuming of knowledge level.
+Remember reader may have weak background!
+Drive home the point that video is expensive (size and internet bandwidth) but very popular
 
-Amount of streaming data from Netflix or some shit to emphasize that video is very popular but also very very large.
+* Signposting
 
-YouTube compression is another indication
+## Raster Graphics
 
-### Raster Graphics
+* Brief summary of what we will go over (signposting)
+* Pixels, Bitmaps, Image Data Buffers: basically the bare must knows about Raster Graphics
+* Advantages and popularity of Raster Graphics
+* Disadvantages like upscaling, pixelation, size issues with high resolution
+* Brief summary of everything we just mentioned
 
-Bitmaps, Image Data Buffers, Pixels, Resolution, Upscaling and pixelation
+## Vector Graphics
 
-### Vector Graphics
+* Brief summary of what we will go over (signposting)
+* Declarative vs Imperative ie WYSIWYG vs WYSIWYM, describing the image using primitive geometry
+* Advantages of Vector especially in contrast to Raster (size and scalability), mention uses and popularity
+* Disadvantages like portability and light technical stuff like gradients and photographs
+* Brief summary of everything we just mentioned
 
-SVG, Geometry, Renderers, Logos, Adobe Illustrator, Size, Scalability
+* We can make a small table comparing Raster & Vector Graphics for the attributes like size, scalability etc
 
-### Image Compression
+## Image Compression
 
-Lossy, lossless, JPEG, PNG
+* Brief summary of what we will go over (signposting)
+* Fundamentals of Compression (type-agnostic) things like compression rate and lossy-ness or accuracy
+* Lossless Image Compression (PNG, BMP etc)
+* Lossy Image Compression (JPEG, GIF etc)
+* Brief summary of everything we just mentioned
 
-### Video Graphics
+* We can have an image comparing popular image file types with regards to compression
 
-Mostly same as Images except moving and include Audio, we are ignoring Audio.
+## Video Graphics?
 
-### Document Specifics?
+This section may not be necessary or it will be quite short
+
+* Brief summary of what we will go over (signposting)
+* How video is stored and how it relates to Images (mostly the same)
+* Common file types and how they compress and store video data (MP4, MKV, H265 etc)
+* Brief summary of everything we just mentioned
+
+## Document Specifics?
+
+* Brief summary of what we will go over (signposting)
+
+* Brief summary of everything we just mentioned
 
 Stuff we will use and reference throughout this document?
 So with any math we will also have accompanying TS-like pseudocode for the more programming oriented 
 reader such as myself
 
-## Related Work
+# Related Work
 
 A section where we talk about ML and how, it may be useful in this instance, it is not a viable true 
 solution because ML is absolute trash, it is not fun, it requires datasets, results depend on previous learnings
@@ -62,15 +76,15 @@ approach because of its huge disadvantages because honestly like fuck machine le
 disadvantages are actually too many for something like this because art like cartoons comes in different forms and
 styles and no machine learning algorithm can do this well enough for all use cases.
 
-## Implementation
+# Implementation
 
-### Pipeline
+## Pipeline
 
 The basic high level pipeline demonstrating the input, the processing, and the output
 
 We can later add a few more pipeline images representing the different approaches we took from a high level
 
-### Toolchain
+## Toolchain
 
 Node, TypeScript, Electron, React?
 OpenCV, GPU.js
@@ -78,9 +92,9 @@ OpenCV, GPU.js
 No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them. 
 This makes the reader brace themselves for what we did without actually telling them just yet.
 
-### Approaches
+## Approaches
 
-#### Color Quantization Based Approach
+### Color Quantization Based Approach
 
 A color quantization based approach using an existing high quality library made for web (ImageTracer.js)
 
@@ -88,14 +102,14 @@ Very accurate and efficient, well documented, using a sound approach but
 too dependent on quantization number of colors, too high will make huge file sizes, take way long and at some 
 point has diminishing returns, this number is also human inputted and cannot be easily chosen based on the image
 
-#### Edge Detection Based Approach
+### Edge Detection Based Approach
 
 An edge detection based approach using OpenCV that will then attempt to make paths and polygons from the edges
 
 Sound in theory but not all paths will create polygons and all it takes is a single pixel to connect 2 polygons that
 are otherwise unrelated or a single pixel gap to disconnect a polygon
 
-#### Connected Component Labelling Based Approach
+### Connected Component Labelling Based Approach
 
 A connected component labelling based approach that reduces an image into connected "Color Regions" such that 
 an image with n color regions has at most n unique colors, each pixel in a color region has the same color
@@ -103,7 +117,7 @@ an image with n color regions has at most n unique colors, each pixel in a color
 Much slower and fails somewhat at the edges because pixels are in between to color regions, thus > 95% of all regions 
 are less than 5 pixels large, reduction has yet shown no positive results
 
-### Limitations & Drawbacks
+## Limitations & Drawbacks
 
 Mostly speed, this process is very expensive and needs to be heavily optimized but even then, 
 it will be difficult to make fast, I personally expect like at best with maximum optimizations
@@ -120,23 +134,23 @@ whether it be noise or actual data, especially in the case of gradients where SV
 vectorization process but also with non-uniform gradients which become significantly more complex and thus 
 more difficult to compute and more expensive to store.
 
-## Software Engineering
+# Software Engineering
 
-### Methodology
+## Methodology
 
 Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in
 
-### Schedule (Gantt Chart)
+## Schedule (Gantt Chart)
 
 Followed it well but started falling apart towards the end, very accurate to the real world :D
 
-### Risks
+## Risks
 
-## Evaluation
+# Evaluation
 
 Two main angles, accuracy to the original and compression rate from the original
 
-### Accuracy
+## Accuracy
 
 Accuracy means how close we are to the original image, this may or may not be affected by artifacts and noise 
 so we need to do a human approach as well as a quantitative direct comparison
@@ -152,7 +166,7 @@ is better, we can then create a metric that is like quality per MB or some shit 
 in the higher end we always have better quality per MB because SVG is built to be scalable and portable whereas 
 rasterization shines on smaller displays and fixed sizes.
 
-### Compression
+## Compression
 
 For quantitative a size comparison (duh)
 For size comparisons we need to try a ton of configurations with the originals to help prove our point, 
@@ -163,13 +177,13 @@ further exaggerate our points and make our negatives not bad in comparison, but 
 just be selective in our favor.
 For qualitative we can actually do a file transfer speed comparison to prove that a smaller size is visible
 
-## Results and Findings
+# Results and Findings
 
 GPU acceleration is hard but improves speed shockingly well
 
 Node sucks for concurrency and doesn't have true multi-threading
 
-## Challenges
+# Challenges
 
 JavaScript is really flexible but also really not yet mature for good OOP scalable development, TS helps but things 
 are not as mature as the JVM for example.
@@ -184,7 +198,7 @@ very accurate results is very very difficult
 Naysayers will always just say use ML and the temptation to use ML for highest results for a project like this is large 
 but at the same time ML is absolute trash as discussed earlier
 
-## Reflection
+# Reflection
 
 This was a difficult project but has allowed me to get deeper into some topics I never thought I would get into like 
 Graphics, Images, GPU and get more comfortable and familiar with tools like TS/JS and others.
@@ -193,12 +207,12 @@ Time Management is also a bitch and being constantly given poor results after mu
 frustrating but also humbling, overall I've learned to better cope and deal with things not working so it's been 
 a very valuable and rewarding experience overall
 
-## Future Work
+# Future Work
 
 Use better tools that allow for native multi-threading, faster execution and easier and direct access to GPU like JVM
 or Native if I'm mentally psychotic, this is quite doable because there actually isn't that much code really. This 
 is really just for better performance and optimizations because as discussed Node has it's limitations.
 
-## Conclusion
+# Conclusion
 
-## Summary
+# Summary
