@@ -1,5 +1,3 @@
-# Abstract
-
 # Introduction
 
 * Project Description
@@ -7,7 +5,7 @@
 * Existing Literature
 * Limitations of the literature that we will attempt to tackle
 * Aims and Objectives
-* Discoveries and results we found after our attempts (Mini Results and Findings)
+* Discoveries and results we found after our attempts
 * Section Signposting
 
 # Background
@@ -45,174 +43,221 @@ Drive home the point that video is expensive (size and internet bandwidth) but v
 
 * We can have an image comparing popular image file types with regards to compression
 
-## Video Graphics?
+## Video Graphics
 
-This section may not be necessary or it will be quite short
+This section may be quite short
 
 * Brief summary of what we will go over (signposting)
 * How video is stored and how it relates to Images (mostly the same)
 * Common file types and how they compress and store video data (MP4, MKV, H265 etc)
+* Evidence and proof of why video is expensive (and also popular)
 * Brief summary of everything we just mentioned
-
-## Document Specifics?
-
-* Brief summary of what we will go over (signposting)
-
-* Brief summary of everything we just mentioned
-
-Stuff we will use and reference throughout this document?
-So with any math we will also have accompanying TS-like pseudocode for the more programming oriented 
-reader such as myself
 
 # Related Work
 
-A section where we talk about ML and how, it may be useful in this instance, it is not a viable true 
-solution because ML is absolute trash, it is not fun, it requires datasets, results depend on previous learnings
-and of course we have no idea how it's calculating anything and thus cannot change the function ourselves. We are thus 
-throwing away the problem to the machine and telling it to solve it for itself and we have no idea or control what is 
-happening. Reference cases where ML fails and ML's major drawbacks as a viable solution to a problem because of these 
-issues. We need to mention somewhere the elephant in the room that is machine learning and why we did not take that 
-approach because of its huge disadvantages because honestly like fuck machine learning. However, in reality the 
-disadvantages are actually too many for something like this because art like cartoons comes in different forms and
-styles and no machine learning algorithm can do this well enough for all use cases.
+Here we throw a lot of the current stuff from both research and industry and show their flaws and limitations
+(which we may or may not have tackled)
+
+## Current Research
+
+* Brief summary of what we will go over (signposting)
+* New Machine Learning methods for Vectorization
+* New Machine Learning methods for Compression
+* Novel approaches and ideas within Vectorization such as mesh gradients etc (no ML)
+* Brief summary of everything we just mentioned
+
+## Current Applications
+
+* Brief summary of what we will go over (signposting)
+* Adobe Illustrator, Logos, Topography, Medical stuff like X rays etc Potrace
+* Animations and Games using Vector as the development method
+* Current Image & Video compression algorithms such as PNG, H265 and H266 (no ML)
+* Brief summary of everything we just mentioned
+
+## Limitations 
+
+* Brief summary of what we will go over (signposting)
+* Why ML is absolute hot trash
+* Show off the flaws with existing technologies while showing how we tackled (and hopefully beat) them
+* Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
+* Brief summary of everything we just mentioned
 
 # Implementation
 
+This may get long and technical, we should try to keep things fairly high level as much as possible,
+we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level details
+
 ## Pipeline
 
-The basic high level pipeline demonstrating the input, the processing, and the output
+The very basic common high level pipeline demonstrating the input, the processing, and the output
 
-We can later add a few more pipeline images representing the different approaches we took from a high level
+### Input
+
+An animated cartoon video, particularly one with vectorizable qualities, which we will further detail
+* Low or no use of gradients so it has discrete colors
+* Low or no noise
+* No 3D stuff like shadows and reflections
+
+### Processing
+
+We have tried multiple processes which we further explain in the approaches section, but here
+we should go over the general idea of what is necessary so:
+* Frame extraction
+* Conversion of each Frame to an SVG which will have a single SVG Path element for each color
+* SVG Frame Joining which will have some smart compression built-in
+
+### Output
+
+An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
+very minimal data loss
 
 ## Toolchain
-
-Node, TypeScript, Electron, React?
-OpenCV, GPU.js
 
 No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them. 
 This makes the reader brace themselves for what we did without actually telling them just yet.
 
 ## Approaches
 
-### Color Quantization Based Approach
+Here we will explain our story of the last few months, the many approaches and their failures. This section
+should implicitly show the reader that the problem is very hard, harder than initially thought to be. If 
+we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
+that we tried something difficult
 
-A color quantization based approach using an existing high quality library made for web (ImageTracer.js)
+### Color Quantization Approach
 
-Very accurate and efficient, well documented, using a sound approach but
-too dependent on quantization number of colors, too high will make huge file sizes, take way long and at some 
-point has diminishing returns, this number is also human inputted and cannot be easily chosen based on the image
+From the general process of the library ImageTracer.js
 
-### Edge Detection Based Approach
+* Explain Color Quantization
+* Advantages (very accurate, fast, good for logos and web based stuff)
+* Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of colors)
+* Show pictures of original vs some different results from this approach (to show why it fails)
 
-An edge detection based approach using OpenCV that will then attempt to make paths and polygons from the edges
+### Connected Component Labelling Approach
 
-Sound in theory but not all paths will create polygons and all it takes is a single pixel to connect 2 polygons that
-are otherwise unrelated or a single pixel gap to disconnect a polygon
+Using Connected Component Labelling (CCL) to create discrete but adjacent components
 
-### Connected Component Labelling Based Approach
+* Explain CCL
+* Reasoning behind approach
+* Possible disadvantages
+* Signpost for the following approaches
 
-A connected component labelling based approach that reduces an image into connected "Color Regions" such that 
-an image with n color regions has at most n unique colors, each pixel in a color region has the same color
+#### Edge Based Approach
 
-Much slower and fails somewhat at the edges because pixels are in between to color regions, thus > 95% of all regions 
-are less than 5 pixels large, reduction has yet shown no positive results
+Using OpenCV Canny Edge detection
+
+* Explain OpenCV and Canny Edge Detection
+* Reasoning behind approach (edges should form polygons which will be color regions) and the expected result
+* Advantages (fast, easy, accurate for edge detection)
+* Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
+
+### Pixel Based
+
+Using the color of each pixel to form regions with close enough or similar colors
+
+* Explain pixel data (RGBA) and what it means to be close to a neighboring pixel
+* Reasoning behind approach (an image can be a partition of several color regions)
+* Advantages (surprisingly accurate, little data loss, huge size savings)
+* Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
 
 ## Limitations & Drawbacks
 
-Mostly speed, this process is very expensive and needs to be heavily optimized but even then, 
-it will be difficult to make fast, I personally expect like at best with maximum optimizations
-and for highest accuracy something along the line of minutes for a frame on my machine, obviously more 
-powerful CPUs and GPUs will be faster but it's still not going to be realtime anytime soon
+Here we explain the overall limitations of all the processes we used and really any future process because
+of the nature of Vectorization of Raster data
 
-The vectorization process is by its nature lossy, it is transforming the data that is made for rasterization with all of
-the requirements, optimizations and issues of that medium, such as Anti-Aliasing into data that is optimal for vector
-graphics which has discrete colors and uses geometric shapes instead of pixels. In many ways, we can say we are undoing
-the effects of rasterization that the studio applied upon video export from their vector graphics application. The
-rasterization process itself was lossy (more accurately transformative) and thus undoing it will also be
-transformative of the transformation. This may be an issue because there are cases where visible data is lost, 
-whether it be noise or actual data, especially in the case of gradients where SVGs especially suffer, at least in the
-vectorization process but also with non-uniform gradients which become significantly more complex and thus 
-more difficult to compute and more expensive to store.
+* Brief summary of what we will go over (signposting)
+* Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
+* Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization artifacts
+* Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
+* Brief summary of everything we just mentioned
 
 # Software Engineering
 
+Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
+
 ## Methodology
 
-Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in
+Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
+
+Here we can show how the poor results affected our schedule and how things shifted because of unexpected results,
+we can definitely show that this is common in real life and is a good representation and preparation of the real world
+which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
 
 ## Schedule (Gantt Chart)
 
 Followed it well but started falling apart towards the end, very accurate to the real world :D
 
+Mention that we started dissertation somewhat early to avoid the risk of running out of time
+
 ## Risks
+
+Time Time Time!!!
+
+## Testing?
+
+Do we need this section?
+
+Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
 
 # Evaluation
 
 Two main angles, accuracy to the original and compression rate from the original
+As much as possible we need to emphasize that we have done something great,
+no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we 
+have accomplished something meaningful
 
 ## Accuracy
 
-Accuracy means how close we are to the original image, this may or may not be affected by artifacts and noise 
-so we need to do a human approach as well as a quantitative direct comparison
-
-For quantitative compare each pixel on the original to the color on the SVG, this will unfortunately be 
-affected by artifacts and noise so we should make that clear
-
-For qualitative a simple eye check side by side will do, we can also do an upscaling comparison. So show an upscaled 
-video or image of the original vs our own, this way we can say that we have successfully defeated upscaling by just 
-using vectorization because both are indistinguishable yet our own is more portable and scalable so the other
-advantages carry it. We can also do a fixed size comparison, meaning if both files are x size show both and ask which 
-is better, we can then create a metric that is like quality per MB or some shit like that so that we can prove that 
-in the higher end we always have better quality per MB because SVG is built to be scalable and portable whereas 
-rasterization shines on smaller displays and fixed sizes.
+* Define accuracy (aka lossy-ness or how much data is lost from original)
+* Quantitative methods (compare each pixel to itself), and compare with other compression methods like JPEG
+* Qualitative methods (human eye side by side) and compare with other methods like JPEG
 
 ## Compression
 
-For quantitative a size comparison (duh)
-For size comparisons we need to try a ton of configurations with the originals to help prove our point, 
-for example if we upscale the frames/videos to 4K and "upscale" ours to the same and compare size, or 
-if we use uncompressed image and video formats vs our own. We could also use some of techniques to heavily reduce
-the size of our output, even if it is unusable by most applications. It's not exactly apples to apples but it will 
-further exaggerate our points and make our negatives not bad in comparison, but we still won't lie though, 
-just be selective in our favor.
-For qualitative we can actually do a file transfer speed comparison to prove that a smaller size is visible
+* Define compression rate (aka how smaller is the result compared to original or some other)
+* Quantitative methods (compare against original, AND against others including upscaled and uncompressed)
+* Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
 
-# Results and Findings
+# Results & Findings
 
-GPU acceleration is hard but improves speed shockingly well
+Here we show both the results of our development but also our own personal findings that someone who 
+wants to research this kind of thing should be aware of that I discovered
 
-Node sucks for concurrency and doesn't have true multi-threading
+## Results
+
+TODO
+
+The good, the bad and the ugly (with detailed explanations :D)
+
+## Findings
+
+* This is a very difficult problem, more difficult than initially thought to be
+* GPU acceleration is very hard but improves speed shockingly well
+* Node sucks for concurrency and doesn't have true multi-threading
+* Differing input will have different results because of the limitations of vectorization
 
 # Challenges
 
-JavaScript is really flexible but also really not yet mature for good OOP scalable development, TS helps but things 
-are not as mature as the JVM for example.
-
-GPU programming is insanely difficult and yields huge benefits
-
-Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
-
-Reducing the number of human inputted arguments to create a fully autonomous system that is not ML based and produces 
-very accurate results is very very difficult
-
-Naysayers will always just say use ML and the temptation to use ML for highest results for a project like this is large 
-but at the same time ML is absolute trash as discussed earlier
+* Toolchain used was not very mature or helpful sometimes
+* GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
+* Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
+* Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not ML based
+and produces very accurate results is very difficult
 
 # Reflection
 
-This was a difficult project but has allowed me to get deeper into some topics I never thought I would get into like 
-Graphics, Images, GPU and get more comfortable and familiar with tools like TS/JS and others.
-
-Time Management is also a bitch and being constantly given poor results after multiple different attempts is very 
-frustrating but also humbling, overall I've learned to better cope and deal with things not working so it's been 
-a very valuable and rewarding experience overall
+* How would you do it differently if to start from scratch (Use JVM or Native and optimize for GPU early)
+* Project Management (Fairly good given the circumstances)
+* So much new knowledge about many different things
+* Very difficult but very mentally stimulating and rewarding project that I really enjoyed
 
 # Future Work
 
-Use better tools that allow for native multi-threading, faster execution and easier and direct access to GPU like JVM
-or Native if I'm mentally psychotic, this is quite doable because there actually isn't that much code really. This 
-is really just for better performance and optimizations because as discussed Node has it's limitations.
+* Use better tools that allow for native multi-threading and easier and direct access to GPU
+* Better optimizations and better compression
+* Explore having a mixed raster and vector solution to solve the areas where vector fails
+* Buy better hardware for faster development :D
 
 # Conclusion
 
-# Summary
+* Summarize everything we said
+* Conclude with final thoughts about the good, the bad and how this can further improve the world etc
