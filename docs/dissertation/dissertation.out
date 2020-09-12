@@ -19,7 +19,7 @@
 \BOOKMARK [3][-]{subsubsection.4.3.2}{Connected Component Labelling \(CCL\)}{subsection.4.3}% 19
 \BOOKMARK [3][-]{subsubsection.4.3.3}{Edge Based CCL Approach}{subsection.4.3}% 20
 \BOOKMARK [3][-]{subsubsection.4.3.4}{Pixel Based CCL Approach}{subsection.4.3}% 21
-\BOOKMARK [2][-]{subsection.4.4}{Limitations \046 Drawbacks}{section.4}% 22
+\BOOKMARK [2][-]{subsection.4.4}{Limitations and Drawbacks}{section.4}% 22
 \BOOKMARK [1][-]{section.5}{Software Engineering}{}% 23
 \BOOKMARK [2][-]{subsection.5.1}{Methodology}{section.5}% 24
 \BOOKMARK [2][-]{subsection.5.2}{Schedule \(Gantt Chart\)}{section.5}% 25
@@ -28,7 +28,7 @@
 \BOOKMARK [1][-]{section.6}{Evaluation}{}% 28
 \BOOKMARK [2][-]{subsection.6.1}{Accuracy}{section.6}% 29
 \BOOKMARK [2][-]{subsection.6.2}{Compression}{section.6}% 30
-\BOOKMARK [1][-]{section.7}{Results \046 Findings}{}% 31
+\BOOKMARK [1][-]{section.7}{Results and Findings}{}% 31
 \BOOKMARK [2][-]{subsection.7.1}{Results}{section.7}% 32
 \BOOKMARK [2][-]{subsection.7.2}{Findings}{section.7}% 33
 \BOOKMARK [1][-]{section.8}{Challenges}{}% 34

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  12 SEP 2020 08:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  12 SEP 2020 09:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -669,17 +669,17 @@ tion.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 424.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 424.
 Package rerunfilecheck Info: File `dissertation.out' has not changed.
-(rerunfilecheck)             Checksum: 5D3C7812569B748A796396C3634C170D;2274.
+(rerunfilecheck)             Checksum: 26E3F154FCAE94B179B40ED433C90867;2272.
 Package logreq Info: Writing requests to 'dissertation.run.xml'.
 \openout1 = `dissertation.run.xml'.
 
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 424.
  ) 
 Here is how much of TeX's memory you used:
- 13581 strings out of 480893
- 243991 string characters out of 5907572
- 936278 words of memory out of 5000000
- 28979 multiletter control sequences out of 15000+600000
+ 13611 strings out of 480893
+ 244607 string characters out of 5907572
+ 937491 words of memory out of 5000000
+ 29009 multiletter control sequences out of 15000+600000
  540593 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  43i,6n,37p,950b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -689,7 +689,7 @@ b><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 ><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
 <d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
 Output written on C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/diss
-ertation/dissertation.pdf (18 pages, 107413 bytes).
+ertation/dissertation.pdf (18 pages, 107104 bytes).
 PDF statistics:
  341 PDF objects out of 1000 (max. 8388607)
  311 compressed objects within 4 object streams

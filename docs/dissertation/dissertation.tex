@@ -59,7 +59,7 @@ bottom=40mm
     \pagenumbering{arabic}
 
 
-    \section{Introduction}
+    \section{Introduction}\label{sec:introduction}
 
     A paragraph or so for each of:
 
@@ -76,7 +76,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Background}
+    \section{Background}\label{sec:background}
 
     \tab
     This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
@@ -91,7 +91,7 @@ bottom=40mm
     Finally, we will explain how this all ties into video graphics and describe some of the few differences between
     concepts from image graphics and video graphics.
 
-    \subsection{Raster Graphics}
+    \subsection{Raster Graphics}\label{subsec:raster-graphics}
 
     1 - 2 sentences for each of:
 
@@ -103,7 +103,7 @@ bottom=40mm
         \item Brief summary of everything we just mentioned
     \end{itemize}
 
-    \subsection{Vector Graphics}
+    \subsection{Vector Graphics}\label{subsec:vector-graphics}
 
     1 - 2 sentences for each of:
 
@@ -117,7 +117,7 @@ bottom=40mm
 
     We can make a small table comparing Raster \& Vector Graphics for the attributes like size, scalability etc
 
-    \subsection{Image Compression}
+    \subsection{Image Compression}\label{subsec:image-compression}
 
     1 - 2 sentences for each of:
 
@@ -131,7 +131,7 @@ bottom=40mm
 
     We can have an image comparing popular image file types with regards to compression
 
-    \subsection{Video Graphics}
+    \subsection{Video Graphics}\label{subsec:video-graphics}
 
     This section may be quite short
 
@@ -146,12 +146,12 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Related Work}
+    \section{Related Work}\label{sec:related-work}
 
     Here we throw a lot of the current stuff from both research and industry and show their flaws and limitations
     (which we may or may not have tackled)
 
-    \subsection{Current Research}
+    \subsection{Current Research}\label{subsec:current-research}
 
     \begin{itemize}
         \item Brief summary of what we will go over (signposting)
@@ -161,7 +161,7 @@ bottom=40mm
         \item Brief summary of everything we just mentioned
     \end{itemize}
 
-    \subsection{Current Applications}
+    \subsection{Current Applications}\label{subsec:current-applications}
 
     \begin{itemize}
         \item Brief summary of what we will go over (signposting)
@@ -171,7 +171,7 @@ bottom=40mm
         \item Brief summary of everything we just mentioned
     \end{itemize}
 
-    \subsection{Limitations}
+    \subsection{Limitations}\label{subsec:limitations}
 
     \begin{itemize}
         \item Brief summary of what we will go over (signposting)
@@ -184,12 +184,12 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Implementation}
+    \section{Implementation}\label{sec:implementation}
 
     This may get long and technical, we should try to keep things fairly high level as much as possible,
     we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level details
 
-    \subsection{Pipeline}
+    \subsection{Pipeline}\label{subsec:pipeline}
 
     The very basic common high level pipeline demonstrating the input, the processing, and the output
 
@@ -217,12 +217,12 @@ bottom=40mm
     An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
     very minimal data loss
 
-    \subsection{Toolchain}
+    \subsection{Toolchain}\label{subsec:toolchain}
 
     No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them.
     This makes the reader brace themselves for what we did without actually telling them just yet.
 
-    \subsection{Approaches}
+    \subsection{Approaches}\label{subsec:approaches}
 
     Here we will explain our story of the last few months, the many approaches and their failures. This section
     should implicitly show the reader that the problem is very hard, harder than initially thought to be. If
@@ -273,7 +273,7 @@ bottom=40mm
         \item Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
     \end{itemize}
 
-    \subsection{Limitations \& Drawbacks}
+    \subsection{Limitations and Drawbacks}\label{subsec:limitations-and-drawbacks}
 
     Here we explain the overall limitations of all the processes we used and really any future process because
     of the nature of Vectorization of Raster data
@@ -290,11 +290,11 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Software Engineering}
+    \section{Software Engineering}\label{sec:software-engineering}
 
     Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
 
-    \subsection{Methodology}
+    \subsection{Methodology}\label{subsec:methodology}
 
     Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
     \linebreak
@@ -302,17 +302,17 @@ bottom=40mm
     we can definitely show that this is common in real life and is a good representation and preparation of the real world
     which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
 
-    \subsection{Schedule (Gantt Chart)}
+    \subsection{Schedule (Gantt Chart)}\label{subsec:schedule-(gantt-chart)}
 
     Followed it well but started falling apart towards the end, very accurate to the real world :D
     \linebreak
     Mention that we started dissertation somewhat early to avoid the risk of running out of time
 
-    \subsection{Risks}
+    \subsection{Risks}\label{subsec:risks}
 
     Time Time Time!!!
 
-    \subsection{Testing?}
+    \subsection{Testing?}\label{subsec:testing?}
 
     Do we need this section?
     \linebreak
@@ -321,7 +321,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Evaluation}
+    \section{Evaluation}\label{sec:evaluation}
 
     Two main angles, accuracy to the original and compression rate from the original
     \linebreak
@@ -329,7 +329,7 @@ bottom=40mm
     no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we
     have accomplished something meaningful
 
-    \subsection{Accuracy}
+    \subsection{Accuracy}\label{subsec:accuracy}
 
     \begin{itemize}
         \item Define accuracy (aka lossy-ness or how much data is lost from original)
@@ -337,7 +337,7 @@ bottom=40mm
         \item Qualitative methods (human eye side by side) and compare with other methods like JPEG
     \end{itemize}
 
-    \subsection{Compression}
+    \subsection{Compression}\label{subsec:compression}
 
     \begin{itemize}
         \item Define compression rate (aka how smaller is the result compared to original or some other)
@@ -348,18 +348,18 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Results \& Findings}
+    \section{Results and Findings}\label{sec:results-and-findings}
 
     Here we show both the results of our development but also our own personal findings that someone who
     wants to research this kind of thing should be aware of that I discovered
 
-    \subsection{Results}
+    \subsection{Results}\label{subsec:results}
 
     TODO
     \linebreak
     The good, the bad and the ugly (with detailed explanations :D)
 
-    \subsection{Findings}
+    \subsection{Findings}\label{subsec:findings}
 
     \begin{itemize}
         \item This is a very difficult problem, more difficult than initially thought to be
@@ -371,7 +371,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Challenges}
+    \section{Challenges}\label{sec:challenges}
 
     \begin{itemize}
         \item Toolchain used was not very mature or helpful sometimes
@@ -383,7 +383,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Reflection}
+    \section{Reflection}\label{sec:reflection}
 
     \begin{itemize}
         \item How would you do it differently if to start from scratch (Use JVM or Native and optimize for GPU early)
@@ -395,7 +395,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Future Work}
+    \section{Future Work}\label{sec:future-work}
 
     \begin{itemize}
         \item Use better tools that allow for native multi-threading and easier and direct access to GPU
@@ -407,7 +407,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Conclusion}
+    \section{Conclusion}\label{sec:conclusion}
 
     \begin{itemize}
         \item Summarize everything we said
