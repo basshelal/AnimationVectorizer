@@ -3,6 +3,9 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
+\usepackage{tabto}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
 \hypersetup{
 colorlinks=false,
 linktoc=all,
@@ -17,19 +20,28 @@ bottom=40mm
 }
 \title{Animation Vectorization and Compression}
 \author{Bassam Helal}
-\date{ \today }
+\date{ September 2020 }
 \begin{document}
-    % TODO Remove black background and white text
+    % TODO 12-Sep-20 Remove black background and white text
     \pagecolor{black}
     \color{white}
 
+    \pagenumbering{gobble}
+
     \maketitle
+
+    \begin{center}
+        \vspace{8cm}
+        \includegraphics[scale=0.65]{SwanseaUniversityLogo.png}
+    \end{center}
 
     \pagebreak
 
     \begin{center}
         \section*{Abstract}
     \end{center}
+
+    % TODO 12-Sep-20 Abstract
 
     \pagebreak
 
@@ -42,8 +54,12 @@ bottom=40mm
 
     \pagebreak
 
+    \pagenumbering{arabic}
+
 
     \section{Introduction}
+
+    A paragraph or so for each of:
 
     \begin{itemize}
         \item Project Description
@@ -60,14 +76,18 @@ bottom=40mm
 
     \section{Background}
 
-    % Remember reader may have weak background!
-    % Drive home the point that video is expensive (size and internet bandwidth) but very popular
-
-    \begin{itemize}
-        \item Signposting
-    \end{itemize}
+    \tab This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
+    thus, this section will introduce the reader to some of the required knowledge needed for understanding this
+    project. Firstly, we will introduce the concept of Raster Graphics, ie, the current standard for graphics data
+    representation. We will then introduce its counterpart Vector Graphics, a different way to store graphics data
+    with its own advantages and disadvantages that is growing in popularity. We will then give a brief primer on
+    Image compression and the different methods of reducing the overall size of an image. Finally, we will explain
+    how this all ties into video graphics and describe some of the few differences between concepts from image
+    graphics and video graphics.
 
     \subsection{Raster Graphics}
+
+    1 - 2 sentences for each of:
 
     \begin{itemize}
         \item Brief summary of what we will go over (signposting)
@@ -78,6 +98,8 @@ bottom=40mm
     \end{itemize}
 
     \subsection{Vector Graphics}
+
+    1 - 2 sentences for each of:
 
     \begin{itemize}
         \item Brief summary of what we will go over (signposting)
@@ -90,6 +112,8 @@ bottom=40mm
     We can make a small table comparing Raster \& Vector Graphics for the attributes like size, scalability etc
 
     \subsection{Image Compression}
+
+    1 - 2 sentences for each of:
 
     \begin{itemize}
         \item Brief summary of what we will go over (signposting)
