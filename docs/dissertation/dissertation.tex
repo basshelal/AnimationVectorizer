@@ -1,7 +1,8 @@
-\documentclass[14pt]{article}
+\documentclass[12pt]{article}
 \usepackage{geometry}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\usepackage[utf8]{inputenc}
 \hypersetup{
 colorlinks=false,
 linktoc=all,
@@ -14,7 +15,6 @@ top=30mm,
 right=30mm,
 bottom=40mm
 }
-\usepackage[utf8]{inputenc}
 \title{Animation Vectorization and Compression}
 \author{Bassam Helal}
 \date{ \today }
@@ -27,7 +27,16 @@ bottom=40mm
 
     \pagebreak
 
-    \renewcommand*\contentsname{Table of Contents}
+    \begin{center}
+        \section*{Abstract}
+    \end{center}
+
+    \pagebreak
+
+    \renewcommand*\contentsname{
+    \begin{center}
+        Table of Contents
+    \end{center}}
 
     \tableofcontents
 
@@ -46,12 +55,13 @@ bottom=40mm
         \item Section Signposting
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Background}
 
-    Remember reader may have weak background!
-    \linebreak
-    Drive home the point that video is expensive (size and internet bandwidth) but very popular
+    % Remember reader may have weak background!
+    % Drive home the point that video is expensive (size and internet bandwidth) but very popular
 
     \begin{itemize}
         \item Signposting
@@ -103,6 +113,8 @@ bottom=40mm
         \item Brief summary of everything we just mentioned
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Related Work}
 
@@ -138,6 +150,8 @@ bottom=40mm
         \item Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
         \item Brief summary of everything we just mentioned
     \end{itemize}
+
+    \pagebreak
 
 
     \section{Implementation}
@@ -243,6 +257,8 @@ bottom=40mm
         \item Brief summary of everything we just mentioned
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Software Engineering}
 
@@ -272,6 +288,8 @@ bottom=40mm
     \linebreak
     Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
 
+    \pagebreak
+
 
     \section{Evaluation}
 
@@ -297,6 +315,8 @@ bottom=40mm
         \item Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Results \& Findings}
 
@@ -318,6 +338,8 @@ bottom=40mm
         \item Differing input will have different results because of the limitations of vectorization
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Challenges}
 
@@ -327,6 +349,8 @@ bottom=40mm
         \item Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
         \item Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not ML based and produces very accurate results is very difficult
     \end{itemize}
+
+    \pagebreak
 
 
     \section{Reflection}
@@ -338,6 +362,8 @@ bottom=40mm
         \item Very difficult but very mentally stimulating and rewarding project that I really enjoyed
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Future Work}
 
@@ -348,6 +374,8 @@ bottom=40mm
         \item Buy better hardware for faster development :D
     \end{itemize}
 
+    \pagebreak
+
 
     \section{Conclusion}
 
@@ -355,5 +383,17 @@ bottom=40mm
         \item Summarize everything we said
         \item Conclude with final thoughts about the good, the bad and how this can further improve the world etc
     \end{itemize}
+
+    \pagebreak
+
+
+    \section{References}
+
+    \pagebreak
+
+
+    \section{Appendix?}
+
+    \pagebreak
 
 \end{document}
