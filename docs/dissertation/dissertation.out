@@ -1,0 +1,37 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Background}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Raster Graphics}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Vector Graphics}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Image Compression}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Video Graphics}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Related Work}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{Current Research}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.2}{Current Applications}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.3}{Limitations}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Implementation}{}% 11
+\BOOKMARK [2][-]{subsection.4.1}{Pipeline}{section.4}% 12
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Input}{subsection.4.1}% 13
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Processing}{subsection.4.1}% 14
+\BOOKMARK [3][-]{subsubsection.4.1.3}{Output}{subsection.4.1}% 15
+\BOOKMARK [2][-]{subsection.4.2}{Toolchain}{section.4}% 16
+\BOOKMARK [2][-]{subsection.4.3}{Approaches}{section.4}% 17
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Color Quantization Approach}{subsection.4.3}% 18
+\BOOKMARK [3][-]{subsubsection.4.3.2}{Connected Component Labelling \(CCL\)}{subsection.4.3}% 19
+\BOOKMARK [3][-]{subsubsection.4.3.3}{Edge Based CCL Approach}{subsection.4.3}% 20
+\BOOKMARK [3][-]{subsubsection.4.3.4}{Pixel Based CCL Approach}{subsection.4.3}% 21
+\BOOKMARK [2][-]{subsection.4.4}{Limitations \046 Drawbacks}{section.4}% 22
+\BOOKMARK [1][-]{section.5}{Software Engineering}{}% 23
+\BOOKMARK [2][-]{subsection.5.1}{Methodology}{section.5}% 24
+\BOOKMARK [2][-]{subsection.5.2}{Schedule \(Gantt Chart\)}{section.5}% 25
+\BOOKMARK [2][-]{subsection.5.3}{Risks}{section.5}% 26
+\BOOKMARK [2][-]{subsection.5.4}{Testing?}{section.5}% 27
+\BOOKMARK [1][-]{section.6}{Evaluation}{}% 28
+\BOOKMARK [2][-]{subsection.6.1}{Accuracy}{section.6}% 29
+\BOOKMARK [2][-]{subsection.6.2}{Compression}{section.6}% 30
+\BOOKMARK [1][-]{section.7}{Results \046 Findings}{}% 31
+\BOOKMARK [2][-]{subsection.7.1}{Results}{section.7}% 32
+\BOOKMARK [2][-]{subsection.7.2}{Findings}{section.7}% 33
+\BOOKMARK [1][-]{section.8}{Challenges}{}% 34
+\BOOKMARK [1][-]{section.9}{Reflection}{}% 35
+\BOOKMARK [1][-]{section.10}{Future Work}{}% 36
+\BOOKMARK [1][-]{section.11}{Conclusion}{}% 37
