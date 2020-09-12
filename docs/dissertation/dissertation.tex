@@ -5,6 +5,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{tabto}
 \usepackage{graphicx}
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
 \graphicspath{ {./images/} }
 \hypersetup{
 colorlinks=false,
@@ -76,14 +78,18 @@ bottom=40mm
 
     \section{Background}
 
-    \tab This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
+    \tab
+    This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
     thus, this section will introduce the reader to some of the required knowledge needed for understanding this
-    project. Firstly, we will introduce the concept of Raster Graphics, ie, the current standard for graphics data
-    representation. We will then introduce its counterpart Vector Graphics, a different way to store graphics data
-    with its own advantages and disadvantages that is growing in popularity. We will then give a brief primer on
-    Image compression and the different methods of reducing the overall size of an image. Finally, we will explain
-    how this all ties into video graphics and describe some of the few differences between concepts from image
-    graphics and video graphics.
+    project.
+    Firstly, we will introduce the concept of Raster Graphics, ie, the current common standard for graphics data
+    representation.
+    We will then introduce its counterpart Vector Graphics, a different way to store graphics data with its own
+    advantages and disadvantages that is growing in popularity.
+    We will then give a brief primer on Image compression and the different methods of reducing the overall size
+    of an image.
+    Finally, we will explain how this all ties into video graphics and describe some of the few differences between
+    concepts from image graphics and video graphics.
 
     \subsection{Raster Graphics}
 
@@ -411,12 +417,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{References}
-
-    \pagebreak
-
-
-    \section{Appendix?}
+    \printbibliography[heading=bibintoc,title={References}]
 
     \pagebreak
 
