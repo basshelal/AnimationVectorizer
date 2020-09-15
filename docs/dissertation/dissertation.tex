@@ -82,14 +82,14 @@ bottom=40mm
     This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
     thus, this section will introduce the reader to some of the required knowledge needed for understanding this
     project.
-    Firstly, we will introduce the concept of Raster Graphics, ie, the current common standard for graphics data
+    Firstly, we will introduce the concept of raster graphics, ie, the current common standard for graphics data
     representation.
-    We will then introduce its counterpart Vector Graphics, a different way to store graphics data with its own
-    advantages and disadvantages that is growing in popularity.
-    We will then give a brief primer on Image compression and the different methods of reducing the overall size
+    We will then introduce its counterpart vector graphics, a different way to store graphics data that is growing in
+    popularity and has its own advantages and disadvantages.
+    We will then give a brief primer on image compression and some common methods of reducing the overall size
     of an image.
     Finally, we will explain how this all ties into video graphics and describe some of the few differences between
-    concepts from image graphics and video graphics.
+    image graphics and video graphics.
 
     \subsection{Raster Graphics}\label{subsec:raster-graphics}
 
@@ -145,6 +145,11 @@ bottom=40mm
 
     \pagebreak
 
+    \subsection{Toolchain}\label{subsec:toolchain}
+
+    No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them.
+    This makes the reader brace themselves for what we did without actually telling them just yet.
+
 
     \section{Related Work}\label{sec:related-work}
 
@@ -186,12 +191,17 @@ bottom=40mm
 
     \section{Implementation}\label{sec:implementation}
 
-    This may get long and technical, we should try to keep things fairly high level as much as possible,
-    we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level details
+    % TODO 15-Sep-20 This may get long and technical, we should try to keep things fairly high level as much as
+    %  possible we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level
+    %  details
 
     \subsection{Pipeline}\label{subsec:pipeline}
 
-    The very basic common high level pipeline demonstrating the input, the processing, and the output
+    \includegraphics[width=\textwidth]{Pipeline.png}
+    % TODO 15-Sep-20 Fix positioning and add a caption, read more here https://cs.overleaf.com/learn/latex/Inserting_Images
+
+    This pipeline image describes the the project's implementation from a high level view.
+    Each phase of the pipeline is further detailed.
 
     \subsubsection{Input}
 
@@ -202,28 +212,27 @@ bottom=40mm
         \item No 3D stuff like shadows and reflections
     \end{itemize}
 
-    \subsubsection{Processing}
+    Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go as well as some less optimal
+    cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
 
-    We have tried multiple processes which we further explain in the approaches section, but here
-    we should go over the general idea of what is necessary so:
-    \begin{itemize}
-        \item Frame extraction
-        \item Conversion of each Frame to an SVG which will have a single SVG Path element for each color
-        \item SVG Frame Joining which will have some smart compression built-in
-    \end{itemize}
+    \subsubsection{Frame Extraction}
+
+    \subsubsection{Vectorization}
+
+    Conversion of each Frame to an SVG which will have a single SVG Path element for each color
+
+    \subsubsection{Frame Merging}
+
+    SVG Frame Joining which will have some smart compression built-in
 
     \subsubsection{Output}
 
     An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
     very minimal data loss
 
-    \subsection{Toolchain}\label{subsec:toolchain}
+    \subsection{Vectorization Methods}\label{subsec:vectorization-methods}
 
-    No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them.
-    This makes the reader brace themselves for what we did without actually telling them just yet.
-
-    \subsection{Approaches}\label{subsec:approaches}
-
+    \tab
     Here we will explain our story of the last few months, the many approaches and their failures. This section
     should implicitly show the reader that the problem is very hard, harder than initially thought to be. If
     we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
