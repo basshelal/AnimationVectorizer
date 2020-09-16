@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  15 SEP 2020 16:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  16 SEP 2020 20:50
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -470,6 +470,10 @@ Package biblatex Info: ... file 'biblatex.cfg' found.
 (d:/Programs/texlive/2020/texmf-dist/tex/latex/biblatex/biblatex.cfg
 File: biblatex.cfg 
 ))
+(d:/Programs/texlive/2020/texmf-dist/tex/latex/comment/comment.sty
+\CommentStream=\write4
+
+Excluding comment 'comment')
 Package hyperref Info: Option `colorlinks' set `false' on input line 15.
 \@quotelevel=\count386
 \@quotereset=\count387
@@ -573,8 +577,8 @@ LaTeX Info: Redefining \nameref on input line 26.
 tion.out)
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.out)
-\@outlinefile=\write4
-\openout4 = `dissertation.out'.
+\@outlinefile=\write5
+\openout5 = `dissertation.out'.
 
 Package biblatex Info: Trying to load language 'english'...
 Package biblatex Info: ... file 'english.lbx' found.
@@ -627,79 +631,74 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.75 ...{\numberline {9}Reflection}{13}{section.9}
+l.75 ...{\numberline {9}Reflection}{12}{section.9}
                                                   % [3])
-\tf@toc=\write5
-\openout5 = `dissertation.toc'.
+\tf@toc=\write6
+\openout6 = `dissertation.toc'.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.58 
-      [4] [1] [2] [3] [4] [5]
-<./images/Pipeline.png, id=283, 623.32875pt x 261.97874pt>
+      [4] [1] [2] [3] [4]
+<./images/Pipeline.png, id=279, 623.32875pt x 261.97874pt>
 File: ./images/Pipeline.png Graphic file (type png)
 <use ./images/Pipeline.png>
-Package pdftex.def Info: ./images/Pipeline.png  used on input line 202.
+Package pdftex.def Info: ./images/Pipeline.png  used on input line 219.
 (pdftex.def)             Requested size: 426.79135pt x 179.3784pt.
- [6 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./im
-ages/Pipeline.png>] [7] [8]
-Underfull \hbox (badness 10000) in paragraph at lines 309--314
+ [5 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./im
+ages/Pipeline.png>] [6] [7]
+Underfull \hbox (badness 10000) in paragraph at lines 327--332
 \OT1/cmr/m/n/12 live in :/
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 317--320
+Underfull \hbox (badness 10000) in paragraph at lines 335--338
 \OT1/cmr/m/n/12 world :D
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 327--330
-\OT1/cmr/m/n/12 Do we need this sec-tion?
+Underfull \hbox (badness 10000) in paragraph at lines 345--348
+\OT1/cmr/m/n/12 Short and quick, show some ba-sic test-ing stuff
  []
 
-[9] [10]
-Underfull \hbox (badness 10000) in paragraph at lines 368--371
-\OT1/cmr/m/n/12 TODO
- []
+[8] [9] [10] [11] [12] [13] [14]
 
-[11] [12] [13] [14] [15]
+LaTeX Warning: Empty bibliography on input line 446.
 
-LaTeX Warning: Empty bibliography on input line 430.
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 434.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 434.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 450.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 450.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 434.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 434.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 450.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 450.
 Package rerunfilecheck Info: File `dissertation.out' has not changed.
-(rerunfilecheck)             Checksum: 903506CD46B3ED1641ED1AA34F842E00;2435.
+(rerunfilecheck)             Checksum: CF8E99DB56E8872A09C82E76C65B6586;2434.
 Package logreq Info: Writing requests to 'dissertation.run.xml'.
 \openout1 = `dissertation.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 434.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 450.
  ) 
 Here is how much of TeX's memory you used:
- 13622 strings out of 480893
- 244832 string characters out of 5907572
- 937505 words of memory out of 5000000
- 29016 multiletter control sequences out of 15000+600000
+ 13658 strings out of 480893
+ 245469 string characters out of 5907572
+ 938419 words of memory out of 5000000
+ 29050 multiletter control sequences out of 15000+600000
  540593 words of font info for 47 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 43i,6n,37p,950b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 43i,6n,37p,937b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
 {d:/Programs/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.en
 c}<d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pf
 b><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 ><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
 <d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
 Output written on C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/diss
-ertation/dissertation.pdf (19 pages, 114794 bytes).
+ertation/dissertation.pdf (18 pages, 115182 bytes).
 PDF statistics:
- 360 PDF objects out of 1000 (max. 8388607)
- 327 compressed objects within 4 object streams
- 58 named destinations out of 1000 (max. 500000)
+ 355 PDF objects out of 1000 (max. 8388607)
+ 323 compressed objects within 4 object streams
+ 57 named destinations out of 1000 (max. 500000)
  323 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -6,12 +6,12 @@
 \usepackage{tabto}
 \usepackage{graphicx}
 \usepackage{biblatex}
+\usepackage{comment}
 \addbibresource{bibliography.bib}
 \graphicspath{ {./images/} }
 \hypersetup{
 colorlinks=false,
-linktoc=all,
-linkcolor=white,
+linktoc=all
 }
 \geometry{
 a4paper,
@@ -22,7 +22,7 @@ bottom=40mm
 }
 \title{Animation Vectorization and Compression}
 \author{Bassam Helal}
-\date{ September 2020 }
+\date{September 2020}
 \begin{document}
     % TODO 12-Sep-20 Remove black background and white text
     \pagecolor{black}
@@ -82,8 +82,7 @@ bottom=40mm
     This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
     thus, this section will introduce the reader to some of the required knowledge needed for understanding this
     project.
-    Firstly, we will introduce the concept of raster graphics, ie, the current common standard for graphics data
-    representation.
+    Firstly, we will introduce raster graphics, ie, the current common standard for graphics data representation.
     We will then introduce its counterpart vector graphics, a different way to store graphics data that is growing in
     popularity and has its own advantages and disadvantages.
     We will then give a brief primer on image compression and some common methods of reducing the overall size
@@ -93,15 +92,35 @@ bottom=40mm
 
     \subsection{Raster Graphics}\label{subsec:raster-graphics}
 
-    1 - 2 sentences for each of:
+    % 1 - 2 sentences for each of:
+    % Brief summary of what we will go over (signposting)
+    % Pixels, Bitmaps, Image Data Buffers: basically the bare must knows about Raster Graphics
+    % Advantages and popularity of Raster Graphics
+    % Disadvantages like upscaling, pixelation, size issues with high resolution
+    % Brief summary of everything we just mentioned
 
-    \begin{itemize}
-        \item Brief summary of what we will go over (signposting)
-        \item Pixels, Bitmaps, Image Data Buffers: basically the bare must knows about Raster Graphics
-        \item Advantages and popularity of Raster Graphics
-        \item Disadvantages like upscaling, pixelation, size issues with high resolution
-        \item Brief summary of everything we just mentioned
-    \end{itemize}
+    \tab
+    Raster graphics is the current most popular way of representing and storing graphics data.
+    This representation format stores the image data as a grid of pixels, a pixel (picture element) being the color
+    of the image at a particular point in the grid.
+    Colors can be represented in a variety of ways but the most common is RGB with RGBA also being found in some
+    formats.
+    Each channel has a bit depth which details the number of possible colors that the channel can contain with 8 bits
+    per channel being the current most common but higher values exist as well such as 10 and 12 bits per channel.
+    Thus the image data is a 2 dimensional array of pixels which could be 3 or 4 channels of 8 bit values, thus an
+    image can also be represented as a 3 dimensional array with the last dimension being 3 or 4 values in size
+    representing the 3 or 4 channels of that pixel.
+    The resolution of an image is the number of pixels it contains, which is the image's width multiplied by its
+    height, higher resolution images have more detail but are also more expensive to store as there is more data.
+    Raster graphics are the most popular form of image and generally graphics representation, they allow for easy
+    representation and computationally cheap as well since all the data is stored with no extra work needed.
+    The main disadvantages of raster graphics have to with image resolution and detail, namely that images will show
+    pixelation artifacts when they are displayed at a higher resolution than they are actually stored at, thus the
+    image appears to show the raw pixels.
+    % TODO 16-Sep-20 Show pixelation images
+    To compensate for this, higher and higher resolution images are needed but those come at the cost of size.
+    % TODO 16-Sep-20 Explain more about raw size (no compression, so use raw format or just plain numbers)
+    % TODO 16-Sep-20 Summarize
 
     \subsection{Vector Graphics}\label{subsec:vector-graphics}
 
@@ -143,12 +162,12 @@ bottom=40mm
         \item Brief summary of everything we just mentioned
     \end{itemize}
 
-    \pagebreak
-
     \subsection{Toolchain}\label{subsec:toolchain}
 
     No need to spend too much time on this part, just quickly mention the tools that we use and why we chose them.
     This makes the reader brace themselves for what we did without actually telling them just yet.
+
+    \pagebreak
 
 
     \section{Related Work}\label{sec:related-work}
@@ -321,9 +340,9 @@ bottom=40mm
 
     Time Time Time!!!
 
-    \subsection{Testing?}\label{subsec:testing?}
+    \subsection{Testing}\label{subsec:testing}
 
-    Do we need this section?
+    Short and quick, show some basic testing stuff
     \linebreak
     Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
 
@@ -364,8 +383,6 @@ bottom=40mm
 
     \subsection{Results}\label{subsec:results}
 
-    TODO
-    \linebreak
     The good, the bad and the ugly (with detailed explanations :D)
 
     \subsection{Findings}\label{subsec:findings}
