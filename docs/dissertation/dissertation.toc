@@ -6,7 +6,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {2.1}Raster Graphics}{2}{subsection.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.2}Vector Graphics}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.2}Vector Graphics}{3}{subsection.2.2}%
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {2.3}Image Compression}{3}{subsection.2.3}%
 \defcounter {refsection}{0}\relax 
