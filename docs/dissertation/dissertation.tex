@@ -20,6 +20,7 @@ top=30mm,
 right=30mm,
 bottom=40mm
 }
+\newcommand{\sentence}{}
 \title{Animation Vectorization and Compression}
 \author{Bassam Helal}
 \date{September 2020}
@@ -82,11 +83,14 @@ bottom=40mm
     This document makes no assumption of the reader's knowledge in computer graphics and its related fields,
     thus, this section will introduce the reader to some of the required knowledge needed for understanding this
     project.
+    \sentence
     Firstly, we will introduce raster graphics, ie, the current common standard for graphics data representation.
     We will then introduce its counterpart vector graphics, a different way to store graphics data that is growing in
     popularity and has its own advantages and disadvantages.
+    \sentence
     We will then give a brief primer on image compression and some common methods of reducing the overall size
     of an image.
+    \sentence
     Finally, we will explain how this all ties into video graphics and describe some of the few differences between
     image graphics and video graphics.
 
@@ -101,24 +105,33 @@ bottom=40mm
 
     \tab
     Raster graphics is the current most popular way of representing and storing graphics data.
+    \sentence
     This representation format stores the image data as a grid of pixels, a pixel (picture element) being the color
     of the image at a particular point in the grid.
+    \sentence
     Colors can be represented in a variety of ways but the most common is RGB with RGBA also being found in some
     formats.
+    \sentence
     Each channel has a bit depth which details the number of possible colors that the channel can contain with 8 bits
     per channel being the current most common but higher values exist as well such as 10 and 12 bits per channel.
+    \sentence
     Thus the image data is a 2 dimensional array of pixels which could be 3 or 4 channels of 8 bit values, thus an
     image can also be represented as a 3 dimensional array with the last dimension being 3 or 4 values in size
     representing the 3 or 4 channels of that pixel.
+    \sentence
     The resolution of an image is the number of pixels it contains, which is the image's width multiplied by its
     height, higher resolution images have more detail but are also more expensive to store as there is more data.
+    \sentence
     Raster graphics are the most popular form of image and generally graphics representation, they allow for easy
     representation and computationally cheap as well since all the data is stored with no extra work needed.
+    \sentence
     The main disadvantages of raster graphics have to with image resolution and detail, namely that images will show
     pixelation artifacts when they are displayed at a higher resolution than they are actually stored at, thus the
     image appears to show the raw pixels.
+    \sentence
     % TODO 16-Sep-20 Show pixelation images
     To compensate for this, higher and higher resolution images are needed but those come at the cost of size.
+    \sentence
     % TODO 16-Sep-20 Explain more about raw size (no compression, so use raw format or just plain numbers)
     % TODO 16-Sep-20 Summarize
 
