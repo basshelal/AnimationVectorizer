@@ -65,15 +65,15 @@ bottom=40mm
 
     A paragraph or so for each of:
 
-    \begin{itemize}
-        \item Project Description
-        \item Motivation
-        \item Existing Literature
-        \item Limitations of the literature that we will attempt to tackle
-        \item Aims and Objectives
-        \item Discoveries and results we found after our attempts
-        \item Section Signposting
-    \end{itemize}
+
+    % Project Description
+    % Motivation
+    % Existing Literature
+    % Limitations of the literature that we will attempt to tackle
+    % Aims and Objectives
+    % Discoveries and results we found after our attempts
+    % Section Signposting
+
 
     \pagebreak
 
@@ -230,38 +230,32 @@ bottom=40mm
 
     \section{Related Work}\label{sec:related-work}
 
-    Here we throw a lot of the current stuff from both research and industry and show their flaws and limitations
-    (which we may or may not have tackled)
+    % Here we throw a lot of the current stuff from both research and industry and show their flaws and limitations
+    % (which we may or may not have tackled)
 
     \subsection{Current Research}\label{subsec:current-research}
 
-    \begin{itemize}
-        \item Brief summary of what we will go over (signposting)
-        \item New Machine Learning methods for Vectorization
-        \item New Machine Learning methods for Compression
-        \item Novel approaches and ideas within Vectorization such as mesh gradients etc (no ML)
-        \item Brief summary of everything we just mentioned
-    \end{itemize}
+    % Brief summary of what we will go over (signposting)
+    % New Machine Learning methods for Vectorization
+    % New Machine Learning methods for Compression
+    % Novel approaches and ideas within Vectorization such as mesh gradients etc (no ML)
+    % Brief summary of everything we just mentioned
 
     \subsection{Current Applications}\label{subsec:current-applications}
 
-    \begin{itemize}
-        \item Brief summary of what we will go over (signposting)
-        \item Adobe Illustrator, Logos, Topography, Medical stuff like X rays etc Potrace
-        \item Animations and Games using Vector as the development method
-        \item Current Image \& Video compression algorithms such as PNG, H265 and H266 (no ML)
-        \item Brief summary of everything we just mentioned
-    \end{itemize}
+    % Brief summary of what we will go over (signposting)
+    % Adobe Illustrator, Logos, Topography, Medical stuff like X rays etc Potrace
+    % Animations and Games using Vector as the development method
+    % Current Image \& Video compression algorithms such as PNG, H265 and H266 (no ML)
+    % Brief summary of everything we just mentioned
 
     \subsection{Limitations}\label{subsec:limitations}
 
-    \begin{itemize}
-        \item Brief summary of what we will go over (signposting)
-        \item Why ML is absolute hot trash
-        \item Show off the flaws with existing technologies while showing how we tackled (and hopefully beat) them
-        \item Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
-        \item Brief summary of everything we just mentioned
-    \end{itemize}
+    % Brief summary of what we will go over (signposting)
+    % Why ML is absolute hot trash
+    % Show off the flaws with existing technologies while showing how we tackled (and hopefully beat) them
+    % Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
+    % Brief summary of everything we just mentioned
 
     \pagebreak
 
@@ -277,226 +271,203 @@ bottom=40mm
     \includegraphics[width=\textwidth]{Pipeline.png}
     % TODO 15-Sep-20 Fix positioning and add a caption, read more here https://cs.overleaf.com/learn/latex/Inserting_Images
 
-    This pipeline image describes the the project's implementation from a high level view.
-    Each phase of the pipeline is further detailed.
+    % This pipeline image describes the the project's implementation from a high level view.
+    % Each phase of the pipeline is further detailed.
 
     \subsubsection{Input}
 
-    An animated cartoon video, particularly one with vectorizable qualities, which we will further detail
-    \begin{itemize}
-        \item Low or no use of gradients so it has discrete colors
-        \item Low or no noise
-        \item No 3D stuff like shadows and reflections
-    \end{itemize}
+    % An animated cartoon video, particularly one with vectorizable qualities, which we will further detail
 
-    Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go as well as some less optimal
-    cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
+    % Low or no use of gradients so it has discrete colors
+    % Low or no noise
+    % No 3D stuff like shadows and reflections
+
+    % Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go as well as some less optimal
+    % cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
 
     \subsubsection{Frame Extraction}
 
     \subsubsection{Vectorization}
 
-    Conversion of each Frame to an SVG which will have a single SVG Path element for each color
+    % Conversion of each Frame to an SVG which will have a single SVG Path element for each color
 
     \subsubsection{Frame Merging}
 
-    SVG Frame Joining which will have some smart compression built-in
+    % SVG Frame Joining which will have some smart compression built-in
 
     \subsubsection{Output}
 
-    An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
-    very minimal data loss
+    % An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
+    % very minimal data loss
 
     \subsection{Vectorization Methods}\label{subsec:vectorization-methods}
 
-    \tab
-    Here we will explain our story of the last few months, the many approaches and their failures. This section
-    should implicitly show the reader that the problem is very hard, harder than initially thought to be. If
-    we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
-    that we tried something difficult
+    % Here we will explain our story of the last few months, the many approaches and their failures. This section
+    % should implicitly show the reader that the problem is very hard, harder than initially thought to be. If
+    % we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
+    % that we tried something difficult
 
     \subsubsection{Color Quantization Approach}
 
-    From the general process of the library ImageTracer.js
+    % From the general process of the library ImageTracer.js
 
-    \begin{itemize}
-        \item Explain Color Quantization
-        \item Advantages (very accurate, fast, good for logos and web based stuff)
-        \item Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of colors)
-        \item Show pictures of original vs some different results from this approach (to show why it fails)
-    \end{itemize}
+    % Explain Color Quantization
+    % Advantages (very accurate, fast, good for logos and web based stuff)
+    % Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of
+    % colors)
+    % Show pictures of original vs some different results from this approach (to show why it fails)
 
     \subsubsection{Connected Component Labelling (CCL)}
 
-    Using Connected Component Labelling (CCL) to create discrete but adjacent components
+    % Using Connected Component Labelling (CCL) to create discrete but adjacent components
 
-    \begin{itemize}
-        \item Explain CCL
-        \item Reasoning behind approach
-        \item Possible disadvantages
-        \item Signpost for the following approaches
-    \end{itemize}
+    % Explain CCL
+    % Reasoning behind approach
+    % Possible disadvantages
+    % Signpost for the following approaches
 
     \subsubsection{Edge Based CCL Approach}
 
-    Using OpenCV Canny Edge detection
+    % Using OpenCV Canny Edge detection
 
-    \begin{itemize}
-        \item Explain OpenCV and Canny Edge Detection
-        \item Reasoning behind approach (edges should form polygons which will be color regions) and the expected result
-        \item Advantages (fast, easy, accurate for edge detection)
-        \item Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
-    \end{itemize}
+    % Explain OpenCV and Canny Edge Detection
+    % Reasoning behind approach (edges should form polygons which will be color regions) and the expected result
+    % Advantages (fast, easy, accurate for edge detection)
+    % Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
 
     \subsubsection{Pixel Based CCL Approach}
 
-    Using the color of each pixel to form regions with close enough or similar colors
+    % Using the color of each pixel to form regions with close enough or similar colors
 
-    \begin{itemize}
-        \item Explain pixel data (RGBA) and what it means to be close to a neighboring pixel
-        \item Reasoning behind approach (an image can be a partition of several color regions)
-        \item Advantages (surprisingly accurate, little data loss, huge size savings)
-        \item Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
-    \end{itemize}
+    % Explain pixel data (RGBA) and what it means to be close to a neighboring pixel
+    % Reasoning behind approach (an image can be a partition of several color regions)
+    % Advantages (surprisingly accurate, little data loss, huge size savings)
+    % Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
 
     \subsection{Limitations and Drawbacks}\label{subsec:limitations-and-drawbacks}
 
-    Here we explain the overall limitations of all the processes we used and really any future process because
-    of the nature of Vectorization of Raster data
+    % Here we explain the overall limitations of all the processes we used and really any future process because
+    % of the nature of Vectorization of Raster data
 
-    \begin{itemize}
-        \item Brief summary of what we will go over (signposting)
-        \item Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
-        \item Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization
-        artifacts
-        \item Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
-        \item Brief summary of everything we just mentioned
-    \end{itemize}
+    % Brief summary of what we will go over (signposting)
+    % Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
+    % Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization
+    % artifacts
+    % Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
+    % Brief summary of everything we just mentioned
+
 
     \pagebreak
 
 
     \section{Software Engineering}\label{sec:software-engineering}
 
-    Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
+    % Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
 
     \subsection{Methodology}\label{subsec:methodology}
 
-    Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
+    % Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
     \linebreak
-    Here we can show how the poor results affected our schedule and how things shifted because of unexpected results,
-    we can definitely show that this is common in real life and is a good representation and preparation of the real world
-    which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
+    % Here we can show how the poor results affected our schedule and how things shifted because of unexpected results,
+    % we can definitely show that this is common in real life and is a good representation and preparation of the real world
+    % which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
 
     \subsection{Schedule (Gantt Chart)}\label{subsec:schedule-(gantt-chart)}
 
-    Followed it well but started falling apart towards the end, very accurate to the real world :D
+    % Followed it well but started falling apart towards the end, very accurate to the real world :D
     \linebreak
-    Mention that we started dissertation somewhat early to avoid the risk of running out of time
+    % Mention that we started dissertation somewhat early to avoid the risk of running out of time
 
     \subsection{Risks}\label{subsec:risks}
 
-    Time Time Time!!!
+    % Time Time Time!!!
 
     \subsection{Testing}\label{subsec:testing}
 
-    Short and quick, show some basic testing stuff
+    % Short and quick, show some basic testing stuff
     \linebreak
-    Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
+    % Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
 
     \pagebreak
 
 
     \section{Evaluation}\label{sec:evaluation}
 
-    Two main angles, accuracy to the original and compression rate from the original
+    % Two main angles, accuracy to the original and compression rate from the original
     \linebreak
-    As much as possible we need to emphasize that we have done something great,
-    no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we
-    have accomplished something meaningful
+    % As much as possible we need to emphasize that we have done something great,
+    % no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we
+    % have accomplished something meaningful
 
     \subsection{Accuracy}\label{subsec:accuracy}
 
-    \begin{itemize}
-        \item Define accuracy (aka lossy-ness or how much data is lost from original)
-        \item Quantitative methods (compare each pixel to itself), and compare with other compression methods like JPEG
-        \item Qualitative methods (human eye side by side) and compare with other methods like JPEG
-    \end{itemize}
+    % Define accuracy (aka lossy-ness or how much data is lost from original)
+    % Quantitative methods (compare each pixel to itself), and compare with other compression methods like JPEG
+    % Qualitative methods (human eye side by side) and compare with other methods like JPEG
 
     \subsection{Compression}\label{subsec:compression}
 
-    \begin{itemize}
-        \item Define compression rate (aka how smaller is the result compared to original or some other)
-        \item Quantitative methods (compare against original, AND against others including upscaled and uncompressed)
-        \item Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
-    \end{itemize}
+    % Define compression rate (aka how smaller is the result compared to original or some other)
+    % Quantitative methods (compare against original, AND against others including upscaled and uncompressed)
+    % Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
 
     \pagebreak
 
 
     \section{Results and Findings}\label{sec:results-and-findings}
 
-    Here we show both the results of our development but also our own personal findings that someone who
-    wants to research this kind of thing should be aware of that I discovered
+    % Here we show both the results of our development but also our own personal findings that someone who
+    % wants to research this kind of thing should be aware of that I discovered
 
     \subsection{Results}\label{subsec:results}
 
-    The good, the bad and the ugly (with detailed explanations :D)
+    % The good, the bad and the ugly (with detailed explanations :D)
 
     \subsection{Findings}\label{subsec:findings}
 
-    \begin{itemize}
-        \item This is a very difficult problem, more difficult than initially thought to be
-        \item GPU acceleration is very hard but improves speed shockingly well
-        \item Node sucks for concurrency and doesn't have true multi-threading
-        \item Differing input will have different results because of the limitations of vectorization
-    \end{itemize}
+    % This is a very difficult problem, more difficult than initially thought to be
+    % GPU acceleration is very hard but improves speed shockingly well
+    % Node sucks for concurrency and doesn't have true multi-threading
+    % Differing input will have different results because of the limitations of vectorization
 
     \pagebreak
 
 
     \section{Challenges}\label{sec:challenges}
 
-    \begin{itemize}
-        \item Toolchain used was not very mature or helpful sometimes
-        \item GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
-        \item Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
-        \item Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not ML based and produces very accurate results is very difficult
-    \end{itemize}
+    % Toolchain used was not very mature or helpful sometimes
+    % GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
+    % Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
+    % Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not
+    % ML based and produces very accurate results is very difficult
 
     \pagebreak
 
 
     \section{Reflection}\label{sec:reflection}
 
-    \begin{itemize}
-        \item How would you do it differently if to start from scratch (Use JVM or Native and optimize for GPU early)
-        \item Project Management (Fairly good given the circumstances)
-        \item So much new knowledge about many different things
-        \item Very difficult but very mentally stimulating and rewarding project that I really enjoyed
-    \end{itemize}
+    % How would you do it differently if to start from scratch (Use JVM or Native and optimize for GPU early)
+    % Project Management (Fairly good given the circumstances)
+    % So much new knowledge about many different things
+    % Very difficult but very mentally stimulating and rewarding project that I really enjoyed
 
     \pagebreak
 
 
     \section{Future Work}\label{sec:future-work}
 
-    \begin{itemize}
-        \item Use better tools that allow for native multi-threading and easier and direct access to GPU
-        \item Better optimizations and better compression
-        \item Explore having a mixed raster and vector solution to solve the areas where vector fails
-        \item Buy better hardware for faster development :D
-    \end{itemize}
+    % Use better tools that allow for native multi-threading and easier and direct access to GPU
+    % Better optimizations and better compression
+    % Explore having a mixed raster and vector solution to solve the areas where vector fails
+    % Buy better hardware for faster development :D
 
     \pagebreak
 
 
     \section{Conclusion}\label{sec:conclusion}
 
-    \begin{itemize}
-        \item Summarize everything we said
-        \item Conclude with final thoughts about the good, the bad and how this can further improve the world etc
-    \end{itemize}
+    % Summarize everything we said
+    % Conclude with final thoughts about the good, the bad and how this can further improve the world etc
 
     \pagebreak
 
