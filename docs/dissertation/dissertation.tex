@@ -20,7 +20,8 @@ top=30mm,
 right=30mm,
 bottom=40mm
 }
-\newcommand{\sentence}{}
+\newcommand{\sentence}{} % New sentence
+\newcommand{\final}{} % Mark a section as finished
 \title{Animation Vectorization and Compression}
 \author{Bassam Helal}
 \date{September 2020}
@@ -133,6 +134,7 @@ bottom=40mm
     To compensate for this, higher and higher resolution images are needed but those come at the cost of size.
     \sentence
     % TODO 16-Sep-20 Explain more about raw size (no compression, so use raw format or just plain numbers)
+    \sentence
     % TODO 16-Sep-20 Summarize
 
     \subsection{Vector Graphics}\label{subsec:vector-graphics}
@@ -170,11 +172,59 @@ bottom=40mm
 
     % 1 - 2 sentences for each of:
     % Brief summary of what we will go over (signposting)
-    % JavaScript, TypeScript (benefits over JS)
     % Node.js
+    % JavaScript, TypeScript (benefits over JS)
     % Supplementaries like Electron, GPU.js, OpenCV etc
     % Brief summary of everything we just mentioned
 
+    % TODO 19-Sep-20 Shorten!
+    \tab
+    This project uses a variety of popular tools and libraries to achieve its aims and objectives both efficiently
+    and quickly, this section will briefly go over the most important tools used.
+    \sentence
+    This project uses Node.js as its runtime platform, Node.js is a cross-platform runtime environment that executes
+    JavaScript code on a machine instead of the usual JavaScript runtime, the browser.
+    \sentence
+    The choice for Node.js was made paradoxically because of both a familiarity with the runtime and the JavaScript
+    ecosystem as well as a strong desire to further enhance our knowledge and experience in both the platform and
+    ecosystem.
+    \sentence
+    Node.js allows us to access the ever-growing JavaScript ecosystem which includes very powerful libraries and
+    frameworks for both front-end designs and back-end computationally heavy workloads.
+    \sentence
+    Node.js uses JavaScript as its runtime language, while JavaScript is a powerful and excellent language for
+    rapid-prototyping, it is also a very error-prone language as it has no typing checks in place.
+    \sentence
+    TypeScript is a programming language that is a strict superset of JavaScript that adds typing features onto
+    JavaScript and transpiles to performant, cross-platform compatible JavaScript by means of a TypeScript compiler.
+    \sentence
+    TypeScript was chosen as the programming language of choice for the project for its many benefits not limited to
+    its added type safety.
+    \sentence
+    The JavaScript ecosystem provides us with some powerful libraries and frameworks for application development,
+    this project makes use of some excellent noteworthy tools such as Electron, GPU.js and OpenCV among other tools.
+    \sentence
+    Electron allows developers to write desktop applications using web technologies, it essentially is a Chromium
+    browser with two processes, a front-end process(es) called the "renderer" which is similar to a Chromium web page
+    that displays HTML, and a back-end process called the main process which is a Node.js process.
+    \sentence
+    Electron combines Node.js and Chromium to allow a developer to write a native desktop application using the same
+    technologies used on the web, this has its own advantages and disadvantages but in our case, it means we can
+    quickly develop a GUI desktop application that can access our Node.js code without resorting to web servers and
+    other more complicated means.
+    \sentence
+    GPU.js is a JavaScript library that allows developers to run code on the host machine's GPU making use of the
+    GPGPU (General-Purpose computing on Graphics Processing Units) paradigmGeneral-purpose computing on graphics
+    processing units.
+    \sentence
+    This can allow for very large performance improvements and speedups for computationally expensive mathematical
+    computations.
+    \sentence
+    % TODO 19-Sep-20 OpenCV? We didn't use it too much and this is already getting too long
+    \sentence
+    In summary, the project uses the Node.js runtime for its large ecosystem, the TypeScript programming language for
+    its added type safety benefits, Electron to easily display a GUI and GPU.js to run code on the GPU for additional
+    performance when needed.
     \pagebreak
 
 
