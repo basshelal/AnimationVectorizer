@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{biblatex}
 \usepackage{comment}
+\usepackage{algpseudocode}
 \addbibresource{bibliography.bib}
 \graphicspath{ {./images/} }
 \hypersetup{
@@ -260,17 +261,37 @@ bottom=40mm
 
     \section{Implementation}\label{sec:implementation}
 
-    % TODO 15-Sep-20 This may get long and technical, we should try to keep things fairly high level as much as
+    %  This may get long and technical, we should try to keep things fairly high level as much as
     %  possible we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level
     %  details
 
     \subsection{Pipeline}\label{subsec:pipeline}
 
-    \includegraphics[width=\textwidth]{Pipeline.png}
-    % TODO 15-Sep-20 Fix positioning and add a caption, read more here https://cs.overleaf.com/learn/latex/Inserting_Images
+    \bigskip
 
-    % This pipeline image describes the the project's implementation from a high level view.
-    % Each phase of the pipeline is further detailed.
+    \includegraphics[width=\textwidth]{Pipeline.png}
+
+    % TODO 15-Sep-20 Add a caption, read more here https://cs.overleaf.com/learn/latex/Inserting_Images
+
+    \bigskip
+
+    \quad
+    The above image shows the high level process pipeline of the project from input to output with each phase of the
+    pipeline further detailed in its own section below.
+    \sentence
+    Firstly, we explain the expected input video and its ideal characteristics that will result in a higher accuracy output.
+    \sentence
+    Then, the first phase of the processing begins, the frame extraction, where the frames of the video are
+    extracted to be used further down the pipeline.
+    \sentence
+    Next, the main phase of the processing, the vectorization of a single frame, we describe and detail the multiple methods
+    and approaches that were used in order to gain the highest level of accuracy and compression rate on each frame.
+    \sentence
+    The final stage of the processing, frame merging combines the vectorized frames back into a playable video form
+    with additional computation executed to add favorable traits such as lower file sizes.
+    \sentence
+    Finally, we explain the output that the process will produce and what an ideal output will be like, particularly in
+    comparison to the input file.
 
     \subsubsection{Input}
 
@@ -365,7 +386,6 @@ bottom=40mm
     \subsection{Methodology}\label{subsec:methodology}
 
     % Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
-    \linebreak
     % Here we can show how the poor results affected our schedule and how things shifted because of unexpected results,
     % we can definitely show that this is common in real life and is a good representation and preparation of the real world
     % which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
@@ -373,7 +393,6 @@ bottom=40mm
     \subsection{Schedule (Gantt Chart)}\label{subsec:schedule-(gantt-chart)}
 
     % Followed it well but started falling apart towards the end, very accurate to the real world :D
-    \linebreak
     % Mention that we started dissertation somewhat early to avoid the risk of running out of time
 
     \subsection{Risks}\label{subsec:risks}
@@ -383,7 +402,6 @@ bottom=40mm
     \subsection{Testing}\label{subsec:testing}
 
     % Short and quick, show some basic testing stuff
-    \linebreak
     % Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
 
     \pagebreak
@@ -392,7 +410,6 @@ bottom=40mm
     \section{Evaluation}\label{sec:evaluation}
 
     % Two main angles, accuracy to the original and compression rate from the original
-    \linebreak
     % As much as possible we need to emphasize that we have done something great,
     % no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we
     % have accomplished something meaningful

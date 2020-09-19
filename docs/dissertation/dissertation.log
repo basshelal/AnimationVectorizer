@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  19 SEP 2020 22:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  19 SEP 2020 23:46
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -474,30 +474,50 @@ File: biblatex.cfg
 \CommentStream=\write4
 
 Excluding comment 'comment')
-Package hyperref Info: Option `colorlinks' set `false' on input line 15.
-\@quotelevel=\count386
-\@quotereset=\count387
+(d:/Programs/texlive/2020/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+Package: algpseudocode 
+
+(d:/Programs/texlive/2020/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count386
+\c@ALG@rem=\count387
+\c@ALG@nested=\count388
+\ALG@tlm=\skip72
+\ALG@thistlm=\skip73
+\c@ALG@Lnr=\count389
+\c@ALG@blocknr=\count390
+\c@ALG@storecount=\count391
+\c@ALG@tmpcounter=\count392
+\ALG@tmplength=\skip74
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+)
+Package hyperref Info: Option `colorlinks' set `false' on input line 16.
+\@quotelevel=\count393
+\@quotereset=\count394
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.aux)
 \openout1 = `dissertation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 28.
-LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 29.
+LaTeX Font Info:    ... okay on input line 29.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -535,16 +555,16 @@ LaTeX Font Info:    ... okay on input line 28.
 
 (d:/Programs/texlive/2020/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count388
+\scratchcounter=\count395
 \scratchdimen=\dimen151
 \scratchbox=\box46
-\nofMPsegments=\count389
-\nofMParguments=\count390
+\nofMPsegments=\count396
+\nofMParguments=\count397
 \everyMPshowfont=\toks19
-\MPscratchCnt=\count391
+\MPscratchCnt=\count398
 \MPscratchDim=\dimen152
-\MPnumerator=\count392
-\makeMPintoPDFobject=\count393
+\MPnumerator=\count399
+\makeMPintoPDFobject=\count400
 \everyMPtoPDFconversion=\toks20
 ) (d:/Programs/texlive/2020/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -555,7 +575,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 \AtBeginShipoutBox=\box47
-Package hyperref Info: Link coloring OFF on input line 28.
+Package hyperref Info: Link coloring OFF on input line 29.
 
 (d:/Programs/texlive/2020/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -567,11 +587,11 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count394
+\c@section@level=\count401
 )
-LaTeX Info: Redefining \ref on input line 28.
-LaTeX Info: Redefining \pageref on input line 28.
-LaTeX Info: Redefining \nameref on input line 28.
+LaTeX Info: Redefining \ref on input line 29.
+LaTeX Info: Redefining \pageref on input line 29.
+LaTeX Info: Redefining \nameref on input line 29.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.out)
@@ -596,18 +616,18 @@ Package biblatex Info: ... file 'dissertation.bbl' found.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.bbl)
-Package biblatex Info: Reference section=0 on input line 28.
-Package biblatex Info: Reference segment=0 on input line 28.
+Package biblatex Info: Reference section=0 on input line 29.
+Package biblatex Info: Reference segment=0 on input line 29.
 \GPT@outputbox=\box48
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 36.
+(Font)              <14.4> on input line 37.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 36.
+(Font)              <7> on input line 37.
 <./images/SwanseaUniversityLogo.png, id=160, 333.8874pt x 185.493pt>
 File: ./images/SwanseaUniversityLogo.png Graphic file (type png)
 <use ./images/SwanseaUniversityLogo.png>
 Package pdftex.def Info: ./images/SwanseaUniversityLogo.png  used on input line
- 39.
+ 40.
 (pdftex.def)             Requested size: 217.02423pt x 120.56902pt.
  [1
 
@@ -617,7 +637,7 @@ aUniversityLogo.png>]pdfTeX warning (ext4): destination with the same identifie
 r (name{page.}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.51 
+l.52 
       [2]
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.toc
@@ -631,7 +651,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.75 ...{\numberline {9}Reflection}{10}{section.9}
+l.75 ...{\numberline {9}Reflection}{11}{section.9}
                                                   % [3])
 \tf@toc=\write6
 \openout6 = `dissertation.toc'.
@@ -640,95 +660,38 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.60 
+l.61 
       [4] [1] [2] [3] [4]
 <./images/Pipeline.png, id=278, 623.32875pt x 261.97874pt>
 File: ./images/Pipeline.png Graphic file (type png)
 <use ./images/Pipeline.png>
-Package pdftex.def Info: ./images/Pipeline.png  used on input line 269.
+Package pdftex.def Info: ./images/Pipeline.png  used on input line 272.
 (pdftex.def)             Requested size: 426.79135pt x 179.3784pt.
  [5 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./im
-ages/Pipeline.png>]
+ages/Pipeline.png>] [6] [7] [8] [9] [10] [11] [12]
+[13]
 
-C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/dissertat
-ion.tex:372: LaTeX Error: There's no line here to end.
+LaTeX Warning: Empty bibliography on input line 490.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.372 
-      
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-
-C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/dissertat
-ion.tex:378: LaTeX Error: There's no line here to end.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.378 
-      
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-
-C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/dissertat
-ion.tex:388: LaTeX Error: There's no line here to end.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.388 
-      
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[6]
-
-C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/dissertat
-ion.tex:399: LaTeX Error: There's no line here to end.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.399 
-      
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-[7] [8] [9] [10] [11] [12]
-
-LaTeX Warning: Empty bibliography on input line 473.
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 477.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 477.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 494.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 494.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 477.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 477.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 494.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 494.
 Package rerunfilecheck Info: File `dissertation.out' has not changed.
 (rerunfilecheck)             Checksum: CF8E99DB56E8872A09C82E76C65B6586;2434.
 Package logreq Info: Writing requests to 'dissertation.run.xml'.
 \openout1 = `dissertation.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 477.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 494.
  ) 
 Here is how much of TeX's memory you used:
- 13655 strings out of 480893
- 245432 string characters out of 5907572
- 940419 words of memory out of 5000000
- 29050 multiletter control sequences out of 15000+600000
+ 14119 strings out of 480893
+ 252205 string characters out of 5907572
+ 948103 words of memory out of 5000000
+ 29506 multiletter control sequences out of 15000+600000
  540256 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  43i,6n,37p,937b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -737,10 +700,10 @@ b><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 ><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb>
 
 Output written on C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/diss
-ertation/dissertation.pdf (16 pages, 100125 bytes).
+ertation/dissertation.pdf (17 pages, 101280 bytes).
 PDF statistics:
- 342 PDF objects out of 1000 (max. 8388607)
- 313 compressed objects within 4 object streams
- 55 named destinations out of 1000 (max. 500000)
+ 346 PDF objects out of 1000 (max. 8388607)
+ 316 compressed objects within 4 object streams
+ 56 named destinations out of 1000 (max. 500000)
  323 words of extra memory for PDF output out of 10000 (max. 10000000)
 

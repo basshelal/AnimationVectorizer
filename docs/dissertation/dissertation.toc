@@ -26,54 +26,54 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {4.1}Pipeline}{5}{subsection.4.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.1.1}Input}{5}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Input}{6}{subsubsection.4.1.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.1.2}Frame Extraction}{5}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.2}Frame Extraction}{6}{subsubsection.4.1.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.1.3}Vectorization}{5}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.3}Vectorization}{6}{subsubsection.4.1.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.1.4}Frame Merging}{5}{subsubsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.4}Frame Merging}{6}{subsubsection.4.1.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.1.5}Output}{5}{subsubsection.4.1.5}%
+\contentsline {subsubsection}{\numberline {4.1.5}Output}{6}{subsubsection.4.1.5}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.2}Vectorization Methods}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.2}Vectorization Methods}{6}{subsection.4.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.2.1}Color Quantization Approach}{5}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.1}Color Quantization Approach}{6}{subsubsection.4.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.2.2}Connected Component Labelling (CCL)}{5}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.2}Connected Component Labelling (CCL)}{6}{subsubsection.4.2.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.2.3}Edge Based CCL Approach}{5}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.3}Edge Based CCL Approach}{6}{subsubsection.4.2.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.2.4}Pixel Based CCL Approach}{5}{subsubsection.4.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.4}Pixel Based CCL Approach}{6}{subsubsection.4.2.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.3}Limitations and Drawbacks}{5}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.3}Limitations and Drawbacks}{6}{subsection.4.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {5}Software Engineering}{6}{section.5}%
+\contentsline {section}{\numberline {5}Software Engineering}{7}{section.5}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.1}Methodology}{6}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.1}Methodology}{7}{subsection.5.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.2}Schedule (Gantt Chart)}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.2}Schedule (Gantt Chart)}{7}{subsection.5.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.3}Risks}{6}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.3}Risks}{7}{subsection.5.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.4}Testing}{6}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.4}Testing}{7}{subsection.5.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6}Evaluation}{7}{section.6}%
+\contentsline {section}{\numberline {6}Evaluation}{8}{section.6}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1}Accuracy}{7}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.1}Accuracy}{8}{subsection.6.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.2}Compression}{7}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.2}Compression}{8}{subsection.6.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Results and Findings}{8}{section.7}%
+\contentsline {section}{\numberline {7}Results and Findings}{9}{section.7}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {7.1}Results}{8}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.1}Results}{9}{subsection.7.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {7.2}Findings}{8}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.2}Findings}{9}{subsection.7.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Challenges}{9}{section.8}%
+\contentsline {section}{\numberline {8}Challenges}{10}{section.8}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Reflection}{10}{section.9}%
+\contentsline {section}{\numberline {9}Reflection}{11}{section.9}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {10}Future Work}{11}{section.10}%
+\contentsline {section}{\numberline {10}Future Work}{12}{section.10}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {11}Conclusion}{12}{section.11}%
+\contentsline {section}{\numberline {11}Conclusion}{13}{section.11}%
