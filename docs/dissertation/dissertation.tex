@@ -6,8 +6,6 @@
 \usepackage{tabto}
 \usepackage{graphicx}
 \usepackage{biblatex}
-\usepackage{comment}
-\usepackage{algpseudocode}
 \addbibresource{bibliography.bib}
 \graphicspath{ {./images/} }
 \hypersetup{
@@ -27,6 +25,7 @@ bottom=40mm
 }
 \newcommand{\sentence}{} % New sentence
 \newcommand{\final}{} % Mark a section as finished
+\newcommand{\italic}[1]{\textit{#1}}
 \title{Animation Vectorization and Compression}
 \author{Bassam Helal}
 \date{September 2020}
@@ -295,7 +294,7 @@ bottom=40mm
     Finally, we explain the output that the process will produce and what an ideal output will be like, particularly in
     comparison to the input file.
 
-    \subsubsection{Input}
+    \subsubsection{Input}\label{subsubsec:input}
 
     % TODO 20-Sep-20 Mention the limitations of Vector and Vectorization somewhere, currently its in 3.3 Limitations
     % but it may be suitable elsewhere
@@ -334,36 +333,58 @@ bottom=40mm
     \sentence
     In addition to this, it is important to note that we are dealing with moving pictures and it is also ideal to
     have as little noise as possible between frames, this can be an artifact of compression or signal interference
-    but can also be seen as an artistic style choice as shown in Cartoon Network's \textit{Ed, Edd n Eddy}.
+    but can also be seen as an artistic style choice as shown in Cartoon Network's \italic{Ed, Edd n Eddy}.
     \sentence
     Obviously very few real world media is like this, but a surprising number of cartoon videos can come very close
     to this description, with very few complications such as shadows and light gradients.
     \sentence
-    An example of a real world cartoon that has these ideal qualities is Nickelodeon's \textit{The Fairly OddParents}
+    An example of a real world cartoon that has these ideal qualities is Nickelodeon's \italic{The Fairly OddParents}
     which uses discrete color regions, very few (if any) gradients and no complex shadows or lighting and thus can be
     described as being a truly 2D cartoon.
     \sentence
     On the other extreme end cartoons with heavy use of photographs and heavy noise are the least ideal as well as
     any 3D cartoons, ie those that make use of 3D effects such as shadows, lighting and many complex gradients.
     \sentence
-    Examples include Hanna Barbera cartoons prominent from the 1960s to the 1980s such as \textit{Top Cat} and
-    \textit{The Flinstones}, \textit{Looney Tunes} cartoons as well as modern 3D animations such as Pixar Animation
-    Studios' \textit{Toy Story} and \textit{The Incredibles}.
+    Examples include Hanna Barbera cartoons prominent from the 1960s to the 1980s such as \italic{Top Cat} and
+    \italic{The Flinstones}, \italic{Looney Tunes} cartoons as well as modern 3D animations such as Pixar Animation
+    Studios' \italic{Toy Story} and \italic{The Incredibles}.
     \sentence
     In summary, the minimum required input is simply any video but the expectation is that it will be a video of an
     animated cartoon and the ideal input is a video of an animated cartoon that has highly vectorizable qualities.
 
-    \subsubsection{Frame Extraction}
+    \subsubsection{Frame Extraction}\label{subsubsec:frame-extraction}
 
-    \subsubsection{Vectorization}
+    \tab
+    The frame extraction phase has a single purpose and that is to convert the input video into a some form of medium
+    that can be vectorized, namely images.
+    \sentence
+    Since the input video will always be frame based, we can thus convert a video into a set of vectorizable units
+    that accurately represent its data, frames.
+    \sentence
+    Each frame of the video will be represented in an image which we can then vectorize in the next step.
+    \sentence
+    To do this, we use the industry standard tool, Ffmpeg to create a directory of PNG images for each frame of the
+    video using the command:
+    \begin{verbatim}ffmpeg -i input.mp4 outputDirectory/%d.png -y
+    \end{verbatim}
+    \sentence
+    This is so that the next step (vectorization) can be done on each frame can be independently and can more easily
+    be parallelized, since the vectorization of a single frame does not depend on any other frames around it.
+    \sentence
+    While in theory one can skip this step and read each frame of the video performing the vectorization step in
+    serial for each frame, it is much more efficient to split the workload first by first dividing the video into
+    frames stored on disk and then perform the vectorization step, now with the additional benefit of being able to
+    run the vectorization step on multiple frames at once.
+
+    \subsubsection{Vectorization}\label{subsubsec:vectorization}
 
     % Conversion of each Frame to an SVG which will have a single SVG Path element for each color
 
-    \subsubsection{Frame Merging}
+    \subsubsection{Frame Merging}\label{subsubsec:frame-merging}
 
     % SVG Frame Joining which will have some smart compression built-in
 
-    \subsubsection{Output}
+    \subsubsection{Output}\label{subsubsec:output}
 
     % An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
     % very minimal data loss
@@ -375,7 +396,7 @@ bottom=40mm
     % we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
     % that we tried something difficult
 
-    \subsubsection{Color Quantization Approach}
+    \subsubsection{Color Quantization Approach}\label{subsubsec:color-quantization-approach}
 
     % From the general process of the library ImageTracer.js
 
@@ -385,7 +406,7 @@ bottom=40mm
     % colors)
     % Show pictures of original vs some different results from this approach (to show why it fails)
 
-    \subsubsection{Connected Component Labelling (CCL)}
+    \subsubsection{Connected Component Labelling (CCL)}\label{subsubsec:connected-component-labelling-(ccl)}
 
     % Using Connected Component Labelling (CCL) to create discrete but adjacent components
 
@@ -394,7 +415,7 @@ bottom=40mm
     % Possible disadvantages
     % Signpost for the following approaches
 
-    \subsubsection{Edge Based CCL Approach}
+    \subsubsection{Edge Based CCL Approach}\label{subsubsec:edge-based-ccl-approach}
 
     % Using OpenCV Canny Edge detection
 
@@ -403,7 +424,7 @@ bottom=40mm
     % Advantages (fast, easy, accurate for edge detection)
     % Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
 
-    \subsubsection{Pixel Based CCL Approach}
+    \subsubsection{Pixel Based CCL Approach}\label{subsubsec:pixel-based-ccl-approach}
 
     % Using the color of each pixel to form regions with close enough or similar colors
 
