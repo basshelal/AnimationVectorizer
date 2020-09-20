@@ -26,7 +26,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {4.1}Pipeline}{5}{subsection.4.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {4.1.1}Input}{6}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Input}{5}{subsubsection.4.1.1}%
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {4.1.2}Frame Extraction}{6}{subsubsection.4.1.2}%
 \defcounter {refsection}{0}\relax 
@@ -71,6 +71,12 @@
 \contentsline {subsection}{\numberline {7.2}Findings}{9}{subsection.7.2}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {8}Challenges}{10}{section.8}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.1}Toolchain}{10}{subsection.8.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.2}Performance}{10}{subsection.8.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.3}Minimizing Human Interaction}{10}{subsection.8.3}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {9}Reflection}{11}{section.9}%
 \defcounter {refsection}{0}\relax 

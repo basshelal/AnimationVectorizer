@@ -21,6 +21,10 @@ top=30mm,
 right=30mm,
 bottom=40mm
 }
+\newcommand{\black}{
+\pagecolor{black}
+\color{white}
+}
 \newcommand{\sentence}{} % New sentence
 \newcommand{\final}{} % Mark a section as finished
 \title{Animation Vectorization and Compression}
@@ -28,8 +32,7 @@ bottom=40mm
 \date{September 2020}
 \begin{document}
     % TODO 12-Sep-20 Remove black background and white text
-    \pagecolor{black}
-    \color{white}
+    \black
 
     \pagenumbering{gobble}
 
@@ -275,7 +278,6 @@ bottom=40mm
 
     \bigskip
 
-    \quad
     The above image shows the high level process pipeline of the project from input to output with each phase of the
     pipeline further detailed in its own section below.
     \sentence
@@ -295,14 +297,61 @@ bottom=40mm
 
     \subsubsection{Input}
 
-    % An animated cartoon video, particularly one with vectorizable qualities, which we will further detail
+    % TODO 20-Sep-20 Mention the limitations of Vector and Vectorization somewhere, currently its in 3.3 Limitations
+    % but it may be suitable elsewhere
 
     % Low or no use of gradients so it has discrete colors
+    % Fewer and larger color regions, this is why photos are more difficult in addition to gradients
     % Low or no noise
     % No 3D stuff like shadows and reflections
 
-    % Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go as well as some less optimal
-    % cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
+    % TODO 20-Sep-20 Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go
+    % TODO 20-Sep-20 Show example of some less optimal cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
+
+    \tab
+    First, it is important to understand the input that the process will be expecting and detail what makes an ideal
+    input file.
+    \sentence
+    The minimum requirement is that the input file be a video in any popular format, specifically, one that Ffmpeg
+    can use (so basically all formats), however, this project specifically aims to work on animated cartoons so while
+    any video will technically work, for the purpose of this project, a video of an animated cartoon is expected.
+    \sentence
+    However, not all animated cartoons are equal, in fact there is a great deal of variation between cartoons in
+    terms of art style, animation method, and many other artistic effects that can heavily influence the output of
+    the process.
+    \sentence
+    Thus, we must define the "ideal" input file, or more precisely, the input file that will produce the best results
+    because the process was designed with those files in mind for reasons to do with the limitations of vectorization.
+    \sentence
+    The ideal input video is one that is most friendly towards vectorization, meaning it has the most vectorizable
+    qualities and characteristics with as few incompatibilities as possible, these were mentioned in depth
+    in the~\nameref{subsec:limitations} section but will be briefly repeated within this new context.
+    \sentence
+    Since vectorization is heavily dependent on the color variation of the original raster image, an ideal input
+    image would be one with discrete color regions made up of a single color, with no noise, gradients, shadows,
+    lighting or any other effects, essentially an image made of a set if color blocks that are very discrete from one
+    another.
+    \sentence
+    In addition to this, it is important to note that we are dealing with moving pictures and it is also ideal to
+    have as little noise as possible between frames, this can be an artifact of compression or signal interference
+    but can also be seen as an artistic style choice as shown in Cartoon Network's \textit{Ed, Edd n Eddy}.
+    \sentence
+    Obviously very few real world media is like this, but a surprising number of cartoon videos can come very close
+    to this description, with very few complications such as shadows and light gradients.
+    \sentence
+    An example of a real world cartoon that has these ideal qualities is Nickelodeon's \textit{The Fairly OddParents}
+    which uses discrete color regions, very few (if any) gradients and no complex shadows or lighting and thus can be
+    described as being a truly 2D cartoon.
+    \sentence
+    On the other extreme end cartoons with heavy use of photographs and heavy noise are the least ideal as well as
+    any 3D cartoons, ie those that make use of 3D effects such as shadows, lighting and many complex gradients.
+    \sentence
+    Examples include Hanna Barbera cartoons prominent from the 1960s to the 1980s such as \textit{Top Cat} and
+    \textit{The Flinstones}, \textit{Looney Tunes} cartoons as well as modern 3D animations such as Pixar Animation
+    Studios' \textit{Toy Story} and \textit{The Incredibles}.
+    \sentence
+    In summary, the minimum required input is simply any video but the expectation is that it will be a video of an
+    animated cartoon and the ideal input is a video of an animated cartoon that has highly vectorizable qualities.
 
     \subsubsection{Frame Extraction}
 
@@ -450,9 +499,17 @@ bottom=40mm
 
     \section{Challenges}\label{sec:challenges}
 
+    \subsection{Toolchain}\label{subsec:toolchain2}
+
     % Toolchain used was not very mature or helpful sometimes
+
+    \subsection{Performance}\label{subsec:performance}
+
     % GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
     % Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
+
+    \subsection{Minimizing Human Interaction}\label{subsec:minimizing-human-interaction}
+
     % Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not
     % ML based and produces very accurate results is very difficult
 
