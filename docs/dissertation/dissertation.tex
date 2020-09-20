@@ -33,7 +33,7 @@ bottom=40mm
     % TODO 12-Sep-20 Remove black background and white text
     \black
 
-    \pagenumbering{gobble}
+    \pagenumbering{gobble} % Remove page numbering
 
     \maketitle
 
@@ -61,7 +61,7 @@ bottom=40mm
 
     \pagebreak
 
-    \pagenumbering{arabic}
+    \pagenumbering{arabic} % Begin page numbering from here
 
 
     \section{Introduction}\label{sec:introduction}
@@ -376,6 +376,8 @@ bottom=40mm
     frames stored on disk and then perform the vectorization step, now with the additional benefit of being able to
     run the vectorization step on multiple frames at once.
 
+    % TODO 20-Sep-20 Picture?
+
     \subsubsection{Vectorization}\label{subsubsec:vectorization}
 
     % Conversion of each Frame to an SVG which will have a single SVG Path element for each color
@@ -451,6 +453,11 @@ bottom=40mm
 
     \section{Software Engineering}\label{sec:software-engineering}
 
+    \tab
+    This section will detail the software engineering aspects of the project's development, specifically the
+    methodology used to develop, the risks of the project and the software testing techniques used in the project's
+    development.
+
     % Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
 
     \subsection{Methodology}\label{subsec:methodology}
@@ -460,10 +467,45 @@ bottom=40mm
     % we can definitely show that this is common in real life and is a good representation and preparation of the real world
     % which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
 
+    \tab
+    The software methodology used for the development of this project is a very lean agile methodology aptly named,
+    Lean-Agile.
+    \sentence
+    % TODO 20-Sep-20 Ref https://www.bluefruit.co.uk/lean-agile-series/whats-lean-agile-how-can-help-you-avoid-project-waste/
+    This methodology inherits heavily from modern agile methodologies following all the core principles and values
+    but adds principles adapted from lean manufacturing, particularly emphasizing minimal waste and minimal
+    prediction.
+    \sentence
+    While a more commonly known methodology such as Scrum could have been used, it seemed more appropriate to use a
+    methodology that has extreme unpredictability built into it nature especially during the growth phase of the
+    COVID-19 pandemic, which caused many unpredictable events.
+    \sentence
+    The pandemic's potentially adverse effects on the development of the project meant that it was critical to use a
+    methodology that is extremely efficient and has little fixed planning with a very easy way of adapting to changes.
+    \sentence
+    This proved to be extremely beneficial, more so than expected because of the many major roadblocks that were
+    faced during development which are further explained in detail in the~\nameref{sec:results-and-findings} section.
+    \sentence
+    The constant occurrence of very negative results, especially after a complex and time-consuming amount of work
+    put in meant that plans had to change and adapt rapidly in accordance to this, which is common and expected in
+    any research based project such as this one.
+    \sentence
+    As a result, while the Lean-Agile methodology is an unorthodox methodology choice, it was absolutely the correct
+    one to use and has been the saving grace of the time management of this project since very few other
+    methodologies could have allowed for the rapid adaptation and movement of this project.
+
     \subsection{Schedule (Gantt Chart)}\label{subsec:schedule-(gantt-chart)}
 
     % Followed it well but started falling apart towards the end, very accurate to the real world :D
     % Mention that we started dissertation somewhat early to avoid the risk of running out of time
+
+    \tab
+    While the Lean-Agile methodology is not particularly well suited to long term predictions, it is still important
+    to have a schedule in place in order to keep track of time and to have a general idea of how many tasks are left
+    and how much time is available to complete them, even if the predictions of time may be incorrect.
+    \sentence
+    This is why a Gantt Chart was used to plot a schedule containing the general phases of the project's development
+    against the time allocated to work on the project.
 
     \subsection{Risks}\label{subsec:risks}
 
