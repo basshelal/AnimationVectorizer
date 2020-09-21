@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  21 SEP 2020 03:39
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  21 SEP 2020 03:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -663,15 +663,15 @@ ages/Pipeline.png>] [6] [7] [8] [9
 ]
 [13] [14] [15] [16] [17] [18]
 
-LaTeX Warning: Empty bibliography on input line 643.
+LaTeX Warning: Empty bibliography on input line 646.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 647.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 647.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 650.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 650.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 647.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 647.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 650.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 650.
 Package rerunfilecheck Info: File `dissertation.out' has not changed.
 (rerunfilecheck)             Checksum: 9BE0B65D5EE2FFF269C4F94239A31FB8;2616.
 
@@ -686,7 +686,7 @@ Package biblatex Warning: Please (re)run Biber on the file:
 Package logreq Info: Writing requests to 'dissertation.run.xml'.
 \openout1 = `dissertation.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 647.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 650.
  ) 
 Here is how much of TeX's memory you used:
  13680 strings out of 480893
