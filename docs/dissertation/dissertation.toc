@@ -52,34 +52,34 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {5.1}Methodology}{8}{subsection.5.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.2}Schedule (Gantt Chart)}{8}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.2}Schedule}{8}{subsection.5.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.3}Risks}{8}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.3}Risks}{10}{subsection.5.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {5.4}Testing}{8}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.4}Testing}{12}{subsection.5.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6}Evaluation}{9}{section.6}%
+\contentsline {section}{\numberline {6}Evaluation}{13}{section.6}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1}Accuracy}{9}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.1}Accuracy}{13}{subsection.6.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.2}Compression}{9}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.2}Compression}{13}{subsection.6.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Results and Findings}{10}{section.7}%
+\contentsline {section}{\numberline {7}Results and Findings}{14}{section.7}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {7.1}Results}{10}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.1}Results}{14}{subsection.7.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {7.2}Findings}{10}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.2}Findings}{14}{subsection.7.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Challenges}{11}{section.8}%
+\contentsline {section}{\numberline {8}Challenges}{15}{section.8}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.1}Toolchain}{11}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.1}Toolchain}{15}{subsection.8.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.2}Performance}{11}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.2}Performance}{15}{subsection.8.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.3}Minimizing Human Interaction}{11}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.3}Minimizing Human Interaction}{15}{subsection.8.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Reflection}{12}{section.9}%
+\contentsline {section}{\numberline {9}Reflection}{16}{section.9}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {10}Future Work}{13}{section.10}%
+\contentsline {section}{\numberline {10}Future Work}{17}{section.10}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {11}Conclusion}{14}{section.11}%
+\contentsline {section}{\numberline {11}Conclusion}{18}{section.11}%

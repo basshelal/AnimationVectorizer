@@ -1,9 +1,9 @@
 [0] Config.pm:312> INFO - This is Biber 2.15
 [0] Config.pm:315> INFO - Logfile is 'dissertation.blg'
-[119] biber-MSWIN32:330> INFO - === 
-[137] Biber.pm:415> INFO - Reading 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\dissertation.bcf'
-[248] Biber.pm:952> INFO - Found 0 citekeys in bib section 0
-[254] Utils.pm:395> WARN - The file 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\dissertation.bcf' does not contain any citations!
-[265] bbl.pm:651> INFO - Writing 'dissertation.bbl' with encoding 'UTF-8'
-[265] bbl.pm:754> INFO - Output to dissertation.bbl
-[267] Biber.pm:128> INFO - WARNINGS: 1
+[100] biber-MSWIN32:330> INFO - === 
+[119] Biber.pm:415> INFO - Reading 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\dissertation.bcf'
+[240] Biber.pm:952> INFO - Found 0 citekeys in bib section 0
+[246] Utils.pm:395> WARN - The file 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\dissertation.bcf' does not contain any citations!
+[258] bbl.pm:651> INFO - Writing 'dissertation.bbl' with encoding 'UTF-8'
+[258] bbl.pm:754> INFO - Output to dissertation.bbl
+[259] Biber.pm:128> INFO - WARNINGS: 1
