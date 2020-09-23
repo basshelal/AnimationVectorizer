@@ -34,6 +34,8 @@ bottom=40mm
     % TODO 12-Sep-20 Remove black background and white text
     \black
 
+    % TODO 23-Sep-20 Remove me when the document is full of pictures, a picture is worth 2000 bytes ;)
+
     \pagenumbering{gobble} % Remove page numbering
 
     \maketitle
@@ -482,7 +484,7 @@ bottom=40mm
     methodology that is extremely efficient and has little fixed planning with a very easy way of adapting to changes.
     \sentence
     This proved to be extremely beneficial, more so than expected because of the many major roadblocks that were
-    faced during development which are further explained in detail in the~\nameref{sec:results-and-findings} section.
+    faced during development which are further explained in detail in the~\nameref{sec:results} section.
     \sentence
     The constant occurrence of very negative results, especially after a complex and time-consuming amount of work
     put in meant that plans had to change and adapt rapidly in accordance to this, which is common and expected in
@@ -515,6 +517,24 @@ bottom=40mm
     \begin{landscape}
         \begin{center}
             \huge{Gantt Chart}
+            \normalsize
+            \begin{itemize}
+                \item Frame Managing (video to frames and frames to video)
+                \subitem Video to frames (ffmpeg)
+                \subitem Read frame image data
+                \subitem Write frame image data (SVG and PNG)
+                \subitem Combine frames to a playable video
+                \item Vectorization
+                \subitem Core programming (ImageTracerJS)
+                \subitem Edge detection
+                \subitem Connected Component Labelling
+                \subitem Path/Polygon parsing
+                \item Writing
+                \subitem Latex setup
+                \subitem User evaluations
+                \subitem Resource compiling
+                \subitem Core writing
+            \end{itemize}
         \end{center}
     \end{landscape}
     \pagebreak
@@ -609,21 +629,7 @@ bottom=40mm
     \pagebreak
 
 
-    \section{Results and Findings}\label{sec:results-and-findings}
-
-    % Here we show both the results of our development but also our own personal findings that someone who
-    % wants to research this kind of thing should be aware of that I discovered
-
-    \subsection{Results}\label{subsec:results}
-
-    % The good, the bad and the ugly (with detailed explanations :D)
-
-    \subsection{Findings}\label{subsec:findings}
-
-    % This is a very difficult problem, more difficult than initially thought to be
-    % GPU acceleration is very hard but improves speed shockingly well
-    % Node sucks for concurrency and doesn't have true multi-threading
-    % Differing input will have different results because of the limitations of vectorization
+    \section{Results}\label{sec:results}
 
     \pagebreak
 

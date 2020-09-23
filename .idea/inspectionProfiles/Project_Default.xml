@@ -1,6 +1,10 @@
 <component name="InspectionProjectProfileManager">
   <profile version="1.0">
     <option name="myName" value="Project Default" />
+    <inspection_tool class="LatexMissingImport" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="numberOfIndexedUsePackages" value="13" />
+    </inspection_tool>
+    <inspection_tool class="LatexTooLargeSection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="TsLint" enabled="true" level="WARNING" enabled_by_default="true" />
   </profile>
 </component>
