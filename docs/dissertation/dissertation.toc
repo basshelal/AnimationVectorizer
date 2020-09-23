@@ -80,12 +80,24 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {8.1}Toolchain}{15}{subsection.8.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.2}Performance}{15}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.1.1}JavaScript}{15}{subsubsection.8.1.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.3}Minimizing Human Interaction}{15}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.1.2}Concurrency}{15}{subsubsection.8.1.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Reflection}{16}{section.9}%
+\contentsline {subsection}{\numberline {8.2}Performance}{16}{subsection.8.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {10}Future Work}{17}{section.10}%
+\contentsline {subsubsection}{\numberline {8.2.1}Hardware Utilization}{16}{subsubsection.8.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {11}Conclusion}{18}{section.11}%
+\contentsline {subsubsection}{\numberline {8.2.2}GPU Programming}{16}{subsubsection.8.2.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{16}{subsection.8.3}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {9}Reflection}{17}{section.9}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {10}Future Work}{18}{section.10}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.1}Concurrency}{18}{subsection.10.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.2}Future Research}{18}{subsection.10.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {11}Conclusion}{19}{section.11}%

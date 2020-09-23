@@ -557,9 +557,6 @@ bottom=40mm
 
     \subsection{Testing}\label{subsec:testing}
 
-    % Short and quick, show some basic testing stuff
-    % Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
-
     \tab
     Testing is an important part of software engineering, as it allows developers to ensure that the program behaves
     as expected even after changes to the code, this means that refactors or new implementations can easily be done
@@ -633,16 +630,67 @@ bottom=40mm
 
     \section{Challenges}\label{sec:challenges}
 
+    \tab
+    As shown by the previous sections in this document, this project has been far from trivial, in fact it was much
+    more difficult and challenging than initially anticipated despite already expecting a high level of difficulty.
+    \sentence
+    While the project has been overall a very mentally stimulating, rewarding and fulfilling project it is important
+    to note some of the major challenges that were faced during the development.
+    \sentence
+    This serves the purpose to inform future readers and those interested in this project about some of the
+    challenges faced and how to either overcome them early, or more likely, to expect and prepare for them.
+    \sentence
+    While some of these issues can be mitigated earlier with further planning and research, the most difficult and
+    major challenges are those inherent to the vectorization process and conversion of raster graphics.
+
     \subsection{Toolchain}\label{subsec:toolchain2}
 
     % Toolchain used was not very mature or helpful sometimes
+
+    \subsubsection{JavaScript}\label{subsubsec:javascript}
+
+    \subsubsection{Concurrency}\label{subsubsec:concurrency}
+
+    \tab
+    Arguably the most preventable and frustrating challenges faced were those that were a direct result of the
+    toolchain used, especially when there exist other tools that do not have these problems.
+    \sentence
+    The most frustrating of these is the lack of maturity in the JavaScript ecosystem.
+    \sentence
+    This can be seen with the very minimal Node.js standard library which contains only the most necessary built in
+    functionality and instead delegates anything else to libraries, frameworks and other open source contributors.
+    \sentence
+    While this does have benefits it also has major disadvantages especially coming from the vast ecosystems of the
+    JVM and Android which both come with large fully featured but modular standard libraries that provide standard
+    ways to perform common operations.
+    \sentence
+    This weakness is shown extensively whilst using any JavaScript collections such as Array, Set or Map, which
+    provide only the most basic functionality leaving common operations like copying and adding an element to an
+    index up to the user or to some external dependency.
+    \sentence
+    However, perhaps the best example for an argument of the JavaScript ecosystem's immaturity is the fact that
+    JavaScript supports object oriented concepts, including classes and methods, but does not allow programmers to
+    declare when two objects are equal or not.
+    \sentence
+    The Set collection contains only distinct elements by first checking if an element already exists before
+    inserting it and ignores it if it already exists.
+    \sentence
+    JavaScript does not allow the programmer to determine how this equality is checked which is done using === by
+    default, instead, if the programmer wants a Set of custom objects they have to implement this themselves or
+    use an external library, further adding to dependency hell.
 
     \subsection{Performance}\label{subsec:performance}
 
     % GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
     % Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
 
-    \subsection{Minimizing Human Interaction}\label{subsec:minimizing-human-interaction}
+    \subsubsection{Hardware Utilization}\label{subsubsec:hardware-utilization}
+
+    % Not using all resources because Node is not multithreaded
+
+    \subsubsection{GPU Programming}\label{subsubsec:gpu-programming}
+
+    \subsection{Minimizing Human Input}\label{subsec:minimizing-human-input}
 
     % Reducing the number of human inputted arguments to create a fully autonomous deterministic system that is not
     % ML based and produces very accurate results is very difficult
@@ -662,10 +710,14 @@ bottom=40mm
 
     \section{Future Work}\label{sec:future-work}
 
+    \subsection{Concurrency}\label{subsec:concurrency}
+
     % Use better tools that allow for native multi-threading and easier and direct access to GPU
     % Better optimizations and better compression
+
+    \subsection{Future Research}\label{subsec:future-research}
+
     % Explore having a mixed raster and vector solution to solve the areas where vector fails
-    % Buy better hardware for faster development :D
 
     \pagebreak
 

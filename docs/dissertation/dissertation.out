@@ -38,8 +38,14 @@
 \BOOKMARK [2][-]{subsection.7.2}{Findings}{section.7}% 38
 \BOOKMARK [1][-]{section.8}{Challenges}{}% 39
 \BOOKMARK [2][-]{subsection.8.1}{Toolchain}{section.8}% 40
-\BOOKMARK [2][-]{subsection.8.2}{Performance}{section.8}% 41
-\BOOKMARK [2][-]{subsection.8.3}{Minimizing Human Interaction}{section.8}% 42
-\BOOKMARK [1][-]{section.9}{Reflection}{}% 43
-\BOOKMARK [1][-]{section.10}{Future Work}{}% 44
-\BOOKMARK [1][-]{section.11}{Conclusion}{}% 45
+\BOOKMARK [3][-]{subsubsection.8.1.1}{JavaScript}{subsection.8.1}% 41
+\BOOKMARK [3][-]{subsubsection.8.1.2}{Concurrency}{subsection.8.1}% 42
+\BOOKMARK [2][-]{subsection.8.2}{Performance}{section.8}% 43
+\BOOKMARK [3][-]{subsubsection.8.2.1}{Hardware Utilization}{subsection.8.2}% 44
+\BOOKMARK [3][-]{subsubsection.8.2.2}{GPU Programming}{subsection.8.2}% 45
+\BOOKMARK [2][-]{subsection.8.3}{Minimizing Human Input}{section.8}% 46
+\BOOKMARK [1][-]{section.9}{Reflection}{}% 47
+\BOOKMARK [1][-]{section.10}{Future Work}{}% 48
+\BOOKMARK [2][-]{subsection.10.1}{Concurrency}{section.10}% 49
+\BOOKMARK [2][-]{subsection.10.2}{Future Research}{section.10}% 50
+\BOOKMARK [1][-]{section.11}{Conclusion}{}% 51
