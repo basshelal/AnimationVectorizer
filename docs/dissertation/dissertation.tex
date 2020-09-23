@@ -87,19 +87,18 @@ bottom=40mm
     thus, this section will introduce the reader to some of the required knowledge needed for understanding this
     project.
     \sentence
-    Firstly, we will introduce raster graphics, ie, the current common standard for graphics data representation.
-    We will then introduce its counterpart vector graphics, a different way to store graphics data that is growing in
-    popularity and has its own advantages and disadvantages.
+    Firstly, we will introduce raster graphics, the current common standard for graphics data representation.
+    We will then introduce its counterpart vector graphics, a different way to store graphics data that addresses
+    some of the issues with raster graphics and is growing in popularity.
     \sentence
     We will then give a brief primer on image compression and some common methods of reducing the overall size
     of an image.
     \sentence
-    Finally, we will explain how this all ties into video graphics and describe some of the few differences between
-    image graphics and video graphics.
+    Finally, we will explain how image graphics tie into video graphics and describe some of the few differences
+    between the two.
 
     \subsection{Raster Graphics}\label{subsec:raster-graphics}
 
-    % 1 - 2 sentences for each of:
     % Brief summary of what we will go over (signposting)
     % Pixels, Bitmaps, Image Data Buffers: basically the bare must knows about Raster Graphics
     % Advantages and popularity of Raster Graphics
@@ -141,18 +140,18 @@ bottom=40mm
 
     \subsection{Vector Graphics}\label{subsec:vector-graphics}
 
-    % 1 - 2 sentences for each of:
     % Brief summary of what we will go over (signposting)
     % Declarative vs Imperative ie WYSIWYG vs WYSIWYM, describing the image using primitive geometry
     % Advantages of Vector especially in contrast to Raster (size and scalability), mention uses and popularity
     % Disadvantages like portability and light technical stuff like gradients and photographs
     % Brief summary of everything we just mentioned
 
-    % TODO 16-Sep-20 We can make a small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
+    % TODO 16-Sep-20 Small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
+
+    % TODO 23-Sep-20 Images with Raster and Vector side by side, 1 for logo (Vector winner) 1 for portrait (raster winner)
 
     \subsection{Image Compression}\label{subsec:image-compression}
 
-    % 1 - 2 sentences for each of:
     % Brief summary of what we will go over (signposting)
     % Fundamentals of Compression (type-agnostic) things like compression rate and lossy-ness or accuracy
     % Lossless Image Compression (PNG, BMP etc)
@@ -163,7 +162,6 @@ bottom=40mm
 
     \subsection{Video Graphics}\label{subsec:video-graphics}
 
-    % 1 - 2 sentences for each of:
     % Brief summary of what we will go over (signposting)
     % How video is stored and how it relates to Images (mostly the same)
     % Common file types and how they compress and store video data (MP4, MKV, H265 etc)
@@ -172,7 +170,6 @@ bottom=40mm
 
     \subsection{Toolchain}\label{subsec:toolchain}
 
-    % 1 - 2 sentences for each of:
     % Brief summary of what we will go over (signposting)
     % Node.js
     % JavaScript, TypeScript (benefits over JS)
@@ -543,6 +540,17 @@ bottom=40mm
     \begin{landscape}
         \begin{center}
             \huge{Risks Chart}
+            \normalsize
+            \begin{itemize}
+                \item Bad time management
+                \item Data Loss
+                \item Hardware performance issues
+                \item Tools too difficult
+                \item Tools not cooperative
+                \item Personal issues (stress, burnout)
+                \item Covid related crap
+                \item Poor results
+            \end{itemize}
         \end{center}
     \end{landscape}
     \pagebreak
@@ -551,6 +559,33 @@ bottom=40mm
 
     % Short and quick, show some basic testing stuff
     % Unit Testing for accuracy and of course Manual Acceptance testing (to ensure images actually open, are not corrupt etc)
+
+    \tab
+    Testing is an important part of software engineering, as it allows developers to ensure that the program behaves
+    as expected even after changes to the code, this means that refactors or new implementations can easily be done
+    since any breaking changes will fail the tests that previously passed.
+    \sentence
+    This makes developing new changes or code more reliable since there is a pillar of trust knowing that if the
+    tests pass, then the software is behaving correctly, assuming of course the tests are well written and defined.
+    \sentence
+    In order to ensure that the application is behaving in the expected way, the project needed some kind of
+    testing facilitation.
+    \sentence
+    A variety of classic testing methodologies and philosophies were used in this project namely, unit testing,
+    integration testing and acceptance testing.
+
+    \subsubsection{Unit Testing}\label{subsubsec:unit-testing}
+
+    % Not too much done but for bare essentials like file reading and writing
+    % Lots of logging used to print out statistics about processing and output
+
+    \subsubsection{Integration Testing}\label{subsubsec:integration-testing}
+
+    % Ensuring that large components can pass objects around correctly and know what to expect
+
+    \subsubsection{Acceptance Testing}\label{subsubsec:acceptance-testing}
+
+    % Most of the testing because visuals require human eye to analyze and compare
 
     \pagebreak
 
