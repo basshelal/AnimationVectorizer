@@ -31,10 +31,9 @@ bottom=40mm
 \author{Bassam Helal}
 \date{September 2020}
 \begin{document}
+    % TODO 23-Sep-20 Remove me when the document is full of pictures, a picture is worth 2000 bytes ;)
     % TODO 12-Sep-20 Remove black background and white text
     \black
-
-    % TODO 23-Sep-20 Remove me when the document is full of pictures, a picture is worth 2000 bytes ;)
 
     \pagenumbering{gobble} % Remove page numbering
 
@@ -89,9 +88,10 @@ bottom=40mm
     thus, this section will introduce the reader to some of the required knowledge needed for understanding this
     project.
     \sentence
-    Firstly, we will introduce raster graphics, the current common standard for graphics data representation.
+    Firstly, we will introduce raster graphics, the current de facto standard for graphics data representation.
+    \sentence
     We will then introduce its counterpart vector graphics, a different way to store graphics data that addresses
-    some of the issues with raster graphics and is growing in popularity.
+    some of the issues with raster graphics.
     \sentence
     We will then give a brief primer on image compression and some common methods of reducing the overall size
     of an image.
@@ -147,6 +147,8 @@ bottom=40mm
     % Advantages of Vector especially in contrast to Raster (size and scalability), mention uses and popularity
     % Disadvantages like portability and light technical stuff like gradients and photographs
     % Brief summary of everything we just mentioned
+
+    % TODO 25-Sep-20 Limitations and weaknesses of vector graphics
 
     % TODO 16-Sep-20 Small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
 
@@ -250,7 +252,7 @@ bottom=40mm
     % Current Image \& Video compression algorithms such as PNG, H265 and H266 (no ML)
     % Brief summary of everything we just mentioned
 
-    \subsection{Limitations}\label{subsec:limitations}
+    \subsection{Existing Limitations}\label{subsec:existing-limitations}
 
     % Brief summary of what we will go over (signposting)
     % Why ML is absolute hot trash
@@ -263,13 +265,26 @@ bottom=40mm
 
     \section{Implementation}\label{sec:implementation}
 
-    %  This may get long and technical, we should try to keep things fairly high level as much as
-    %  possible we will also show both Math, pseudocode and pipeline of the overall process and avoid boring low level
-    %  details
+    \tab
+    The following section will go into high level detail describing the implementation details of the project.
+    \sentence
+    While this section may seem rather long, it is in fact made dense to ensure conciseness while keeping all the
+    necessary details explained.
+    \sentence
+    This is because the project explores many different ideas and implementations to try to achieve its goals as will
+    be evident by the multiple vectorization methods used.
+    \sentence
+    Firstly, we introduce the high level process pipeline of the project from input to output.
+    \sentence
+    Then, we explore in depth some of the many methods of vectorization used in the project.
+    \sentence
+    Finally, we describe the limitations and drawbacks that were found during the implementation.
 
     \subsection{Pipeline}\label{subsec:pipeline}
 
     \bigskip
+
+    % TODO 25-Sep-20 Make pipeline image look better
 
     \includegraphics[width=\textwidth]{Pipeline.png}
 
@@ -289,31 +304,20 @@ bottom=40mm
     and approaches that were used in order to gain the highest level of accuracy and compression rate on each frame.
     \sentence
     The final stage of the processing, frame merging combines the vectorized frames back into a playable video form
-    with additional computation executed to add favorable traits such as lower file sizes.
+    with additional computation executed to add favorable traits such as further reduced file sizes.
     \sentence
     Finally, we explain the output that the process will produce and what an ideal output will be like, particularly in
     comparison to the input file.
 
     \subsubsection{Input}\label{subsubsec:input}
 
-    % TODO 20-Sep-20 Mention the limitations of Vector and Vectorization somewhere, currently its in 3.3 Limitations
-    % but it may be suitable elsewhere
-
-    % Low or no use of gradients so it has discrete colors
-    % Fewer and larger color regions, this is why photos are more difficult in addition to gradients
-    % Low or no noise
-    % No 3D stuff like shadows and reflections
-
-    % TODO 20-Sep-20 Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go
-    % TODO 20-Sep-20 Show example of some less optimal cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
-
     \tab
-    First, it is important to understand the input that the process will be expecting and detail what makes an ideal
-    input file.
+    Firstly, it is important to understand the input that the process will be expecting and detail what makes an ideal
+    input file that will produce the best results.
     \sentence
-    The minimum requirement is that the input file be a video in any popular format, specifically, one that Ffmpeg
-    can use (so basically all formats), however, this project specifically aims to work on animated cartoons so while
-    any video will technically work, for the purpose of this project, a video of an animated cartoon is expected.
+    The minimum requirement is that the input file be any video, but more specifically, this project
+    aims to work on animated cartoons, so while any video will technically work, for the purpose of this project, a
+    video of an animated cartoon is expected.
     \sentence
     However, not all animated cartoons are equal, in fact there is a great deal of variation between cartoons in
     terms of art style, animation method, and many other artistic effects that can heavily influence the output of
@@ -324,33 +328,38 @@ bottom=40mm
     \sentence
     The ideal input video is one that is most friendly towards vectorization, meaning it has the most vectorizable
     qualities and characteristics with as few incompatibilities as possible, these were mentioned in depth
-    in the~\nameref{subsec:limitations} section but will be briefly repeated within this new context.
-    \sentence
+    in the~\nameref{subsec:existing-limitations} section but will be briefly repeated within this new context.
+
+    \bigskip
     Since vectorization is heavily dependent on the color variation of the original raster image, an ideal input
     image would be one with discrete color regions made up of a single color, with no noise, gradients, shadows,
-    lighting or any other effects, essentially an image made of a set if color blocks that are very discrete from one
+    lighting or any other effects, essentially an image made of a set of color blocks that are very discrete from one
     another.
     \sentence
     In addition to this, it is important to note that we are dealing with moving pictures and it is also ideal to
-    have as little noise as possible between frames, this can be an artifact of compression or signal interference
-    but can also be seen as an artistic style choice as shown in Cartoon Network's \italic{Ed, Edd n Eddy}.
+    have as little noise as possible \italic{between} frames, this can be an artifact of compression or
+    rasterization but can also be seen as an artistic style choice as shown in Cartoon Network's
+    \italic{Ed, Edd n Eddy}.
     \sentence
-    Obviously very few real world media is like this, but a surprising number of cartoon videos can come very close
-    to this description, with very few complications such as shadows and light gradients.
+    Obviously very few real world media satisfies these conditions, but a surprising number of cartoon videos can come
+    very close to this description, with very few complications such as shadows and light gradients that are usually
+    in the background or are less important elements of the image.
     \sentence
     An example of a real world cartoon that has these ideal qualities is Nickelodeon's \italic{The Fairly OddParents}
-    which uses discrete color regions, very few (if any) gradients and no complex shadows or lighting and thus can be
-    described as being a truly 2D cartoon.
+    which uses discrete color regions, very few (if any) gradients and no complex shadows or lighting.
     \sentence
-    On the other extreme end cartoons with heavy use of photographs and heavy noise are the least ideal as well as
+    On the other extreme end cartoons with heavy use of photographs or heavy noise are the least ideal as well as
     any 3D cartoons, ie those that make use of 3D effects such as shadows, lighting and many complex gradients.
     \sentence
-    Examples include Hanna Barbera cartoons prominent from the 1960s to the 1980s such as \italic{Top Cat} and
-    \italic{The Flinstones}, \italic{Looney Tunes} cartoons as well as modern 3D animations such as Pixar Animation
-    Studios' \italic{Toy Story} and \italic{The Incredibles}.
+    Examples include Hanna Barbera cartoons prominent from the 1960s to the 1980s such as \italic{Top Cat}
+    and\italic{The Flinstones} and modern 3D animations such as Pixar Animation Studios'
+    \italic{Toy Story} and \italic{The Incredibles}.
     \sentence
-    In summary, the minimum required input is simply any video but the expectation is that it will be a video of an
-    animated cartoon and the ideal input is a video of an animated cartoon that has highly vectorizable qualities.
+    In summary, the minimum required input is simply any video but the expectation is that it will be an
+    animated cartoon video and the ideal input being an animated cartoon video that has highly vectorizable qualities.
+
+    % TODO 20-Sep-20 Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go
+    % TODO 20-Sep-20 Show example of some less optimal cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
 
     \subsubsection{Frame Extraction}\label{subsubsec:frame-extraction}
 
@@ -363,8 +372,9 @@ bottom=40mm
     \sentence
     Each frame of the video will be represented in an image which we can then vectorize in the next step.
     \sentence
-    To do this, we use the industry standard tool, Ffmpeg to create a directory of PNG images for each frame of the
+    To do this, we use the industry standard tool, FFmpeg to create a directory of PNG images for each frame of the
     video using the command:
+    % TODO 25-Sep-20 Make this code look nicer and centered, possibly explain the command
     \begin{verbatim}ffmpeg -i input.mp4 outputDirectory/%d.png -y
     \end{verbatim}
     \sentence
@@ -376,7 +386,7 @@ bottom=40mm
     frames stored on disk and then perform the vectorization step, now with the additional benefit of being able to
     run the vectorization step on multiple frames at once.
 
-    % TODO 20-Sep-20 Picture?
+    % TODO 20-Sep-20 Picture showing the directory of frames
 
     \subsubsection{Vectorization}\label{subsubsec:vectorization}
 

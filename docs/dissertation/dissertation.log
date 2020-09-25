@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  25 SEP 2020 02:24
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  25 SEP 2020 07:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -604,14 +604,14 @@ Package biblatex Info: Reference section=0 on input line 33.
 Package biblatex Info: Reference segment=0 on input line 33.
 \GPT@outputbox=\box48
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 42.
+(Font)              <14.4> on input line 41.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 42.
+(Font)              <7> on input line 41.
 <./images/SwanseaUniversityLogo.png, id=200, 333.8874pt x 185.493pt>
 File: ./images/SwanseaUniversityLogo.png Graphic file (type png)
 <use ./images/SwanseaUniversityLogo.png>
 Package pdftex.def Info: ./images/SwanseaUniversityLogo.png  used on input line
- 45.
+ 44.
 (pdftex.def)             Requested size: 217.02423pt x 120.56902pt.
  [1
 
@@ -621,7 +621,7 @@ aUniversityLogo.png>]pdfTeX warning (ext4): destination with the same identifie
 r (name{page.}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.57 
+l.56 
       [2]
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.toc
@@ -644,12 +644,12 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.66 
+l.65 
       [4] [1] [2] [3] [4]
 <./images/Pipeline.png, id=339, 623.32875pt x 261.97874pt>
 File: ./images/Pipeline.png Graphic file (type png)
 <use ./images/Pipeline.png>
-Package pdftex.def Info: ./images/Pipeline.png  used on input line 274.
+Package pdftex.def Info: ./images/Pipeline.png  used on input line 289.
 (pdftex.def)             Requested size: 426.79135pt x 179.3784pt.
  [5 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./im
 ages/Pipeline.png>] [6] [7] [8] [9
@@ -663,17 +663,17 @@ ages/Pipeline.png>] [6] [7] [8] [9
 ]
 [13] [14] [15] [16] [17] [18] [19]
 
-LaTeX Warning: Empty bibliography on input line 783.
+LaTeX Warning: Empty bibliography on input line 793.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 787.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 787.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 797.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 797.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 787.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 787.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 797.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 797.
 Package rerunfilecheck Info: File `dissertation.out' has not changed.
-(rerunfilecheck)             Checksum: AC742710972D68B7323E9FAD06D0CD1F;3138.
+(rerunfilecheck)             Checksum: C5CA882B3A5F587D5C10F7BB98310D06;3147.
 
 
 LaTeX Warning: There were undefined references.
@@ -686,12 +686,12 @@ Package biblatex Warning: Please (re)run Biber on the file:
 Package logreq Info: Writing requests to 'dissertation.run.xml'.
 \openout1 = `dissertation.run.xml'.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 787.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 797.
  ) 
 Here is how much of TeX's memory you used:
  13705 strings out of 480893
- 246477 string characters out of 5907572
- 941199 words of memory out of 5000000
+ 246486 string characters out of 5907572
+ 941208 words of memory out of 5000000
  29076 multiletter control sequences out of 15000+600000
  541408 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -704,7 +704,7 @@ b><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 <d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
 <d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
 Output written on C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/diss
-ertation/dissertation.pdf (23 pages, 142892 bytes).
+ertation/dissertation.pdf (23 pages, 143168 bytes).
 PDF statistics:
  449 PDF objects out of 1000 (max. 8388607)
  409 compressed objects within 5 object streams
