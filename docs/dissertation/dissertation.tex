@@ -570,6 +570,7 @@ bottom=40mm
                 \item Personal issues (stress, burnout)
                 \item Covid related crap
                 \item Poor results
+                \item Catastrophic fatal disaster ;)
             \end{itemize}
         \end{center}
     \end{landscape}
@@ -716,14 +717,57 @@ bottom=40mm
 
     \section{Future Work}\label{sec:future-work}
 
-    \subsection{Concurrency}\label{subsec:concurrency}
+    \tab
+    Despite being given many months to work on this project, it would be dishonest to claim that it is close to being
+    completed, as there are still many future endeavours and tasks that can be completed given more time.
+    \sentence
+    These tasks were left out as they were either lower priority or out of the scope of the project's initial aims
+    and objectives and were thus cut for time saving.
+    \sentence
 
-    % Use better tools that allow for native multi-threading and easier and direct access to GPU
-    % Better optimizations and better compression
+    \subsection{Optimization}\label{subsec:optimization}
+
+    \tab
+    As discussed in depth in the preceding sections, one of the main issues with the project currently is the
+    performance of the processing.
+    \sentence
+    This was never a high priority to begin with as it was clear early on that in order to aim for high accuracy and
+    high compression, more instructions needed to be executed and thus more time was needed to execute them.
+    \sentence
+    However, given more time this is an angle that is important to investigate and tackle as the more complex the
+    process becomes, the longer it takes to view any results, leading to significantly lower productivity.
+    \sentence
+    One of the main ways this can be achieved is by using the machine's hardware more efficiently especially by using
+    more of the resources and making use of the many processing cores most modern machines possess today.
+    \sentence
+    As discussed earlier, % TODO 25-Sep-20 Node sucks at this and we need multithreading and GPU execution
 
     \subsection{Future Research}\label{subsec:future-research}
 
-    % Explore having a mixed raster and vector solution to solve the areas where vector fails
+    \tab
+    Towards the end of the development cycle many new ideas began to make themselves apparent especially
+    after the multiple consecutive failures to show major positive results.
+    \sentence
+    These ideas were noted and left aside in order to focus on the main goal of the project as they strayed slightly
+    from the scope of the project and would have required more than the given time in order to truly explore correctly.
+    \sentence
+    However, given more time, these ideas should be further explored and tested as they can show further positive
+    results and shed some light and insight onto the vectorization problem.
+    \sentence
+    The most important idea is the potential mixing of raster and vector graphics in a new graphics format in order
+    to leverage the best of both formats and attempt to solve the issues of both.
+    \sentence
+    A potential algorithm would identify easily vectorizable areas of an image that would alter the data of the
+    original image only less than a given maximum data loss threshold.
+    \sentence
+    These areas of the image would be vectorized and represented in vector graphics.
+    \sentence
+    Then, for the areas where vectorization fails to yield any positive results, usually because of noise,
+    rasterization artifacts such as anti-aliasing or other non-vectorizable qualities such as gradients, the
+    algorithm would keep those areas as raster pixel-based.
+    \sentence
+    As is made obvious by the simplistic high-level explanation, this idea is still not well thought out or
+    researched, but given more time this is something that can be explored and researched in depth.
 
     \pagebreak
 
