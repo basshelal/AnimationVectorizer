@@ -150,6 +150,8 @@ bottom=40mm
 
     % TODO 25-Sep-20 Limitations and weaknesses of vector graphics
 
+    % TODO 25-Sep-20 Briefly explain the SVG path element because that is the only element we use and need
+
     % TODO 16-Sep-20 Small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
 
     % TODO 23-Sep-20 Images with Raster and Vector side by side, 1 for logo (Vector winner) 1 for portrait (raster winner)
@@ -391,6 +393,38 @@ bottom=40mm
     \subsubsection{Vectorization}\label{subsubsec:vectorization}
 
     % Conversion of each Frame to an SVG which will have a single SVG Path element for each color
+    \tab
+    The most important and most difficult step of the process is vectorization, which converts
+    frames from raster graphics to SVG vector graphics.
+    \sentence
+    The expected behavior of this step is extremely simple, a raster graphics input image will be converted to a
+    vector graphics output image ideally one with the highest possible accuracy and lowest size possible.
+    \sentence
+    While the expected behavior is extremely simple, the actual process is extremely difficult and complicated and
+    there are many possible correct approaches to this problem that yield varying results.
+    \sentence
+    These processes are detailed more thoroughly in the~\nameref{subsec:vectorization-methods} subsection further below
+    with their advantages and disadvantages.
+    \sentence
+    From a high level standpoint however, all the approaches aim to achieve the same result, that is to transform the
+    data from one representation format (raster) to another representation format (vector).
+    \sentence
+    This inherently means that there will be some form of data loss with the goal being to achieve what is called
+    \italic{Visually Lossless Compression} while gaining the benefits of vector graphics such as scalability in
+    addition to the aforementioned smaller size.
+    \sentence
+    To achieve this, we convert the input image into an SVG image made up only of one SVG element, the powerful
+    \verb|path| element.
+    \sentence
+    As mentioned earlier the \verb|path| element allows us to declare a path of arbitrary shape by declaring the
+    commands used to draw it.
+    \sentence
+    The path can then be filled with a single color allowing us to create single-color regions of arbitrary shape.
+    \sentence
+    Across all tried approaches, this is the common method used to create a vector graphics image, with the only
+    differences being in how these color regions are parsed and determined from the original raster image.
+
+    % TODO 25-Sep-20 Picture showing pixels of a single color being converted to a single SVG path
 
     \subsubsection{Frame Merging}\label{subsubsec:frame-merging}
 
