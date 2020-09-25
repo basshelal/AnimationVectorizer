@@ -170,7 +170,7 @@ bottom=40mm
 
     % Brief summary of what we will go over (signposting)
     % How video is stored and how it relates to Images (mostly the same)
-    % Common file types and how they compress and store video data (MP4, MKV, H265 etc)
+    % Common file types and how they compress and store video data (MP4, MKV, H265 etc) MPEG1 temporal redundancy
     % Evidence and proof of why video is expensive (and also popular)
     % Brief summary of everything we just mentioned
 
@@ -363,6 +363,12 @@ bottom=40mm
     % TODO 20-Sep-20 Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go
     % TODO 20-Sep-20 Show example of some less optimal cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
 
+    \subsubsection{Output}\label{subsubsec:output}
+
+    % Output here because we need to know what is expected before discussing any processing
+    % An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
+    % very minimal data loss (frame based still)
+
     \subsubsection{Frame Extraction}\label{subsubsec:frame-extraction}
 
     \tab
@@ -392,7 +398,6 @@ bottom=40mm
 
     \subsubsection{Vectorization}\label{subsubsec:vectorization}
 
-    % Conversion of each Frame to an SVG which will have a single SVG Path element for each color
     \tab
     The most important and most difficult step of the process is vectorization, which converts
     frames from raster graphics to SVG vector graphics.
@@ -428,12 +433,34 @@ bottom=40mm
 
     \subsubsection{Frame Merging}\label{subsubsec:frame-merging}
 
-    % SVG Frame Joining which will have some smart compression built-in
-
-    \subsubsection{Output}\label{subsubsec:output}
-
-    % An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
-    % very minimal data loss
+    \tab
+    The final processing step is frame merging, the step that will combine all frames (now in glorious vector
+    graphics) back into some playable video form.
+    \sentence
+    This is the step where the most optimizations and improvements can be made with regards to file size.
+    \sentence
+    Since we are returning back to the realm of video, i.e. moving pictures, we can make use of the existing
+    compression technology and theory that is used in raster based video to drastically reduce file size.
+    \sentence
+    This is true because the output is still frame based just as raster videos are, and thus the same theories can be
+    applied, this would not be true if the video was not frame based such as using interpolation or some other
+    advanced method.
+    \sentence
+    The main concept to be brought over from current raster video compression is compression through leveraging
+    temporal redundancy in a video as mentioned in the~\nameref{subsec:video-graphics} section.
+    \sentence
+    In this case, we can join a series of similar frames into what we call a frameset which will have a root
+    or anchor frame.
+    \sentence
+    Only the root frame will be completely stored, all successive frames in the frameset will only be stored as the
+    delta between the root frame.
+    \sentence
+    This is currently the only concept that is taken from raster video to reduce size but as mentioned, since the
+    video is still frame based, many of the same ideas can be directly ported into the vector graphics world for
+    further size reduction.
+    \sentence
+    Many more compression optimizations can be done in the future in this step to further reduce the size of the final
+    video, hence the importance of the frame merging step within the process pipeline.
 
     \subsection{Vectorization Methods}\label{subsec:vectorization-methods}
 
