@@ -297,7 +297,11 @@ bottom=40mm
     The above image shows the high level process pipeline of the project from input to output with each phase of the
     pipeline further detailed in its own section below.
     \sentence
-    Firstly, we explain the expected input video and its ideal characteristics that will result in a higher accuracy output.
+    Firstly, we explain the expected input video and its ideal characteristics that will result in a higher accuracy
+    output.
+    \sentence
+    Then, we establish the expected and desired output and detail its expected and ideal characteristics before
+    further discussing any of the processing.
     \sentence
     Then, the first phase of the processing begins, the frame extraction, where the frames of the video are
     extracted to be used further down the pipeline.
@@ -305,11 +309,8 @@ bottom=40mm
     Next, the main phase of the processing, the vectorization of a single frame, we describe and detail the multiple methods
     and approaches that were used in order to gain the highest level of accuracy and compression rate on each frame.
     \sentence
-    The final stage of the processing, frame merging combines the vectorized frames back into a playable video form
-    with additional computation executed to add favorable traits such as further reduced file sizes.
-    \sentence
-    Finally, we explain the output that the process will produce and what an ideal output will be like, particularly in
-    comparison to the input file.
+    Finally, the final stage of the processing, frame merging combines the vectorized frames back into a playable
+    video form with additional computation executed to add favorable traits such as further reduced file sizes.
 
     \subsubsection{Input}\label{subsubsec:input}
 
@@ -365,9 +366,40 @@ bottom=40mm
 
     \subsubsection{Output}\label{subsubsec:output}
 
-    % Output here because we need to know what is expected before discussing any processing
-    % An SVG Video that is of course highly scalable and has a lower size than the original if upscaled and with
-    % very minimal data loss (frame based still)
+    \tab
+    Before discussing any of the processing, it is important to first understand the expected output that the process
+    will generate and detail the expected and ideal characteristics of the output.
+    \sentence
+    In essence, the output is a playable video that uses vector graphics to store the same data as the input file but
+    with the added benefits of vector graphics, namely improved scalability and reduced size.
+    \sentence
+    Ideally, the output will be visually indistinguishable from the original but with a smaller size essentially
+    achieving so called~\italic{Visually Lossless Compression}.
+    \sentence
+    However, since the video is using vector graphics, it will be much more scalable in comparison and essentially
+    void of the pixelation problem that plagues traditional raster graphics.
+    \sentence
+    The size difference should especially be evident when taking the upscaling ability into account since the new
+    video can be effective at any resolution display whilst the original will show pixelation once it is displayed on
+    high enough resolution displays.
+    \sentence
+    Thus, an input video in 480p could likely produce an output video of larger size, and an input video in 720p
+    could likely produce an output of similar size to the original, but the new vector graphics videos will be
+    scalable to any resolution such as 4K or higher where the originals will show major pixelation at those resolutions.
+    \sentence
+    One important thing to note is that the output will still be frame based, this means the video data is frames of
+    images moving at some given framerate, as is the case with raster video formats.
+    \sentence
+    This is in contrast to what vector animations are often represented in (usually for UI animations) and that is
+    using some form of interpolation making the playback framerate independent, that is not the case here as that
+    would add much more complexity.
+    \sentence
+    This frame-based characteristic of the output is important because it means we can leverage existing theories and
+    concepts from raster videos mainly with regard to compression as is made clearer in
+    the~\nameref{subsubsec:frame-merging} section.
+    \sentence
+    This frame based vector graphics video output makes the process as simple as possible while still achieving the
+    desired benefits of vector graphics into the original raster video, namely improved scalability and reduced size.
 
     \subsubsection{Frame Extraction}\label{subsubsec:frame-extraction}
 
@@ -459,8 +491,10 @@ bottom=40mm
     video is still frame based, many of the same ideas can be directly ported into the vector graphics world for
     further size reduction.
     \sentence
-    Many more compression optimizations can be done in the future in this step to further reduce the size of the final
+    Many more compression optimizations can be done during this step to further reduce the size of the final
     video, hence the importance of the frame merging step within the process pipeline.
+
+    % TODO 25-Sep-20 Picture showing too many successive frames are identical
 
     \subsection{Vectorization Methods}\label{subsec:vectorization-methods}
 
