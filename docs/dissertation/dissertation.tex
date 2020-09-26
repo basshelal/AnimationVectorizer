@@ -463,7 +463,9 @@ bottom=40mm
     As mentioned earlier the \verb|path| element allows us to declare a path of arbitrary shape by declaring the
     commands used to draw it.
     \sentence
-    The path can then be filled with a single color allowing us to create single-color regions of arbitrary shape.
+    An image can be represented as a set of discrete connected color regions that together form the whole image,
+    these can be done using the path element which can then be filled with a single color allowing us to create
+    single-color regions of arbitrary shape.
     \sentence
     Across all tried approaches, this is the common method used to create a vector graphics image, with the only
     differences being in how these color regions are parsed and determined from the original raster image.
@@ -527,13 +529,14 @@ bottom=40mm
     % From the general process of the library ImageTracer.js
 
     % Explain Color Quantization
+    % How we are using it in our approach
     % Advantages (very accurate, fast, good for logos and web based stuff)
     % Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of
     % colors)
     % Show pictures of original vs some different results from this approach (to show why it fails)
 
     \tab
-    The first approach is based on color quantization, or in plain English, reducing the total number of unique
+    The first approach is based on color quantization, or simply, reducing the total number of unique
     colors in an image while still aiming to be visually identical, again aiming for \italic{Visually Lossless
     Compression}.
     \sentence
@@ -581,6 +584,32 @@ bottom=40mm
     % Possible disadvantages
     % Signpost for the following approaches
 
+    \tab
+    A more logical way to approach the problem is to approach it as a partitioning problem, meaning we want to
+    partition the image into a set of discrete adjacent parts that altogether make up the whole image.
+    \sentence
+    This is because that is exactly how the end result SVG will be created, as a set of SVG elements that together
+    form the whole image as if they are parts of a partition.
+    \sentence
+    This way of thinking lends itself extremely well to Connected Component Labelling (CCL) which is basically
+    exactly that, dividing the image into a partition of connected components that together form the whole image.
+    \sentence
+    % TODO 26-Sep-20 Where CCL is used and some theory background
+    \sentence
+    Connected Component Labelling does not in itself describe any particular implementation and thus can be
+    implemented in many different ways depending on the context and desired outcome.
+    \sentence
+    However, the basic idea is that a single pass is made across the image and each pixel is checked to see if it
+    fits within its neighbors components, if so it is added to that component, if not it is the first in a new
+    component.
+    \sentence
+    This is obviously very simplistic, but the general concept is the same and the details will be further explained
+    in each approach.
+    \sentence
+    Two CCL based approaches were used to attempt to tackle the vectorization problem, each differing only in the
+    means by which a "component" is defined, the first using edges as components and the second using pixel colors as
+    components.
+
     \subsubsection{Edge Based CCL Approach}\label{subsubsec:edge-based-ccl-approach}
 
     % Using OpenCV Canny Edge detection
@@ -589,6 +618,38 @@ bottom=40mm
     % Reasoning behind approach (edges should form polygons which will be color regions) and the expected result
     % Advantages (fast, easy, accurate for edge detection)
     % Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
+
+    \tab
+    The first approach using CCL is based on defining a component as an edge of the image.
+    \sentence
+    Edges can be easily detected using any edge detection algorithm, for this we used OpenCV's Canny edge detection
+    but the actual edge detection is not the important factor here.
+    \sentence
+    For higher accuracy and confidence, a large sample size of edge detection passes with different parameters was
+    averaged to create a single averaged edges image.
+    \sentence
+    This image is a monochrome image in which, a pixel with value of 0 is never an edge in any pass and a pixel with
+    a value of 255 is an edge in every pass, thus we need to use some thresholding to determine what defines an edge.
+    \sentence
+    Once that is determined however, the CCL algorithm can pass through the average edges image to find the connected
+    edges that make up the image.
+    \sentence
+    The reasoning behind this is that in theory, this will return the edges of all the polygons that make up the
+    image and thus by filling them with their average color, we can recreate the image using color regions.
+    \sentence
+    However, this is much easier said than done, and indeed there are many edge cases that need to be noted,
+    specifically the effect of a single pixel.
+    \sentence
+    A single missing pixel could mean a polygon is incomplete, a single extra pixel between two unrelated polygons
+    could mean the polygon is incorrect, basically the algorithm is very sensitive to any discrepancies within the
+    averaged image.
+    \sentence
+    This can be tackled using further processing and analysis to undo some of these effects, but this would be very
+    complicated and time consuming.
+    \sentence
+    In the end however, the edge based CCL approach did not yield the expected results and was very disappointing,
+    although theoretically it can be perfected with time, that was something that was very limited and valuable and
+    thus a new approach was used.
 
     \subsubsection{Pixel Based CCL Approach}\label{subsubsec:pixel-based-ccl-approach}
 
