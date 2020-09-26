@@ -526,54 +526,52 @@ bottom=40mm
 
     \subsubsection{Color Quantization Approach}\label{subsubsec:color-quantization-approach}
 
-    % From the general process of the library ImageTracer.js
-
-    % Explain Color Quantization
-    % How we are using it in our approach
-    % Advantages (very accurate, fast, good for logos and web based stuff)
-    % Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of
-    % colors)
-    % Show pictures of original vs some different results from this approach (to show why it fails)
-
     \tab
-    The first approach is based on color quantization, or simply, reducing the total number of unique
-    colors in an image while still aiming to be visually identical, again aiming for \italic{Visually Lossless
-    Compression}.
+    The first approach is based on color quantization, or simply, reducing the total number of distinct
+    colors in an image while still aiming for \italic{Visually Lossless Compression}.
     \sentence
-    This approach was chosen only because it is the approach that is used in the \italic{ImageTracer.js} library that
-    was used as an initial blueprint and foundation for the project's codebase that became unrecognizable from the
-    original library by the end of the project's development.
+    This approach was chosen because it is the one used in the \italic{ImageTracer.js} library that
+    was used as an initial blueprint and foundation for the project's codebase.
     \sentence
-    Color quantization can be implemented in a variety of different algorithms such as the Median cut algorithm or
-    any 3-dimensional clustering algorithm.
+    Color quantization can be implemented in a variety of different algorithms but essentially any 3-dimensional (or
+    4-dimensional if including alpha) clustering algorithm can work because it is in essence a classification problem.
     \sentence
-    All algorithms have the same expected behavior though; given an image and a desired number of colors, find the
-    set of colors that best represent this image.
+    All algorithms have the same expected behavior though;
+    given an image and a desired number of colors \italic{n}, find the \italic{n}-size set of colors that best
+    represents this image.
     \sentence
     Each pixel in the image is then changed from its original color to the color in the reduced palette that is
-    closest to its original color, and thus the image has been reduced.
+    closest to its original color, and thus the image has been reduced since the image has only \italic{n} distinct
+    colors.
     \sentence
+    Each distinct color can then be assigned a single SVG path element, this is like a layer because it need not
+    necessarily be connected, thus we end up with an SVG image made up of \italic{n} number of SVG path elements,
+    each a single color.
+
+    \bigskip
     Color quantization is an excellent way to reduce the size of an image drastically while making it visually
-    similar to the original and it is usually an extremely fast process.
+    similar to the original and it is usually an extremely fast and efficient process.
     \sentence
-    Their are a few drawbacks though, the first being that it suffers drastically when reducing images with gradients
-    and noise and their will be a visually obvious loss of data, similar to the issues that affect vectorization.
+    Their are a few drawbacks though, the first being that it performs much worse when attempting to reduce images
+    with gradients and noise and there will be a visually obvious loss of data, similar to the issues that affect
+    vectorization.
     \sentence
-    The larger issue in our case though, is to do with the manually inputted number of colors.
+    However, in our case, the larger issue is to do with the manually inputted number of colors that the algorithm
+    requires.
     \sentence
-    The number of colors that are given to a color quantization algorithm can drastically change accuracy,
-    performance and size all at the same time.
+    The number of colors that are given to a color quantization algorithm can drastically change all of accuracy,
+    performance and file size all at the same time.
     \sentence
     A high number such as 1,000 colors will yield very high accuracy for most images but will have much less size
     reductions and have significant performance impacts.
     \sentence
     Even ignoring performance, choosing the correct number of colors that will yield the highest compression rate while
-    also being visually identical in quality is another task in itself and one that will also need to be tackled.
+    also being visually identical in quality is another major task in itself, especially when considering that not
+    all frames or images have the same color space.
     \sentence
-    The truth is, color quantization depends too heavily on the provided number of colors and determining this color
-    deterministically is another problem of its own.
-
-    % TODO 26-Sep-20 Explain more specifically about how WE use color quantization, so 2 paragraphs at least
+    The truth is, while color quantization is an excellent way to reduce file size and still achieve
+    \italic{Visually Lossless Compression}, it depends too heavily on the provided number of colors and
+    computing this color deterministically is another major problem of its own.
 
     \subsubsection{Connected Component Labelling (CCL)}\label{subsubsec:connected-component-labelling-(ccl)}
 
