@@ -1,16 +1,16 @@
 \documentclass[12pt]{article}
 \usepackage{geometry}
 \usepackage{xcolor}
-\usepackage{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage{tabto}
 \usepackage{graphicx}
 \usepackage{biblatex}
 \usepackage{pdflscape}
+\usepackage{hyperref}
 \addbibresource{bibliography.bib}
 \graphicspath{ {./images/} }
 \hypersetup{
-colorlinks=false,
+colorlinks=false, % TODO 26-Sep-20 Properly configure links https://www.overleaf.com/learn/latex/hyperlinks
 linktoc=all
 }
 \geometry{
@@ -42,6 +42,13 @@ bottom=40mm
     \begin{center}
         \vspace{8cm}
         \includegraphics[scale=0.65]{SwanseaUniversityLogo.png}
+    \end{center}
+    \begin{center}
+        \vspace{1cm}
+        \large
+        Bassam Helal
+        \linebreak
+        809293
     \end{center}
 
     \pagebreak
@@ -498,10 +505,22 @@ bottom=40mm
 
     \subsection{Vectorization Methods}\label{subsec:vectorization-methods}
 
-    % Here we will explain our story of the last few months, the many approaches and their failures. This section
-    % should implicitly show the reader that the problem is very hard, harder than initially thought to be. If
-    % we show the difficulty and the struggle it can explain any poor results and can further show overall contribution
-    % that we tried something difficult
+    \tab
+    As previously mentioned, many different approaches and methods were used to tackle the vectorization step of the
+    pipeline in order to achieve the best possible results, or sometimes even acceptable results in some cases as
+    will be detailed below.
+    \sentence
+    Three main approaches were used to tackle the problem, a color quantization based approach and two connected
+    component labelling based approaches, one using edges as components and the other using colors as components.
+    \sentence
+    One detail to note is that multiple approaches were not planned early on and were in fact researched and explored
+    as the project developed and as results began to appear.
+    \sentence
+    This is noteworthy because each successive approach aimed to fix the issues with the previous one, only to
+    introduce new issues of its own.
+    \sentence
+    We will explain all three approaches in depth in their own subsections below as well as give an introduction to
+    the theory of connected component labelling as two of the three approaches are based on this.
 
     \subsubsection{Color Quantization Approach}\label{subsubsec:color-quantization-approach}
 
@@ -512,6 +531,46 @@ bottom=40mm
     % Disadvantages (Too dependent on quantization number of colors, large size and poor speed with high number of
     % colors)
     % Show pictures of original vs some different results from this approach (to show why it fails)
+
+    \tab
+    The first approach is based on color quantization, or in plain English, reducing the total number of unique
+    colors in an image while still aiming to be visually identical, again aiming for \italic{Visually Lossless
+    Compression}.
+    \sentence
+    This approach was chosen only because it is the approach that is used in the \italic{ImageTracer.js} library that
+    was used as an initial blueprint and foundation for the project's codebase that became unrecognizable from the
+    original library by the end of the project's development.
+    \sentence
+    Color quantization can be implemented in a variety of different algorithms such as the Median cut algorithm or
+    any 3-dimensional clustering algorithm.
+    \sentence
+    All algorithms have the same expected behavior though; given an image and a desired number of colors, find the
+    set of colors that best represent this image.
+    \sentence
+    Each pixel in the image is then changed from its original color to the color in the reduced palette that is
+    closest to its original color, and thus the image has been reduced.
+    \sentence
+    Color quantization is an excellent way to reduce the size of an image drastically while making it visually
+    similar to the original and it is usually an extremely fast process.
+    \sentence
+    Their are a few drawbacks though, the first being that it suffers drastically when reducing images with gradients
+    and noise and their will be a visually obvious loss of data, similar to the issues that affect vectorization.
+    \sentence
+    The larger issue in our case though, is to do with the manually inputted number of colors.
+    \sentence
+    The number of colors that are given to a color quantization algorithm can drastically change accuracy,
+    performance and size all at the same time.
+    \sentence
+    A high number such as 1,000 colors will yield very high accuracy for most images but will have much less size
+    reductions and have significant performance impacts.
+    \sentence
+    Even ignoring performance, choosing the correct number of colors that will yield the highest compression rate while
+    also being visually identical in quality is another task in itself and one that will also need to be tackled.
+    \sentence
+    The truth is, color quantization depends too heavily on the provided number of colors and determining this color
+    deterministically is another problem of its own.
+
+    % TODO 26-Sep-20 Explain more specifically about how WE use color quantization, so 2 paragraphs at least
 
     \subsubsection{Connected Component Labelling (CCL)}\label{subsubsec:connected-component-labelling-(ccl)}
 
