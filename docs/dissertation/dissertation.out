@@ -20,7 +20,7 @@
 \BOOKMARK [3][-]{subsubsection.4.2.1}{Color Quantization Approach}{subsection.4.2}% 20
 \BOOKMARK [3][-]{subsubsection.4.2.2}{Connected Component Labelling \(CCL\)}{subsection.4.2}% 21
 \BOOKMARK [3][-]{subsubsection.4.2.3}{Edge Based CCL Approach}{subsection.4.2}% 22
-\BOOKMARK [3][-]{subsubsection.4.2.4}{Pixel Based CCL Approach}{subsection.4.2}% 23
+\BOOKMARK [3][-]{subsubsection.4.2.4}{Color Based CCL Approach}{subsection.4.2}% 23
 \BOOKMARK [2][-]{subsection.4.3}{Limitations and Drawbacks}{section.4}% 24
 \BOOKMARK [1][-]{section.5}{Software Engineering}{}% 25
 \BOOKMARK [2][-]{subsection.5.1}{Methodology}{section.5}% 26

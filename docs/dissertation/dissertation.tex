@@ -575,22 +575,15 @@ bottom=40mm
 
     \subsubsection{Connected Component Labelling (CCL)}\label{subsubsec:connected-component-labelling-(ccl)}
 
-    % Using Connected Component Labelling (CCL) to create discrete but adjacent components
-
-    % Explain CCL
-    % Reasoning behind approach
-    % Possible disadvantages
-    % Signpost for the following approaches
-
     \tab
     A more logical way to approach the problem is to approach it as a partitioning problem, meaning we want to
     partition the image into a set of discrete adjacent parts that altogether make up the whole image.
     \sentence
-    This is because that is exactly how the end result SVG will be created, as a set of SVG elements that together
+    This is because that is exactly how the end result SVG will be created, as a set of SVG path elements that together
     form the whole image as if they are parts of a partition.
     \sentence
-    This way of thinking lends itself extremely well to Connected Component Labelling (CCL) which is basically
-    exactly that, dividing the image into a partition of connected components that together form the whole image.
+    This way of thinking lends itself extremely well to Connected Component Labelling (CCL) which is exactly that,
+    dividing the image into a partition of connected components that together form the whole image.
     \sentence
     % TODO 26-Sep-20 Where CCL is used and some theory background
     \sentence
@@ -598,24 +591,20 @@ bottom=40mm
     implemented in many different ways depending on the context and desired outcome.
     \sentence
     However, the basic idea is that a single pass is made across the image and each pixel is checked to see if it
-    fits within its neighbors components, if so it is added to that component, if not it is the first in a new
+    fits within its neighbors' components, if so it is added to that component, if not it is the first in a new
     component.
     \sentence
-    This is obviously very simplistic, but the general concept is the same and the details will be further explained
-    in each approach.
+    A second pass may be made to merge any components that are adjacent but this can be done in a single pass
+    by checking to merge components after the initial component assignment.
+    \sentence
+    The concept itself is relatively simple with the intricate details left to the implementation which can heavily
+    affect the results depending on how it is implemented and approached.
     \sentence
     Two CCL based approaches were used to attempt to tackle the vectorization problem, each differing only in the
     means by which a "component" is defined, the first using edges as components and the second using pixel colors as
     components.
 
     \subsubsection{Edge Based CCL Approach}\label{subsubsec:edge-based-ccl-approach}
-
-    % Using OpenCV Canny Edge detection
-
-    % Explain OpenCV and Canny Edge Detection
-    % Reasoning behind approach (edges should form polygons which will be color regions) and the expected result
-    % Advantages (fast, easy, accurate for edge detection)
-    % Disadvantages (not all edges form polygons and 1 pixel incorrect can have huge effects)
 
     \tab
     The first approach using CCL is based on defining a component as an edge of the image.
@@ -647,9 +636,9 @@ bottom=40mm
     \sentence
     In the end however, the edge based CCL approach did not yield the expected results and was very disappointing,
     although theoretically it can be perfected with time, that was something that was very limited and valuable and
-    thus a new approach was used.
+    thus a new approach was explored.
 
-    \subsubsection{Pixel Based CCL Approach}\label{subsubsec:pixel-based-ccl-approach}
+    \subsubsection{Color Based CCL Approach}\label{subsubsec:color-based-ccl-approach}
 
     % Using the color of each pixel to form regions with close enough or similar colors
 
@@ -657,6 +646,58 @@ bottom=40mm
     % Reasoning behind approach (an image can be a partition of several color regions)
     % Advantages (surprisingly accurate, little data loss, huge size savings)
     % Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
+
+    \tab
+    The second approach using CCL is based on defining a component as a region of similar colors based on the pixel
+    values.
+    \sentence
+    This approach is the most logical way to approach the problem solely based on the desired output, i.e., SVG path
+    elements of a single color each representing a color region.
+    \sentence
+    Since each pixel contains its color information, we can cluster pixels that are adjacent and have colors that are
+    within a given delta threshold, that is to say, they are close enough in color to be part of the same color
+    region.
+    \sentence
+    In essence we are performing a kind of color quantization since there will be reduced colors at the end of the
+    process but unlike classic color quantization mentioned in the~\nameref{subsubsec:color-quantization-approach}
+    section, the desired number of colors is no longer an input, solving the issue with that approach.
+    \sentence
+    As with other CCL approaches, the image is looped on and each pixel is queried to check whether it is eligible to
+    be part of any of the components of its preceding neighbors, if so it joins that component, if not it is assigned
+    its own new component where it is the first element.
+    \sentence
+    The reasoning behind this approach is that in theory each color region in the original image will naturally form
+    a cluster which can then be reduced to a single color that is an average of all the pixels in that region.
+    \sentence
+    Thus, the image is transformed from a grid of unrelated pixels to a partition of adjacent color regions each
+    being a single color that altogether form the entire image.
+    \sentence
+
+    \bigskip
+    While being fairly complex and computationally expensive, this approach yields shockingly positive results both
+    in terms of size reduction and image accuracy with any data loss incurred being minor.
+    \sentence
+    However, upon further inspection, a huge issue became obvious;
+    the total number of components that was created was surprisingly high, an image with at most perhaps a few
+    thousand color regions results with tens of thousands of color regions.
+    \sentence
+    The distinct colors were still reduced so color quantization was successful but an efficient partitioning was not
+    and upon further investigation and research, it was clear that the culprit was anti-aliasing.
+    \sentence
+    Anti-aliasing is an effect popular in raster graphics that is used to make edges less sharp by adding blurs
+    between them, and in the case of two different color regions, pixels with colors \italic{in between} those two
+    colors.
+    \sentence
+    What ends up happening is that our algorithm cannot determine which region these \italic{in between} pixels are
+    because their colors are not close enough to either region and so they are assigned their own region.
+    \sentence
+    This is shown when we analyze the number of components with less than 5 total pixels and the result is a whopping
+    97\% of all regions have less than 5 pixels in total and upon investigating, it is clear that these are the
+    pixels at the edges of color changes and thus the ones responsible for anti-aliasing.
+    \sentence
+
+
+    % TODO 27-Sep-20 Put limitations before any implementation?
 
     \subsection{Limitations and Drawbacks}\label{subsec:limitations-and-drawbacks}
 
@@ -753,7 +794,7 @@ bottom=40mm
                 \subitem Connected Component Labelling
                 \subitem Path/Polygon parsing
                 \item Writing
-                \subitem Latex setup
+                \subitem Latex setup and learning
                 \subitem User evaluations
                 \subitem Resource compiling
                 \subitem Core writing
