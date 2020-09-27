@@ -36,18 +36,17 @@
 \BOOKMARK [3][-]{subsubsection.6.1.2}{Qualitative Methods}{subsection.6.1}% 36
 \BOOKMARK [2][-]{subsection.6.2}{Compression}{section.6}% 37
 \BOOKMARK [3][-]{subsubsection.6.2.1}{Quantitative Methods}{subsection.6.2}% 38
-\BOOKMARK [3][-]{subsubsection.6.2.2}{Qualitative Methods}{subsection.6.2}% 39
-\BOOKMARK [1][-]{section.7}{Results}{}% 40
-\BOOKMARK [1][-]{section.8}{Challenges}{}% 41
-\BOOKMARK [2][-]{subsection.8.1}{Toolchain}{section.8}% 42
-\BOOKMARK [3][-]{subsubsection.8.1.1}{JavaScript}{subsection.8.1}% 43
-\BOOKMARK [3][-]{subsubsection.8.1.2}{Concurrency}{subsection.8.1}% 44
-\BOOKMARK [2][-]{subsection.8.2}{Performance}{section.8}% 45
-\BOOKMARK [3][-]{subsubsection.8.2.1}{Hardware Utilization}{subsection.8.2}% 46
-\BOOKMARK [3][-]{subsubsection.8.2.2}{GPU Programming}{subsection.8.2}% 47
-\BOOKMARK [2][-]{subsection.8.3}{Minimizing Human Input}{section.8}% 48
-\BOOKMARK [1][-]{section.9}{Reflection}{}% 49
-\BOOKMARK [1][-]{section.10}{Future Work}{}% 50
-\BOOKMARK [2][-]{subsection.10.1}{Optimization}{section.10}% 51
-\BOOKMARK [2][-]{subsection.10.2}{Future Research}{section.10}% 52
-\BOOKMARK [1][-]{section.11}{Conclusion}{}% 53
+\BOOKMARK [1][-]{section.7}{Results}{}% 39
+\BOOKMARK [1][-]{section.8}{Challenges}{}% 40
+\BOOKMARK [2][-]{subsection.8.1}{Toolchain}{section.8}% 41
+\BOOKMARK [3][-]{subsubsection.8.1.1}{JavaScript}{subsection.8.1}% 42
+\BOOKMARK [3][-]{subsubsection.8.1.2}{Concurrency}{subsection.8.1}% 43
+\BOOKMARK [2][-]{subsection.8.2}{Performance}{section.8}% 44
+\BOOKMARK [3][-]{subsubsection.8.2.1}{Hardware Utilization}{subsection.8.2}% 45
+\BOOKMARK [3][-]{subsubsection.8.2.2}{GPU Programming}{subsection.8.2}% 46
+\BOOKMARK [2][-]{subsection.8.3}{Minimizing Human Input}{section.8}% 47
+\BOOKMARK [1][-]{section.9}{Reflection}{}% 48
+\BOOKMARK [1][-]{section.10}{Future Work}{}% 49
+\BOOKMARK [2][-]{subsection.10.1}{Optimization}{section.10}% 50
+\BOOKMARK [2][-]{subsection.10.2}{Future Research}{section.10}% 51
+\BOOKMARK [1][-]{section.11}{Conclusion}{}% 52

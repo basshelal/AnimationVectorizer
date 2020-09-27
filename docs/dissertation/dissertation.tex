@@ -25,8 +25,8 @@ bottom=40mm
 \color{white}
 }
 \newcommand{\sentence}{} % New sentence
-\newcommand{\final}{} % Mark a section as finished
 \newcommand{\italic}[1]{\textit{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
 \title{Vectorization and Compression of Animated Cartoon Videos}
 \author{Bassam Helal}
 \date{September 2020}
@@ -433,9 +433,10 @@ bottom=40mm
     \sentence
     To do this, we use the industry standard tool, FFmpeg to create a directory of PNG images for each frame of the
     video using the command:
-    % TODO 25-Sep-20 Make this code look nicer and centered, possibly explain the command
-    \begin{verbatim}ffmpeg -i input.mp4 outputDirectory/%d.png -y
-    \end{verbatim}
+    % TODO 25-Sep-20 Possibly explain the command
+    \begin{center}
+        \code{ffmpeg -i input.mp4 outputDirectory/\%d.png -y}
+    \end{center}
     \sentence
     This is so that the next step (vectorization) can be done on each frame can be independently and can more easily
     be parallelized, since the vectorization of a single frame does not depend on any other frames around it.
@@ -470,9 +471,9 @@ bottom=40mm
     addition to the aforementioned smaller size.
     \sentence
     To achieve this, we convert the input image into an SVG image made up only of one SVG element, the powerful
-    \verb|path| element.
+    \code{path} element.
     \sentence
-    As mentioned earlier the \verb|path| element allows us to declare a path of arbitrary shape by declaring the
+    As mentioned earlier the \code{path} element allows us to declare a path of arbitrary shape by declaring the
     commands used to draw it.
     \sentence
     An image can be represented as a set of discrete connected color regions that together form the whole image,
@@ -857,7 +858,7 @@ bottom=40mm
     \tab
     The first testing methodology used was none other than the classic and simple unit testing.
     \sentence
-    In our case we used a variety of classic automated unit tests, in-code \verb|assert| statements and regular
+    In our case we used a variety of classic automated unit tests, in-code \code{assert} statements and regular
     logging messages each serving different purposes.
     \sentence
     Firstly, the typical automated unit tests were used at the end of a computation to ensure that the output image
@@ -866,7 +867,7 @@ bottom=40mm
     One of the ways was to test the output image's properties such as resolution, bit depth, size, distinct colors,
     among others.
     \sentence
-    Secondly, in-code \verb|assert| statements were used before any requirement that was needed to be true before
+    Secondly, in-code \code{assert} statements were used before any requirement that was needed to be true before
     computation, usually with regards to expected inputs.
     \sentence
     While this is not a traditional testing method, it was used as such here as there are many times where the input
@@ -889,14 +890,14 @@ bottom=40mm
     In this case, a process such as average edge detection for example would have a specific output that perhaps the
     next process, edge based CCL, may not be expecting or may not know how to behave with.
     \sentence
-    In addition to the core concepts were used from unit testing such as using in-code \verb|assert| statements
+    In addition to the core concepts were used from unit testing such as using in-code \code{assert} statements
     and logging statements, additional code was added in order to ensure that the application would either use the
     same data formats, or have a trustworthy converter to convert the data.
     \sentence
-    An excellent is example is OpenCV's \verb|Mat| type representing a matrix which was used during edge detection
+    An excellent is example is OpenCV's \code{Mat} type representing a matrix which was used during edge detection
     but the next steps would only know how to handle a built in type representing images.
     \sentence
-    Thus, a converter was created to ensure that whenever the \verb|Mat| type was used it was immediately converted
+    Thus, a converter was created to ensure that whenever the \code{Mat} type was used it was immediately converted
     to the internal type ensuring that the entire application would be uniform in what data types it would use and
     expect.
     \sentence
@@ -1002,18 +1003,31 @@ bottom=40mm
 
     \subsection{Compression}\label{subsec:compression}
 
-    % Define compression rate (aka how smaller is the result compared to original or some other)
-    % Quantitative methods (compare against original, AND against others including upscaled and uncompressed)
-    % Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
-
     \tab
     The other property to evaluate is compression rate, i.e., the size ratio of the new file's size to the original
     file's size.
     \sentence
+    It is important to note that the project's aim with regard to compression in that the aim is to have smaller file
+    sizes \italic{and} scalability, that means there may be instances where file size may actually become larger,
+    like when dealing with a low resolution input.
+    \sentence
+    However, that same output file can now be used on higher resolution displays with no issues, whereas the original
+    cannot and any upscaled copies of the original will never be as small in size as our output, at least that is the
+    aim.
+    \sentence
+    Thus, the upscaling factor needs to be taken into account when viewing the data in order to gain a fuller
+    understanding of the whole picture.
+    \sentence
+    Below we detail the many different quantitative methods that can be used to evaluate the compression of the process.
 
     \subsubsection{Quantitative Methods}\label{subsubsec:quantitative-methods2}
 
-    \subsubsection{Qualitative Methods}\label{subsubsec:qualitative-methods2}
+    \tab
+    Compression can really only be quantitatively measured but it can be measured fairly easy and therefore, we can
+    gather a large amount of data to gain a more concrete understanding of the compression rate of the
+    process especially when considering upscaling.
+    \sentence
+
 
     \pagebreak
 
@@ -1039,8 +1053,6 @@ bottom=40mm
     major challenges are those inherent to the vectorization process and conversion of raster graphics.
 
     \subsection{Toolchain}\label{subsec:toolchain2}
-
-    % Toolchain used was not very mature or helpful sometimes
 
     \subsubsection{JavaScript}\label{subsubsec:javascript}
 

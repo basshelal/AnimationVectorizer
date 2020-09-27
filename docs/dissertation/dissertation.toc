@@ -76,8 +76,6 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {6.2.1}Quantitative Methods}{20}{subsubsection.6.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {6.2.2}Qualitative Methods}{20}{subsubsection.6.2.2}%
-\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {7}Results}{21}{section.7}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {8}Challenges}{22}{section.8}%
