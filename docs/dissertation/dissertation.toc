@@ -8,11 +8,13 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {2.2}Vector Graphics}{3}{subsection.2.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.3}Image Compression}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.3}Vectorization}{3}{subsection.2.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.4}Video Graphics}{3}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.4}Image Compression}{3}{subsection.2.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.5}Toolchain}{3}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.5}Video Graphics}{3}{subsection.2.5}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.6}Toolchain}{3}{subsection.2.6}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {3}Related Work}{4}{section.3}%
 \defcounter {refsection}{0}\relax 
@@ -46,8 +48,6 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {4.2.4}Color Based CCL Approach}{11}{subsubsection.4.2.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {4.3}Limitations and Drawbacks}{12}{subsection.4.3}%
-\defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {5}Software Engineering}{13}{section.5}%
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {5.1}Methodology}{13}{subsection.5.1}%
@@ -62,38 +62,38 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {5.4.2}Integration Testing}{17}{subsubsection.5.4.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {5.4.3}Acceptance Testing}{17}{subsubsection.5.4.3}%
+\contentsline {subsubsection}{\numberline {5.4.3}Acceptance Testing}{18}{subsubsection.5.4.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {6}Evaluation}{18}{section.6}%
+\contentsline {section}{\numberline {6}Evaluation}{19}{section.6}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.1}Accuracy}{18}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.1}Accuracy}{19}{subsection.6.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.2}Compression}{18}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.2}Compression}{19}{subsection.6.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Results}{19}{section.7}%
+\contentsline {section}{\numberline {7}Results}{20}{section.7}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Challenges}{20}{section.8}%
+\contentsline {section}{\numberline {8}Challenges}{21}{section.8}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.1}Toolchain}{20}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.1}Toolchain}{21}{subsection.8.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.1.1}JavaScript}{20}{subsubsection.8.1.1}%
+\contentsline {subsubsection}{\numberline {8.1.1}JavaScript}{21}{subsubsection.8.1.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.1.2}Concurrency}{20}{subsubsection.8.1.2}%
+\contentsline {subsubsection}{\numberline {8.1.2}Concurrency}{21}{subsubsection.8.1.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.2}Performance}{21}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.2}Performance}{22}{subsection.8.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.2.1}Hardware Utilization}{21}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.1}Hardware Utilization}{22}{subsubsection.8.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.2.2}GPU Programming}{21}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.2.2}GPU Programming}{22}{subsubsection.8.2.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{21}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{22}{subsection.8.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Reflection}{22}{section.9}%
+\contentsline {section}{\numberline {9}Reflection}{23}{section.9}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {10}Future Work}{23}{section.10}%
+\contentsline {section}{\numberline {10}Future Work}{24}{section.10}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {10.1}Optimization}{23}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.1}Optimization}{24}{subsection.10.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {10.2}Future Research}{23}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.2}Future Research}{24}{subsection.10.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {11}Conclusion}{24}{section.11}%
+\contentsline {section}{\numberline {11}Conclusion}{25}{section.11}%

@@ -163,6 +163,18 @@ bottom=40mm
 
     % TODO 23-Sep-20 Images with Raster and Vector side by side, 1 for logo (Vector winner) 1 for portrait (raster winner)
 
+    \subsection{Vectorization}\label{subsec:vectorization}
+
+    % Here we explain the overall limitations of all the processes we used and really any future process because
+    % of the nature of Vectorization of Raster data
+
+    % Brief summary of what we will go over (signposting)
+    % Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
+    % Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization
+    % artifacts
+    % Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
+    % Brief summary of everything we just mentioned
+
     \subsection{Image Compression}\label{subsec:image-compression}
 
     % Brief summary of what we will go over (signposting)
@@ -696,22 +708,6 @@ bottom=40mm
     pixels at the edges of color changes and thus the ones responsible for anti-aliasing.
     \sentence
 
-
-    % TODO 27-Sep-20 Put limitations before any implementation?
-
-    \subsection{Limitations and Drawbacks}\label{subsec:limitations-and-drawbacks}
-
-    % Here we explain the overall limitations of all the processes we used and really any future process because
-    % of the nature of Vectorization of Raster data
-
-    % Brief summary of what we will go over (signposting)
-    % Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
-    % Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization
-    % artifacts
-    % Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
-    % Brief summary of everything we just mentioned
-
-
     \pagebreak
 
 
@@ -858,16 +854,78 @@ bottom=40mm
 
     \subsubsection{Unit Testing}\label{subsubsec:unit-testing}
 
-    % Not too much done but for bare essentials like file reading and writing
-    % Lots of logging used to print out statistics about processing and output
+    \tab
+    The first testing methodology used was none other than the classic and simple unit testing.
+    \sentence
+    In our case we used a variety of classic automated unit tests, in-code \verb|assert| statements and regular
+    logging messages each serving different purposes.
+    \sentence
+    Firstly, the typical automated unit tests were used at the end of a computation to ensure that the output image
+    was as expected, using whatever possible methods to do this.
+    \sentence
+    One of the ways was to test the output image's properties such as resolution, bit depth, size, distinct colors,
+    among others.
+    \sentence
+    Secondly, in-code \verb|assert| statements were used before any requirement that was needed to be true before
+    computation, usually with regards to expected inputs.
+    \sentence
+    While this is not a traditional testing method, it was used as such here as there are many times where the input
+    is not guaranteed to meet the requirements and thus a graceful failure is the only option with detailed messages.
+    \sentence
+    Finally, regular logging messages were used throughout the processing.
+    \sentence
+    These were used less as hard tests and more as indicators of less critical correct or incorrect behavior and very
+    often used to measure time passed for every phase or step as execution times became fairly long.
+    \sentence
+    These three techniques were all used to ensure that the application was tested from the lowest point possible and
+    the developer is able to understand how the code is being run and when and why it may be failing.
 
     \subsubsection{Integration Testing}\label{subsubsec:integration-testing}
 
-    % Ensuring that large components can pass objects around correctly and know what to expect
+    \tab
+    Since many phases and process had to interact with one another and pass data to each other, it was important to
+    ensure that this was behaving correctly using integration testing.
+    \sentence
+    In this case, a process such as average edge detection for example would have a specific output that perhaps the
+    next process, edge based CCL, may not be expecting or may not know how to behave with.
+    \sentence
+    In addition to the core concepts were used from unit testing such as using in-code \verb|assert| statements
+    and logging statements, additional code was added in order to ensure that the application would either use the
+    same data formats, or have a trustworthy converter to convert the data.
+    \sentence
+    An excellent is example is OpenCV's \verb|Mat| type representing a matrix which was used during edge detection
+    but the next steps would only know how to handle a built in type representing images.
+    \sentence
+    Thus, a converter was created to ensure that whenever the \verb|Mat| type was used it was immediately converted
+    to the internal type ensuring that the entire application would be uniform in what data types it would use and
+    expect.
+    \sentence
+    Using integration testing using measures like these, we can ensure that the application can have components and
+    processes interact with one another in the expected and correct behavior.
 
     \subsubsection{Acceptance Testing}\label{subsubsec:acceptance-testing}
 
-    % Most of the testing because visuals require human eye to analyze and compare
+    \tab
+    Perhaps the most used and most important methodology used in this project was acceptance testing.
+    \sentence
+    In this case specifically this was done manually while developing in order to ensure results are visually as
+    expected.
+    \sentence
+    This is because this is a graphics based project after all and the final judge as to whether the image is correct
+    or not, is of course the human eye.
+    \sentence
+    A typical test case here was to run some computation on a frame, (have a coffee because it took a while) and
+    check to see if the output image was something that was at least close to what was expected.
+    \sentence
+    This was how the majority of the main important validation was done since no automated test can ever tell if an
+    image is acceptable.
+    \sentence
+    Indeed, there were many cases where the output image would have the expected properties such as resolution, color
+    depth, size reduction etc and yet still be nothing more than noise because of some oversight or bug in the code.
+    \sentence
+    Thus, it is safe to say that while unit testing and integration testing were extremely important in this project,
+    the true most important testing methodology used in this project was that which uses the the human eye and that
+    being acceptance testing.
 
     \pagebreak
 
