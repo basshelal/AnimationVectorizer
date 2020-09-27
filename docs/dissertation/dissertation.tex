@@ -932,22 +932,88 @@ bottom=40mm
 
     \section{Evaluation}\label{sec:evaluation}
 
-    % Two main angles, accuracy to the original and compression rate from the original
-    % As much as possible we need to emphasize that we have done something great,
-    % no lying, just selective and sometimes exaggerated benchmarks in order to further our claim that we
-    % have accomplished something meaningful
+    \tab
+    In order to know when the program is behaving correctly and to evaluate how well it is performing its task, we
+    need to define some evaluation methods and metrics.
+    \sentence
+    Essentially there really only exist two key traits to the process, how accurate is the process and how well is
+    the compression.
+    \sentence
+    A possible third angle could be performance, but this was never a priority to begin with and this can be heavily
+    optimized and improved later, not to mention that it will differ across machines and architectures.
+    \sentence
+    Thus we will only discuss and detail the two key evaluation properties, accuracy and compression.
 
     \subsection{Accuracy}\label{subsec:accuracy}
 
-    % Define accuracy (aka lossy-ness or how much data is lost from original)
-    % Quantitative methods (compare each pixel to itself), and compare with other compression methods like JPEG
-    % Qualitative methods (human eye side by side) and compare with other methods like JPEG
+    \tab
+    The first property to evaluate is accuracy, or more accurately (pun intended), the lossy-ness that is incurred
+    from the process.
+    \sentence
+    As mentioned earlier, since the vectorization process is transforming data from one form of representation to
+    another, there will be data loss, especially if one intends to reduce size as we do.
+    \sentence
+    However, since we are aiming for \italic{Visually Lossless Compression}, it is important to know how to measure
+    this data lossy-ness accurately in a meaningful way.
+    \sentence
+    Below we detail the two methods of evaluating the accuracy of an image using quantitative methods and qualitative
+    methods.
+
+    \subsubsection{Quantitative Methods}\label{subsubsec:quantitative-methods}
+
+    \tab
+    The quantitative methods we can use to evaluate the accuracy of the process are fairly straightforward since
+    really all that we need to do is compare the data of both images, the input and the output.
+    \sentence
+    As such, we can relatively easily loop over every pixel in the original image and compare the color of that pixel
+    to the color that is visible at that coordinate within the output SVG image.
+    \sentence
+    While vector graphics do not use the concept of pixels, we can still go to a specific coordinate on the image and
+    query the color visible their using our own means.
+    \sentence
+    It is important to note here that 100\% may not only be impossible, but in fact is actually not ideal as we are
+    not aiming for a truly lossless transformation.
+    \sentence
+    What we are aiming for is a \italic{Visually Lossless} transformation, meaning any data loss should be invisible
+    to the human eye.
+    \sentence
+    Therefore, while quantitative methods for accuracy are quick and easy, they do not accurately represent the true
+    goal of this project, which was never aimed to be lossless.
+
+    \subsubsection{Qualitative Methods}\label{subsubsec:qualitative-methods}
+
+    \tab
+    The qualitative methods of comparing accuracy are the most meaningful and important but at the same time, the
+    most difficult to measure and make sense of.
+    \sentence
+    Really, the main judge of whether a compression algorithm is \italic{Visually Lossless} is the human eye, but
+    measuring perceived quality and difference has complications.
+    \sentence
+    However, despite being difficult to accurately measure, as after all, visual perception differs amongst people
+    and "quality" can be subjective, there are ways to measure this and make \italic{some} informed conclusion based
+    on the data.
+    \sentence
+    This of course can be done by using a sample set of different people with as diverse possible perception and
+    notion of "quality" as possible.
+    \sentence
+    Despite being very difficult and expensive to gather such a sample set (especially in these times), a sample set
+    of close friends and family of fairly diverse ages and backgrounds was gathered and used to measure perceived
+    accuracy.
 
     \subsection{Compression}\label{subsec:compression}
 
     % Define compression rate (aka how smaller is the result compared to original or some other)
     % Quantitative methods (compare against original, AND against others including upscaled and uncompressed)
     % Qualitative methods (file transfer speeds of smaller sizes and how smaller files are better for users)
+
+    \tab
+    The other property to evaluate is compression rate, i.e., the size ratio of the new file's size to the original
+    file's size.
+    \sentence
+
+    \subsubsection{Quantitative Methods}\label{subsubsec:quantitative-methods2}
+
+    \subsubsection{Qualitative Methods}\label{subsubsec:qualitative-methods2}
 
     \pagebreak
 

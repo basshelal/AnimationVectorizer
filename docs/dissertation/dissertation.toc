@@ -68,32 +68,40 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {6.1}Accuracy}{19}{subsection.6.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {6.2}Compression}{19}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.1.1}Quantitative Methods}{19}{subsubsection.6.1.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {7}Results}{20}{section.7}%
+\contentsline {subsubsection}{\numberline {6.1.2}Qualitative Methods}{19}{subsubsection.6.1.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {8}Challenges}{21}{section.8}%
+\contentsline {subsection}{\numberline {6.2}Compression}{20}{subsection.6.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.1}Toolchain}{21}{subsection.8.1}%
+\contentsline {subsubsection}{\numberline {6.2.1}Quantitative Methods}{20}{subsubsection.6.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.1.1}JavaScript}{21}{subsubsection.8.1.1}%
+\contentsline {subsubsection}{\numberline {6.2.2}Qualitative Methods}{20}{subsubsection.6.2.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.1.2}Concurrency}{21}{subsubsection.8.1.2}%
+\contentsline {section}{\numberline {7}Results}{21}{section.7}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.2}Performance}{22}{subsection.8.2}%
+\contentsline {section}{\numberline {8}Challenges}{22}{section.8}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.2.1}Hardware Utilization}{22}{subsubsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.1}Toolchain}{22}{subsection.8.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.2.2}GPU Programming}{22}{subsubsection.8.2.2}%
+\contentsline {subsubsection}{\numberline {8.1.1}JavaScript}{22}{subsubsection.8.1.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{22}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.1.2}Concurrency}{22}{subsubsection.8.1.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Reflection}{23}{section.9}%
+\contentsline {subsection}{\numberline {8.2}Performance}{23}{subsection.8.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {10}Future Work}{24}{section.10}%
+\contentsline {subsubsection}{\numberline {8.2.1}Hardware Utilization}{23}{subsubsection.8.2.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {10.1}Optimization}{24}{subsection.10.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}GPU Programming}{23}{subsubsection.8.2.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {10.2}Future Research}{24}{subsection.10.2}%
+\contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{23}{subsection.8.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {11}Conclusion}{25}{section.11}%
+\contentsline {section}{\numberline {9}Reflection}{24}{section.9}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {10}Future Work}{25}{section.10}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.1}Optimization}{25}{subsection.10.1}%
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {10.2}Future Research}{25}{subsection.10.2}%
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {11}Conclusion}{26}{section.11}%
