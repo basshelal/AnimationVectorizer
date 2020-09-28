@@ -154,15 +154,56 @@ bottom=40mm
 
     \subsection{Vector Graphics}\label{subsec:vector-graphics}
 
-    % Brief summary of what we will go over (signposting)
-    % Declarative vs Imperative ie WYSIWYG vs WYSIWYM, describing the image using primitive geometry
-    % Advantages of Vector especially in contrast to Raster (size and scalability), mention uses and popularity
-    % Disadvantages like portability and light technical stuff like gradients and photographs
-    % Brief summary of everything we just mentioned
+    \tab
+    Another graphics representation format is vector graphics, which addresses some of the issues of raster graphics
+    and is growing in popularity within some domains.
+    \sentence
+    Vector graphics uses a more declarative style of data storage, where instead of storing the data to be shown
+    (such as pixels containing color information), vector graphics is based on instructions to a renderer
+    about how to draw the image.
+    \sentence
+    These instructions are based on a set of standard geometric elements that are used in that vector graphics format
+    or protocol.
+    \sentence
+    The most common and well known vector graphics format today is SVG, Scalable Vector Graphics, which is developed
+    by the W3C since 1999, this is the format we will be using throughout this document when referencing vector
+    graphics.
+    \sentence
+    An SVG file is nothing more than an XML-like text file with XML elements part of the SVG standard that describe
+    to the renderer how to draw the image.
+    \sentence
+    The SVG specification defines many elements that can be used in an SVG file but the most important one in our
+    case is the SVG \code{path} element.
+    \sentence
+    The \code{path} element can be used to draw a complex line by providing it with commands on where and how to
+    draw, it is perhaps the single most powerful element within the SVG specification and is the only element that we
+    will use in this project.
+    \sentence
 
-    % TODO 25-Sep-20 Limitations and weaknesses of vector graphics
-
-    % TODO 25-Sep-20 Briefly explain the SVG path element because that is the only element we use and need
+    \bigskip
+    The greatest advantages of vector graphics that they address the main issues of raster graphics mentioned in
+    the~\nameref{subsec:raster-graphics} section, that is to say that vector graphics are resolution independent and
+    are (theoretically) infinitely scalable no matter the display.
+    \sentence
+    The scalability of vector graphics actually solves both issues at once because there is no longer a need for
+    higher resolution media thus saving on disk space \italic{and} keeping old media still usable because of infinite
+    scalability.
+    \sentence
+    But such advantages don't come with some issues, and there's a reason vector graphics are not the current norm.
+    \sentence
+    Simply put, vector graphics are only good at displaying certain kinds of images and media because of the way they
+    represent data, making it very difficult to accurately and efficiently store other kinds of images such as images
+    of natural scenery or faces.
+    \sentence
+    This is because those kinds of images tend to have a large degree of color fluctuations and especially
+    non-linear, complex color fluctuations.
+    \sentence
+    This is a particular weakness of vector graphics and one that has limited its adoption and growth because
+    compared to raster graphics in this regard, vector graphics are significantly inferior.
+    \sentence
+    As a result, vector graphics are seen as mostly domain and use-case specific and not general purpose, they are
+    excellent for logos and icons specifically because of their scalable nature but are inferior when used for
+    photographs because of the complex color fluctuations of those images.
 
     % TODO 16-Sep-20 Small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
 
@@ -200,13 +241,6 @@ bottom=40mm
 
     \subsection{Toolchain}\label{subsec:toolchain}
 
-    % Brief summary of what we will go over (signposting)
-    % Node.js
-    % JavaScript, TypeScript (benefits over JS)
-    % Supplementaries like Electron, GPU.js, OpenCV etc
-    % Brief summary of everything we just mentioned
-
-    % TODO 19-Sep-20 Shorten!
     \tab
     This project uses a variety of popular tools and libraries to achieve its aims and objectives both efficiently
     and quickly, this section will briefly go over the most important tools used.
@@ -218,9 +252,6 @@ bottom=40mm
     ecosystem as well as a strong desire to further enhance our knowledge and experience in both the platform and
     ecosystem.
     \sentence
-    Node.js allows us to access the ever-growing JavaScript ecosystem which includes very powerful libraries and
-    frameworks for both front-end designs and back-end computationally heavy workloads.
-    \sentence
     Node.js uses JavaScript as its runtime language, while JavaScript is a powerful and excellent language for
     rapid-prototyping, it is also a very error-prone language as it has no typing checks in place.
     \sentence
@@ -230,11 +261,15 @@ bottom=40mm
     TypeScript was chosen as the programming language of choice for the project for its many benefits not limited to
     its added type safety.
     \sentence
-    The JavaScript ecosystem provides us with some powerful libraries and frameworks for application development,
-    this project makes use of some excellent noteworthy tools such as Electron, GPU.js and OpenCV among other tools.
+
+    \bigskip
     \sentence
-    Electron allows developers to write desktop applications using web technologies, it essentially is a Chromium
-    browser with two processes, a front-end process(es) called the "renderer" which is similar to a Chromium web page
+    Node.js also allows us to access the ever-growing JavaScript ecosystem which includes libraries and
+    frameworks for both the front-end and back-end side of development, of which this project makes use of some
+    notable tools such as Electron, GPU.js and OpenCV among others.
+    \sentence
+    Electron allows developers to write desktop applications using web technologies, it is essentially a Chromium
+    browser with two processes, a front-end process called the "renderer" which is similar to a Chromium web page
     that displays HTML, and a back-end process called the main process which is a Node.js process.
     \sentence
     Electron combines Node.js and Chromium to allow a developer to write a native desktop application using the same
@@ -243,13 +278,8 @@ bottom=40mm
     other more complicated means.
     \sentence
     GPU.js is a JavaScript library that allows developers to run code on the host machine's GPU making use of the
-    GPGPU (General-Purpose computing on Graphics Processing Units) paradigmGeneral-purpose computing on graphics
-    processing units.
-    \sentence
-    This can allow for very large performance improvements and speedups for computationally expensive mathematical
-    computations.
-    \sentence
-    % TODO 19-Sep-20 OpenCV? We didn't use it too much and this is already getting too long
+    GPGPU (General-Purpose computing on Graphics Processing Units) paradigm to allow for very large performance
+    improvements and speedups for computationally expensive mathematical operations.
     \sentence
     In summary, the project uses the Node.js runtime for its large ecosystem, the TypeScript programming language for
     its added type safety benefits, Electron to easily display a GUI and GPU.js to run code on the GPU for additional
