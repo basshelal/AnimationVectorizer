@@ -82,15 +82,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {8.1}Toolchain}{25}{subsection.8.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.1.1}JavaScript}{25}{subsubsection.8.1.1}%
-\defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.1.2}Concurrency}{25}{subsubsection.8.1.2}%
-\defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {8.2}Performance}{26}{subsection.8.2}%
-\defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.2.1}Hardware Utilization}{26}{subsubsection.8.2.1}%
-\defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {8.2.2}GPU Programming}{26}{subsubsection.8.2.2}%
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{26}{subsection.8.3}%
 \defcounter {refsection}{0}\relax 

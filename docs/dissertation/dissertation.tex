@@ -1187,10 +1187,6 @@ bottom=40mm
 
     \subsection{Toolchain}\label{subsec:toolchain2}
 
-    \subsubsection{JavaScript}\label{subsubsec:javascript}
-
-    \subsubsection{Concurrency}\label{subsubsec:concurrency}
-
     \tab
     Arguably the most preventable and frustrating challenges faced were those that were a direct result of the
     toolchain used, especially when there exist other tools that do not have these problems.
@@ -1218,17 +1214,70 @@ bottom=40mm
     JavaScript does not allow the programmer to determine how this equality is checked which is done using === by
     default, instead, if the programmer wants a Set of custom objects they have to implement this themselves or
     use an external library, further adding to dependency hell.
+    \sentence
+
+    \bigskip
+    Another issue from the toolchain used that was also completely unexpected and mostly taken for granted coming
+    from the JVM world is the lack of true concurrency or multithreading in Node.js and JavaScript in general.
+    \sentence
+    Node.js is asynchronous meaning execution can jump between functions and wait until functions are complete by
+    using the \code{Promise} API in addition to the \code{async} / \code{await} model.
+    \sentence
+    However, JavaScript does not allow multiple threads of execution at once and the only way to achieve this is by
+    using multiple JavaScript instances, in the case of Node.js multiple Node processes which adds a huge amount of
+    complexity to the program.
+    \sentence
+    This meant that any possible optimizations that could be made would be much more difficult than expected and
+    would take too long to develop.
+    \sentence
+    This is an issue because the application can make use of parallel execution and can heavily benefit from this but
+    because of the issues with the toolchain, such benefits would be too costly to achieve.
+    \sentence
+    These are just some of the examples of when the toolchain used was actively discouraging and slowing down
+    development and this is something that was a major challenge and annoyance during development as it was not
+    expected and is out of our direct control.
 
     \subsection{Performance}\label{subsec:performance}
 
     % GPU programming is insanely difficult but yields huge benefits (leading to very difficult decisions)
     % Optimizations to increase speed are also difficult and especially so on a non-multi-threaded environment like Node
 
-    \subsubsection{Hardware Utilization}\label{subsubsec:hardware-utilization}
+    \tab
+    Another major challenge was the performance of the program and trying to improve it in some way.
+    \sentence
+    Because of the desired accuracy and compression and the complexity and number of operations that are required to
+    achieve these two key traits, the cost was performance since the program was just too complex.
+    \sentence
+    This was mostly expected at first, however what was not expected was the difficulty in optimizing and reducing
+    the time it took to run the process on a single frame and any added code would only compound the problem.
+    \sentence
+    This meant that in order to test some new code worked a full loop had to be run first before further proceeding,
+    this would take anywhere between 5 to 10 minutes to finish and as a result productivity was much lower than
+    desirable.
+    \sentence
+    How to improve this was obvious since there were two clearly possible solutions to take, add multithreading as
+    only one thread was running and the CPU was maxing at only 9\% utilization, or use the GPU wherever possible as
+    much of the code can theoretically be run on the GPU for insanely better results.
 
-    % Not using all resources because Node is not multithreaded
-
-    \subsubsection{GPU Programming}\label{subsubsec:gpu-programming}
+    \bigskip
+    \sentence
+    Adding multi-threading to the application was much more difficult than anticipated as the toolchain used simply
+    did not allow for this to be an easy solution as mentioned in the above~\nameref{subsec:toolchain2} section.
+    \sentence
+    However, more beneficially perhaps was to use the GPU wherever possible as the GPU is capable of having huge
+    performance improvements if the code is written for it.
+    \sentence
+    Indeed, the GPU was used in some parts of the application leading to truly shocking results, what took 60-100
+    seconds now takes 4-6 seconds, however the difficulty and learning curve for correct and effective GPU
+    programming is enormous.
+    \sentence
+    This really creates a very difficult decision to make because GPU optimizations are big cost big reward
+    optimizations that can significantly increase productivity and in the long run provide us with more time to write
+    and test code.
+    \sentence
+    In the end however, the time cost to rewrite code to run on the GPU was simply too high to risk and the
+    potentially huge optimizations and performance improvements were not fully accomplished, thus, the program having
+    very poor performance overall despite attempts to rectify this.
 
     \subsection{Minimizing Human Input}\label{subsec:minimizing-human-input}
 
