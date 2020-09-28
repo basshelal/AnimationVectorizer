@@ -108,44 +108,49 @@ bottom=40mm
 
     \subsection{Raster Graphics}\label{subsec:raster-graphics}
 
-    % Brief summary of what we will go over (signposting)
-    % Pixels, Bitmaps, Image Data Buffers: basically the bare must knows about Raster Graphics
-    % Advantages and popularity of Raster Graphics
-    % Disadvantages like upscaling, pixelation, size issues with high resolution
-    % Brief summary of everything we just mentioned
-
     \tab
     Raster graphics is the current most popular way of representing and storing graphics data.
     \sentence
-    This representation format stores the image data as a grid of pixels, a pixel (picture element) being the color
-    of the image at a particular point in the grid.
+    This representation format stores the image data as a grid of pixels, a pixel (picture element) being the
+    smallest element of the image containing the color information of the image at a particular point in the grid.
     \sentence
-    Colors can be represented in a variety of ways but the most common is RGB with RGBA also being found in some
-    formats.
+    Colors can be represented in many different formats but the most common is the three channel RGB (Red, Green, Blue)
+    with RGBA (Red, Green, Blue, Alpha) gaining popularity.
     \sentence
     Each channel has a bit depth which details the number of possible colors that the channel can contain with 8 bits
     per channel being the current most common but higher values exist as well such as 10 and 12 bits per channel.
     \sentence
-    Thus the image data is a 2 dimensional array of pixels which could be 3 or 4 channels of 8 bit values, thus an
-    image can also be represented as a 3 dimensional array with the last dimension being 3 or 4 values in size
-    representing the 3 or 4 channels of that pixel.
+    So a pixel in RGB format is really just a 3-tuple (triple) of numbers for each color channel in that pixel.
     \sentence
-    The resolution of an image is the number of pixels it contains, which is the image's width multiplied by its
+    An image's resolution is the number of total pixels it contains, which is the image's width multiplied by its
     height, higher resolution images have more detail but are also more expensive to store as there is more data.
     \sentence
-    Raster graphics are the most popular form of image and generally graphics representation, they allow for easy
-    representation and computationally cheap as well since all the data is stored with no extra work needed.
+    While these concepts are seen as the current norm in computer graphics, they are more specific to raster graphics
+    in particular.
     \sentence
-    The main disadvantages of raster graphics have to with image resolution and detail, namely that images will show
-    pixelation artifacts when they are displayed at a higher resolution than they are actually stored at, thus the
-    image appears to show the raw pixels.
+
+    \bigskip
+    Raster graphics are the most popular form of image and generally graphics representation as they are easy to
+    understand and display.
     \sentence
+    The main disadvantages of raster graphics concern image resolution and detail, namely that images will show
+    pixelation artifacts when they are displayed at a higher resolution than their own where the image will start
+    showing the raw pixels.
+    \sentence
+    To match the evolving increase in display resolutions, newer media uses higher resolutions in order to show
+    optimally on these displays but at a cost.
+    \sentence
+    The first cost being that the new higher resolution images require more disk space to store as they are larger in
+    size, but the less obvious cost is that it leaves the older lower resolution content behind.
+    \sentence
+    Any content made in low resolutions will forever live with that resolution and continue to scale more poorly as
+    displays have higher resolutions.
+    \sentence
+    Therefore, while raster graphics are the current de facto standard for graphics representation, they are not
+    without their major disadvantages, namely concerning the need for increased resolutions, meaning more disk space
+    needed and old content becoming more and more outdated.
+
     % TODO 16-Sep-20 Show pixelation images
-    To compensate for this, higher and higher resolution images are needed but those come at the cost of size.
-    \sentence
-    % TODO 16-Sep-20 Explain more about raw size (no compression, so use raw format or just plain numbers)
-    \sentence
-    % TODO 16-Sep-20 Summarize
 
     \subsection{Vector Graphics}\label{subsec:vector-graphics}
 
@@ -1027,7 +1032,7 @@ bottom=40mm
     gather a large amount of data to gain a more concrete understanding of the compression rate of the
     process especially when considering upscaling.
     \sentence
-
+    % TODO 27-Sep-20 Finish this
 
     \pagebreak
 
