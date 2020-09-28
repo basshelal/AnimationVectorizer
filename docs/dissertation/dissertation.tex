@@ -265,11 +265,38 @@ bottom=40mm
 
     \subsection{Video Graphics}\label{subsec:video-graphics}
 
-    % Brief summary of what we will go over (signposting)
-    % How video is stored and how it relates to Images (mostly the same)
-    % Common file types and how they compress and store video data (MP4, MKV, H265 etc) MPEG1 temporal redundancy
-    % Evidence and proof of why video is expensive (and also popular)
-    % Brief summary of everything we just mentioned
+    \tab
+    There is a reason we have only described image graphics specifically and not mention videos and
+    that is because for the most part, the two are very interchangeable as videos are essentially a series of
+    sequential images.
+    \sentence
+    The most obvious difference being twofold, videos are temporal, meaning they are concerned with time, and videos
+    contain audio data in addition to the visual graphical data.
+    \sentence
+    For this project we will completely ignore the audio aspects of videos and are only concerned with the visual
+    properties of videos, ie the "moving pictures" part.
+    \sentence
+    While it is true that videos are essentially a series of images, raster images specifically, different formats
+    and codecs will store the video data differently in order to optimize for quality, compression or both.
+    \sentence
+    One such codec, the popular MPEG and its derivatives, explicitly make use of video's temporal nature in order to
+    find and eliminate redundant data to increase compression rate while minimizing quality loss.
+    \sentence
+    This essentially aims to group similar frames into a frameset and instead of storing all the frames, store only
+    the difference between the frames which is especially effective when the frames are very similar to one another.
+    \sentence
+    These codecs also perform a wide variety of other smart operations to maximize compression rate while minimizing
+    quality loss when doing so because of the main daunting issue with video, video is naturally very storage expensive.
+    \sentence
+    This issue continues to compound as display resolutions continue to increase and raster media keeps catching up
+    to it showing the same issues mentioned with raster graphics in the~\nameref{subsec:raster-graphics} section.
+    \sentence
+    In addition to this, video media is ever-growing in popularity and ubiquity, especially on the web, making the
+    demand for high fidelity, low bandwidth consuming video higher than ever.
+    \sentence
+    Despite these smart compression focused codecs however, video graphics concepts are largely identical to those of
+    image graphics with video being simply a series of sequential images that can be encoded in many different ways
+    for optimal compression and quality.
 
     \subsection{Toolchain}\label{subsec:toolchain}
 
