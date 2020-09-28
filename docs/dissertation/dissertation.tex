@@ -211,11 +211,50 @@ bottom=40mm
 
     \subsection{Image Compression}\label{subsec:image-compression}
 
-    % Brief summary of what we will go over (signposting)
-    % Fundamentals of Compression (type-agnostic) things like compression rate and lossy-ness or accuracy
-    % Lossless Image Compression (PNG, BMP etc)
-    % Lossy Image Compression (JPEG, GIF etc)
-    % Brief summary of everything we just mentioned
+    \tab
+    One of the most important subjects within computer graphics is image compression, that is reducing the file size
+    of an image.
+    \sentence
+    Image compression concepts are fundamentally identical to those of classical file compression but to ensure the
+    reader is up to date, we go over some of these briefly in addition to one novel concept somewhat specific to
+    image compression.
+    \sentence
+    Compression really comes in two major forms, both relating to the data loss that happens after the compression
+    process is completed, lossy compression and lossless compression.
+    \sentence
+    Lossy compression removes data during the process of compression to make the most of the reductions, usually
+    this is redundant or unnecessary data depending on the context or domain.
+    \sentence
+    For example audio compression algorithms will typically remove frequencies beyond the human hearing range,
+    removing unnecessary data.
+    \sentence
+    In the graphics world this is what is known as \italic{visually lossless compression} which means visually, to
+    the human eye, no data was lost, although technically the algorithm is lossy and data was actually lost.
+    \sentence
+    Because of its lossy nature, lossy compression is a one way process that will have irreversible data loss such
+    that attempting to compress again using lossless compression will not regain the lost data.
+    \sentence
+    Lossless compression on the other hand, aims to reduce file sizes without any loss of data, a more difficult task
+    to achieve with often worse compression ratios than lossy compression algorithms.
+    \sentence
+    The compression ratio of a compression algorithm is the ratio of the uncompressed size to the compressed size but
+    space savings is also popular as it is more indicative of the effects of compression.
+    \sentence
+
+    \bigskip
+    Image compression is used by all popular image formats to have more reasonable sizes.
+    \sentence
+    Lossy formats include JPEG and GIF which will show compression artifacts if encoded many times successively
+    showing the data loss upon each compression pass, these formats are excellent for portability and transfer and
+    indeed have been very popular on the web where bandwidth and data caps are noteworthy.
+    \sentence
+    Lossless formats include BMP and PNG which will always retain their data even after successive compresses, these
+    formats however offer less compression compared to the lossy formats but are useful for those who need the
+    highest quality with the guarantee of no data loss.
+    \sentence
+    These concepts are essentially identical to those found in classic file compression with the exception of
+    \italic{visually lossless compression} being a lossy compression method that aims to be "lossless to the human
+    eye" which is preferred if lossy compression is the compression method of choice.
 
     % TODO 16-Sep-20 We can have an image comparing popular image file types with regards to compression
 
@@ -273,7 +312,7 @@ bottom=40mm
     The most obvious difference being twofold, videos are temporal, meaning they are concerned with time, and videos
     contain audio data in addition to the visual graphical data.
     \sentence
-    For this project we will completely ignore the audio aspects of videos and are only concerned with the visual
+    For this project we will completely ignore the audio aspects of videos and remain only concerned with the visual
     properties of videos, ie the "moving pictures" part.
     \sentence
     While it is true that videos are essentially a series of images, raster images specifically, different formats

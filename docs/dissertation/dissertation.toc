@@ -10,11 +10,11 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {2.3}Image Compression}{3}{subsection.2.3}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.4}Vectorization}{3}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.4}Vectorization}{4}{subsection.2.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.5}Video Graphics}{4}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.5}Video Graphics}{5}{subsection.2.5}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.6}Toolchain}{5}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.6}Toolchain}{6}{subsection.2.6}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {3}Related Work}{7}{section.3}%
 \defcounter {refsection}{0}\relax 
