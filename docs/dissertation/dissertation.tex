@@ -209,18 +209,6 @@ bottom=40mm
 
     % TODO 23-Sep-20 Images with Raster and Vector side by side, 1 for logo (Vector winner) 1 for portrait (raster winner)
 
-    \subsection{Vectorization}\label{subsec:vectorization}
-
-    % Here we explain the overall limitations of all the processes we used and really any future process because
-    % of the nature of Vectorization of Raster data
-
-    % Brief summary of what we will go over (signposting)
-    % Speed or performance (never realtime and requires HPC on GPUs for good speeds) and optimizations required
-    % Lossy-ness, the transformation of Raster to Vector is by nature lossy because we are undoing Rasterization
-    % artifacts
-    % Size, this can be an issue for low resolution images or for very complex images, rasterization is often better
-    % Brief summary of everything we just mentioned
-
     \subsection{Image Compression}\label{subsec:image-compression}
 
     % Brief summary of what we will go over (signposting)
@@ -230,6 +218,50 @@ bottom=40mm
     % Brief summary of everything we just mentioned
 
     % TODO 16-Sep-20 We can have an image comparing popular image file types with regards to compression
+
+    \subsection{Vectorization}\label{subsec:vectorization}
+
+    \tab
+    Converting graphics from raster to vector allows for one to make use of the benefits of vector graphics and is a
+    used by people across multiple domains, this process is known as vectorization or raster-to-vector conversion.
+    \sentence
+    This process is often used by specialists when viewing image data captured in raster to be viewed by a vector
+    graphics program that can then perform additional processing such as classification, labelling etc.
+    \sentence
+    This process is, by its nature, lossy, meaning the original data will be lost during the process because the
+    process is transformative and even though a lossless process is theoretically possible, it would not be practical
+    or efficient as it would not introduce any of the benefits of vector graphics and would instead just be
+    converting pixels into pixels in vector graphics.
+    \sentence
+    Therefore, the process aims to be \italic{Visually Lossless} aiming for highest accuracy while also trying to
+    effectively and efficiently transform the data into suitable optimal vector graphics data.
+    \sentence
+    This will often mean trying to undo rasterization effects or artifacts in order to achieve a better output that
+    makes sense in a vector format such as for example, interpolating pixels in order to create smooth lines
+    or doing some kind of color reduction, both of which change the original data in order for it to make more sense
+    in the vector output.
+
+    \bigskip
+    \sentence
+    In that vain, it is also important to note that the vectorization process will also be dependent on the input
+    data provided with images that do not have vectorizable qualities resulting in poor vector results, either in
+    terms of accuracy or file size or both.
+    \sentence
+    These kind of images are most often photographs or other kinds of images with a high degree of color fluctuations
+    as mentioned in the~\nameref{subsec:vector-graphics} section.
+    \sentence
+    Whereas images with discrete color regions such as logos, icons and other "man-made graphics" often contain less
+    of these qualities and will more likely do well in the vectorization process because the vectorization process
+    does not work well on color fluctuations.
+    \sentence
+    In such cases raster graphics is always a better format as it will much more effectively store such data with
+    high clarity and lower file sizes, as such, it is important for one to know where each format is more suitable as
+    they each have their advantages and disadvantages.
+    \sentence
+    Knowing that however, when one does deduce that vector graphics is the more suitable format for their graphics,
+    vectorization will allow those people to convert their graphics from raster to vector in a manner that is as
+    effective as possible in order to obtain visually lossless transformation that will still be optimal as a vector
+    graphics output.
 
     \subsection{Video Graphics}\label{subsec:video-graphics}
 
