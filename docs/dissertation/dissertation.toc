@@ -84,14 +84,12 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {8.2}Performance}{26}{subsection.8.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {8.3}Minimizing Human Input}{27}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Reflection}{27}{section.9}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {9}Reflection}{28}{section.9}%
+\contentsline {section}{\numberline {10}Future Work}{28}{section.10}%
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {10}Future Work}{29}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Optimization}{28}{subsection.10.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {10.1}Optimization}{29}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Future Research}{28}{subsection.10.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {10.2}Future Research}{29}{subsection.10.2}%
-\defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {11}Conclusion}{30}{section.11}%
+\contentsline {section}{\numberline {11}Conclusion}{29}{section.11}%
