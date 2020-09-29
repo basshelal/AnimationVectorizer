@@ -32,13 +32,12 @@ bottom=40mm
 \author{Bassam Helal}
 \date{September 2020}
 \begin{document}
-    % TODO 23-Sep-20 Remove me when the document is full of pictures, a picture is worth 2000 bytes ;)
     % TODO 12-Sep-20 Remove black background and white text
     \black
 
     \pagenumbering{gobble} % Remove page numbering
 
-    \maketitle
+    \maketitle % TODO 29-Sep-20 Better title page??
 
     \begin{center}
         \vspace{8cm}
@@ -388,16 +387,37 @@ bottom=40mm
 
     \section{Related Work}\label{sec:related-work}
 
-    % Here we throw a lot of the current stuff from both research and industry and show their flaws and limitations
-    % (which we may or may not have tackled)
+    \tab
+    Vectorization has existed for some time now and there is much ongoing and existing research aimed at finding new
+    ways of improving the process for higher accuracy and lower file sizes.
+    \sentence
+    There also exist real world applications in industry using vectorization methods ranging across domains such as
+    art to medicine.
+    \sentence
+    This is also the case for image and video compression as well since resolutions are ever increasing and with them
+    come increased file sizes that are needed to be controlled in order to keep storage space costs low.
+    \sentence
+    This section will firstly detail some of the existing and current research done within the realm of image
+    vectorization and compression in section~\fullref{subsec:current-research}.
+    \sentence
+    Next, we will go over some of the existing applications of vectorization as well existing compression algorithms
+    in section~\fullref{subsec:current-applications}.
+    \sentence
+    Finally, we mention some of the limitations and flaws with the existing technologies within the realm of
+    vectorization in section~\fullref{subsec:existing-limitations}.
 
     \subsection{Current Research}\label{subsec:current-research}
 
-    % Brief summary of what we will go over (signposting)
-    % New Machine Learning methods for Vectorization
-    % New Machine Learning methods for Compression
-    % Novel approaches and ideas within Vectorization such as mesh gradients etc (no ML)
-    % Brief summary of everything we just mentioned
+    \tab
+    The existing and current research within image vectorization continues to improve and grow with time,
+    particularly in the current age of machine learning where results can truly become revolutionary.
+    \sentence
+
+
+    \bigskip
+    In addition to vectorization, image and video compression research has always been thriving and growing and it
+    too has also been bolstered in the current age of machine learning.
+    \sentence
 
     \subsection{Current Applications}\label{subsec:current-applications}
 
@@ -407,13 +427,61 @@ bottom=40mm
     % Current Image \& Video compression algorithms such as PNG, H265 and H266 (no ML)
     % Brief summary of everything we just mentioned
 
+    \tab
+    In addition to the existing research there also exist many real world applications in industry that
+    use vectorization in parts of their application or service.
+    \sentence
+
+    \bigskip
+    In addition to vectorization there also exist a vast multitude of image and video compression algorithms and
+    codecs that aim to achieve the highest space savings while maintaining the highest level of quality at the same
+    time.
+    \sentence
+
     \subsection{Existing Limitations}\label{subsec:existing-limitations}
 
     % Brief summary of what we will go over (signposting)
     % Why ML is absolute hot trash
-    % Show off the flaws with existing technologies while showing how we tackled (and hopefully beat) them
     % Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
     % Brief summary of everything we just mentioned
+
+    \tab
+    While the aforementioned current research and applications are very impressive and revolutionary, they are not
+    without their limitations or issues, especially some of the latest research using machine learning as they will
+    inherit the limitations and issues that come with that computational model.
+    \sentence
+    With the age of machine learning there has been a growing desire to solve every problem using machine learning
+    and leave behind the days of old where solving a problem by hand was the only way.
+    \sentence
+    However, as more applications and services use machine learning to solve their problems, sometimes already solved
+    problems, the inherent flaws that come with machine learning make themselves more and more apparent.
+    \sentence
+    Machine learning is still extremely dependent on the materials that were used to train it and this is in fact a
+    requirement for a machine learning algorithm, it needs a lot of existing data to be trained, something that may
+    not be readily available.
+    \sentence
+    Machine learning is also trained well based on the input data provided but will perform poorly if given data it
+    has not seen before, even if that data is still relevant.
+    \sentence
+    In this case the solution is to get more training data and retrain the model until it has learned but this
+    solution is not sustainable and not cheap as machine learning training is very computationally expensive.
+    \sentence
+    Not always is there readily available datasets to be used for training and it is not feasible to always be
+    retraining the model when some new input data is used that it has never seen.
+    \sentence
+    This is all without mentioning that with machine learning there is no idea at all what is happening and how the
+    machine is processing the data, there is a black box between the input and the output, something that is
+    absolutely not maintainable or sustainable in the long term.
+    \sentence
+    Therefore, not all problems can be solved using machine learning and it is important to recognize the inherent
+    flaws and limitations of machine learning as well as the dangers of trusting machine learning to solve every
+    problem as this leads to no understanding of any of the processing.
+
+    \bigskip
+    Non machine learning based algorithms are still not without fault however, as there exist limitations
+    inherent to the vectorization process that have not yet been solved.
+    \sentence
+
 
     \pagebreak
 
@@ -787,13 +855,6 @@ bottom=40mm
 
     \subsubsection{Color Based CCL Approach}\label{subsubsec:color-based-ccl-approach}
 
-    % Using the color of each pixel to form regions with close enough or similar colors
-
-    % Explain pixel data (RGBA) and what it means to be close to a neighboring pixel
-    % Reasoning behind approach (an image can be a partition of several color regions)
-    % Advantages (surprisingly accurate, little data loss, huge size savings)
-    % Disadvantages (slow, complex, Anti-Aliasing and noise affects result so too many 1 pixel regions)
-
     \tab
     The second approach using CCL is based on defining a component as a region of similar colors based on the pixel
     values.
@@ -854,14 +915,7 @@ bottom=40mm
     methodology used to develop, the risks of the project and the software testing techniques used in the project's
     development.
 
-    % Just the SE stuff and how we applied it during development, briefly mention the changes Covid did to the development
-
     \subsection{Methodology}\label{subsec:methodology}
-
-    % Extreme Lean Agile because life is unknown beyond 2 days in these strange times we live in :/
-    % Here we can show how the poor results affected our schedule and how things shifted because of unexpected results,
-    % we can definitely show that this is common in real life and is a good representation and preparation of the real world
-    % which has unexpected delays and poor results all the time and how we overcame it all (less sleep and more coffee :D)
 
     \tab
     The software methodology used for the development of this project is a very lean agile methodology aptly named,
@@ -891,9 +945,6 @@ bottom=40mm
     methodologies could have allowed for the rapid adaptation and movement of this project.
 
     \subsection{Schedule}\label{subsec:schedule}
-
-    % Followed it well but started falling apart towards the end, very accurate to the real world :D
-    % Mention that we started dissertation somewhat early to avoid the risk of running out of time
 
     \tab
     While the Lean-Agile methodology is not particularly well suited to long term predictions, it is still important
@@ -1386,8 +1437,11 @@ bottom=40mm
 
     \section{Conclusion}\label{sec:conclusion}
 
-    % Summarize everything we said
-    % Conclude with final thoughts about the good, the bad and how this can further improve the world etc
+    \tab
+    Finally, we conclude by summarizing what this document has gone over and provide some final thoughts and
+    statements with regards to the impact that this project may have on the world, now and in the future.
+    \sentence
+
 
     \pagebreak
 
