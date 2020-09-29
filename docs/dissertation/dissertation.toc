@@ -22,7 +22,7 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {3.2}Current Applications}{7}{subsection.3.2}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.3}Existing Limitations}{7}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.3}Existing Limitations}{8}{subsection.3.3}%
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {4}Implementation}{9}{section.4}%
 \defcounter {refsection}{0}\relax 

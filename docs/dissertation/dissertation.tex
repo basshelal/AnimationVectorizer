@@ -412,38 +412,44 @@ bottom=40mm
     The existing and current research within image vectorization continues to improve and grow with time,
     particularly in the current age of machine learning where results can truly become revolutionary.
     \sentence
-
+    % TODO 29-Sep-20 Finish!
 
     \bigskip
     In addition to vectorization, image and video compression research has always been thriving and growing and it
     too has also been bolstered in the current age of machine learning.
     \sentence
+    % TODO 29-Sep-20 Finish!
 
     \subsection{Current Applications}\label{subsec:current-applications}
 
     % Brief summary of what we will go over (signposting)
     % Adobe Illustrator, Logos, Topography, Medical stuff like X rays etc Potrace
-    % Animations and Games using Vector as the development method
-    % Current Image \& Video compression algorithms such as PNG, H265 and H266 (no ML)
-    % Brief summary of everything we just mentioned
 
     \tab
     In addition to the existing research there also exist many real world applications in industry that
     use vectorization in parts of their application or service.
     \sentence
+    % TODO 29-Sep-20 Finish!
 
     \bigskip
     In addition to vectorization there also exist a vast multitude of image and video compression algorithms and
     codecs that aim to achieve the highest space savings while maintaining the highest level of quality at the same
     time.
     \sentence
+    Perhaps the most important and most influential of these being the JPEG format which continues to be the most
+    widely used image compression standard since its inception in 1992.
+    \sentence
+    JPEG aims for visually lossless compression by using the Discrete Cosine Transform which itself is also used for
+    compression across other popular codecs such as those developed by the MPEG group as well as the H.26x codecs.
+    \sentence
+    There continue to be more developments towards formats that can perform even better compression with less quality
+    loss \italic{and} with fast encode times (for videos) such as the very recently developed H.266 video codec.
+    \sentence
+    These algorithms, formats and codecs continue to evolve and improve showing that image and video compression also
+    continues to remain a relevant and important problem to tackle as higher resolution displays continue to emerge
+    and become ubiquitous.
 
     \subsection{Existing Limitations}\label{subsec:existing-limitations}
-
-    % Brief summary of what we will go over (signposting)
-    % Why ML is absolute hot trash
-    % Discuss inherent limitations of this process, such as issues with Vector Graphics and input data being varying etc
-    % Brief summary of everything we just mentioned
 
     \tab
     While the aforementioned current research and applications are very impressive and revolutionary, they are not
@@ -481,7 +487,15 @@ bottom=40mm
     Non machine learning based algorithms are still not without fault however, as there exist limitations
     inherent to the vectorization process that have not yet been solved.
     \sentence
-
+    Potrace can only output monochrome images, completely ignoring colors entirely and even then will still not fully
+    accurately trace the edges correctly because internally it using edge detection in order to draw the edges.
+    \sentence
+    Other algorithms such as ImageTracer.js will either achieve high accuracy at the cost of file size, or small file
+    sizes at the cost of accuracy and with some required parameters such as desired number of colors.
+    \sentence
+    While these algorithms do perform the vectorization process as advertised, they still do not overcome some of the
+    inherent issues with the process and thus still are limited in their usefulness for vectorizing animated cartoons
+    in a way that is both accurate and size optimal.
 
     \pagebreak
 
