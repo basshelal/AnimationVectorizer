@@ -27,7 +27,7 @@ bottom=40mm
 \newcommand{\sentence}{} % New sentence
 \newcommand{\italic}[1]{\textit{#1}}
 \newcommand{\code}[1]{\texttt{#1}}
-\renewcommand{\fullref}[1]{\ref{#1}\nameref{#1}}
+\newcommand{\fullref}[1]{\ref{#1}~\nameref{#1}}
 \title{Vectorization and Compression of Animated Cartoon Videos}
 \author{Bassam Helal}
 \date{September 2020}
@@ -75,15 +75,89 @@ bottom=40mm
 
     \section{Introduction}\label{sec:introduction}
 
-    % A paragraph or so for each of:
+    \tab
+    Moving pictures have existed for at least 100 years and have been a prevalent and important part of our lives for
+    generations from films to broadcast television to online video.
+    \sentence
+    As display technology improves, so does the need for higher fidelity media to make use of the new displays,
+    whether it be higher color quality, higher resolutions, or higher framerates, the evolution of technology never
+    stops.
+    \sentence
+    However, as this technology improves, media made for older technology becomes more and more dated showing its age
+    and slowly becoming closer to obsolescence and near unusable.
+    \sentence
+    And while digitization allows these media to live a longer life in its original form, it does not allow the media
+    to age well as display technologies inevitably improve.
+    \sentence
+    Cartoons are a form of media that show much less signs of these symptoms, remaining relevant and watchable well
+    past other media from their time, \italic{Tom and Jerry} is the perfect example of this.
+    \sentence
+    But with the ever increasing desire for higher fidelity moving picture, even once thought timeless media has
+    begun to show its age with some modern displays.
+    \sentence
+    Just as preserving this media in its original form is important, so too should aiming to maintain it to live for
+    future generations as if it were made for them and not from an era long gone.
 
-    % Project Description
-    % Motivation
-    % Existing Literature
-    % Limitations of the literature that we will attempt to tackle
-    % Aims and Objectives
-    % Discoveries and results we found after our attempts
-    % Section Signposting
+    \bigskip
+    This project aims to tackle this issue, namely, try to transform cartoons into a form that can live and scale to
+    the displays of the future not just the present.
+    \sentence
+    This is achieved by using one of the most powerful graphics format that, if used correctly, can create graphics that
+    scale infinitely \italic{and} have a small file size, vector graphics.
+    \sentence
+    Cartoons are not stored in this format and are instead stored using the ubiquitous raster graphics formats, thus
+    a process must be developed that can transform the cartoons from raster graphics to vector graphics.
+    \sentence
+    This process must be both as accurate as possible to the original \italic{and} have reasonable storage costs,
+    ideally smaller than any alternative.
+    \sentence
+    This project aims to develop just that, to transform cartoons from raster graphics to vector graphics (a process
+    known as vectorization) and do so aiming for the highest accuracy while also achieving a smaller file size as a
+    result.
+
+    \bigskip
+    There already exists existing research and applications for both vectorization and compression with a great deal
+    of advancement using machine learning techniques in addition to the existing techniques.
+    \sentence
+    Vectorization is used by % TODO 29-Sep-20 Finish based off Related Work
+
+    \bigskip
+    However, the existing research and applications do not tackle the vectorization problem in an ideal fashion and
+    machine learning approaches bring with them the issues of the machine learning computational model.
+    \sentence
+    Existing vectorization methods often make a compromise between file size and accuracy, usually in order to be as
+    general purpose as possible.
+    \sentence
+    Machine learning approaches will always bring with them the failures of machine learning which is too dependent
+    and affected by the learning dataset and is seen as a black box of unknown computation.
+    \sentence
+    This project attempts to remedy this by developing a vectorization process specifically aimed at cartoons with no
+    machine learning involved in order to have a fully transparent, portable and sustainable process.
+
+    \bigskip
+    After months of research and development results have shown that the process is much more difficult than
+    anticipated but still theoretically feasible without the need for any machine learning.
+    \sentence
+
+    \bigskip
+    This document will cover the story of several months of research and development from the necessary background
+    knowledge to the results and reflection.
+    \sentence
+    Section~\fullref{sec:background} covers the necessary background knowledge needed followed by
+    section~\fullref{sec:related-work} which goes over some of the existing research and applications.
+    \sentence
+    Section~\fullref{sec:implementation} goes in detail surrounding the technical implementation details and methods.
+    \sentence
+    Section~\fullref{sec:software-engineering} covers the important software engineering aspects of the project's
+    management, important for this project as it is part of an \italic{Advanced Software Technology} degree.
+    \sentence
+    Sections~\fullref{sec:evaluation} and~\fullref{sec:results} go over defining evaluation methods and describing
+    the results of the project respectively.
+    \sentence
+    Sections~\fullref{sec:challenges},~\fullref{sec:reflection} and~\fullref{sec:future-work} reflect back on the
+    challenges and experiences of the project and detail the possible endeavours the project can overcome in the future.
+    \sentence
+    Finally, section~\fullref{sec:conclusion} wraps up the document and concludes with final thoughts moving forward.
 
     \pagebreak
 
