@@ -27,6 +27,7 @@ bottom=40mm
 \newcommand{\sentence}{} % New sentence
 \newcommand{\italic}[1]{\textit{#1}}
 \newcommand{\code}[1]{\texttt{#1}}
+\renewcommand{\fullref}[1]{\ref{#1}\nameref{#1}}
 \title{Vectorization and Compression of Animated Cartoon Videos}
 \author{Bassam Helal}
 \date{September 2020}
@@ -182,8 +183,8 @@ bottom=40mm
 
     \bigskip
     The greatest advantages of vector graphics that they address the main issues of raster graphics mentioned in
-    the~\nameref{subsec:raster-graphics} section, that is to say that vector graphics are resolution independent and
-    are (theoretically) infinitely scalable no matter the display.
+    the section~\fullref{subsec:raster-graphics}, that is to say that vector graphics are resolution independent
+    and are (theoretically) infinitely scalable no matter the display.
     \sentence
     The scalability of vector graphics actually solves both issues at once because there is no longer a need for
     higher resolution media thus saving on disk space \italic{and} keeping old media still usable because of infinite
@@ -287,7 +288,7 @@ bottom=40mm
     terms of accuracy or file size or both.
     \sentence
     These kind of images are most often photographs or other kinds of images with a high degree of color fluctuations
-    as mentioned in the~\nameref{subsec:vector-graphics} section.
+    as mentioned in the section~\fullref{subsec:vector-graphics}.
     \sentence
     Whereas images with discrete color regions such as logos, icons and other "man-made graphics" often contain less
     of these qualities and will more likely do well in the vectorization process because the vectorization process
@@ -328,7 +329,7 @@ bottom=40mm
     quality loss when doing so because of the main daunting issue with video, video is naturally very storage expensive.
     \sentence
     This issue continues to compound as display resolutions continue to increase and raster media keeps catching up
-    to it showing the same issues mentioned with raster graphics in the~\nameref{subsec:raster-graphics} section.
+    to it showing the same issues mentioned with raster graphics in the section~\fullref{subsec:raster-graphics}.
     \sentence
     In addition to this, video media is ever-growing in popularity and ubiquity, especially on the web, making the
     demand for high fidelity, low bandwidth consuming video higher than ever.
@@ -483,7 +484,7 @@ bottom=40mm
     \sentence
     The ideal input video is one that is most friendly towards vectorization, meaning it has the most vectorizable
     qualities and characteristics with as few incompatibilities as possible, these were mentioned in depth
-    in the~\nameref{subsec:existing-limitations} section but will be briefly repeated within this new context.
+    in the section~\fullref{subsec:existing-limitations} but will be briefly repeated within this new context.
 
     \bigskip
     Since vectorization is heavily dependent on the color variation of the original raster image, an ideal input
@@ -548,7 +549,7 @@ bottom=40mm
     \sentence
     This frame-based characteristic of the output is important because it means we can leverage existing theories and
     concepts from raster videos mainly with regard to compression as is made clearer in
-    the~\nameref{subsubsec:frame-merging} section.
+    the section~\fullref{subsubsec:frame-merging}.
     \sentence
     This frame based vector graphics video output makes the process as simple as possible while still achieving the
     desired benefits of vector graphics into the original raster video, namely improved scalability and reduced size.
@@ -593,7 +594,7 @@ bottom=40mm
     While the expected behavior is extremely simple, the actual process is extremely difficult and complicated and
     there are many possible correct approaches to this problem that yield varying results.
     \sentence
-    These processes are detailed more thoroughly in the~\nameref{subsec:vectorization-methods} subsection further below
+    These processes are detailed more thoroughly in the subsection~\fullref{subsec:vectorization-methods} further below
     with their advantages and disadvantages.
     \sentence
     From a high level standpoint however, all the approaches aim to achieve the same result, that is to transform the
@@ -626,7 +627,7 @@ bottom=40mm
     \sentence
     This is the step where the most optimizations and improvements can be made with regards to file size.
     \sentence
-    Since we are returning back to the realm of video, i.e. moving pictures, we can make use of the existing
+    Since we are returning back to the realm of video, i.e.\ moving pictures, we can make use of the existing
     compression technology and theory that is used in raster based video to drastically reduce file size.
     \sentence
     This is true because the output is still frame based just as raster videos are, and thus the same theories can be
@@ -634,7 +635,7 @@ bottom=40mm
     advanced method.
     \sentence
     The main concept to be brought over from current raster video compression is compression through leveraging
-    temporal redundancy in a video as mentioned in the~\nameref{subsec:video-graphics} section.
+    temporal redundancy in a video as mentioned in the section~\fullref{subsec:video-graphics}.
     \sentence
     In this case, we can join a series of similar frames into what we call a frameset which will have a root
     or anchor frame.
@@ -805,8 +806,9 @@ bottom=40mm
     region.
     \sentence
     In essence we are performing a kind of color quantization since there will be reduced colors at the end of the
-    process but unlike classic color quantization mentioned in the~\nameref{subsubsec:color-quantization-approach}
-    section, the desired number of colors is no longer an input, solving the issue with that approach.
+    process but unlike classic color quantization mentioned in the
+    section~\fullref{subsubsec:color-quantization-approach}, the desired number of colors is no longer an input,
+    solving the issue with that approach.
     \sentence
     As with other CCL approaches, the image is looped on and each pixel is queried to check whether it is eligible to
     be part of any of the components of its preceding neighbors, if so it joins that component, if not it is assigned
@@ -878,7 +880,7 @@ bottom=40mm
     methodology that is extremely efficient and has little fixed planning with a very easy way of adapting to changes.
     \sentence
     This proved to be extremely beneficial, more so than expected because of the many major roadblocks that were
-    faced during development which are further explained in detail in the~\nameref{sec:results} section.
+    faced during development which are further explained in detail in the section~\fullref{sec:results}.
     \sentence
     The constant occurrence of very negative results, especially after a complex and time-consuming amount of work
     put in meant that plans had to change and adapt rapidly in accordance to this, which is common and expected in
@@ -1259,13 +1261,13 @@ bottom=40mm
     \bigskip
     \sentence
     Adding multi-threading to the application was much more difficult than anticipated as the toolchain used simply
-    did not allow for this to be an easy solution as mentioned in the above~\nameref{subsec:toolchain2} section.
+    did not allow for this to be an easy solution as mentioned in the above section~\fullref{subsec:toolchain2}.
     \sentence
     However, more beneficially perhaps was to use the GPU wherever possible as the GPU is capable of having huge
     performance improvements if the code is written for it.
     \sentence
-    Indeed, the GPU was used in some parts of the application leading to truly shocking results, what took 60-100
-    seconds now takes 4-6 seconds, however the difficulty and learning curve for correct and effective GPU
+    Indeed, the GPU was used in some parts of the application leading to truly shocking results, what took 60--100
+    seconds now takes 4--6 seconds, however the difficulty and learning curve for correct and effective GPU
     programming is enormous.
     \sentence
     This really creates a very difficult decision to make because GPU optimizations are big cost big reward
@@ -1306,7 +1308,7 @@ bottom=40mm
     Perhaps the most important thing to change is the toolchain from Node.js to one that allows true multithreading
     but with the same vast ecosystem as JavaScript.
     \sentence
-    The first toolchain that comes to mind is the JVM platform with its large thriving ecosystem, multiple languages
+    The first alternative that comes to mind is the JVM platform with its large thriving ecosystem, multiple languages
     to choose from (Java, Kotlin, Scala etc) and the addition of true multithreading, this is the ideal toolchain to
     use instead of a JavaScript based one.
     \sentence
@@ -1314,9 +1316,9 @@ bottom=40mm
     this problem.
     \sentence
     Vectorization is not an easy process and particularly so on complex media such as cartoons, even if they contain
-    qualities that seem favorable towards vectorization.
+    qualities that are favorable towards vectorization.
     \sentence
-    In knowing this beforehand one may face less frustrations and better expectations on what it means to achieve any
+    In knowing this beforehand one may face less frustrations and have better expectations on what it means to achieve any
     decent results because while those results may not seem perfect, they are far more impressive than they seem.
     \sentence
     All in all however, the experience has been rewarding, fulfilling, mentally stimulating and a truly challenging
@@ -1338,7 +1340,7 @@ bottom=40mm
     \subsection{Optimization}\label{subsec:optimization}
 
     \tab
-    As discussed in depth in the preceding sections, one of the main issues with the project currently is the
+    As discussed in the preceding sections, one of the main issues with the project currently is the
     performance of the processing.
     \sentence
     This was never a high priority to begin with as it was clear early on that in order to aim for high accuracy and
