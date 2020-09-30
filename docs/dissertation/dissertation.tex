@@ -33,7 +33,7 @@ bottom=40mm
 \date{September 2020}
 \begin{document}
     % TODO 12-Sep-20 Remove black background and white text
-    \black
+
 
     \pagenumbering{gobble} % Remove page numbering
 
@@ -223,8 +223,13 @@ bottom=40mm
     Therefore, while raster graphics are the current de facto standard for graphics representation, they are not
     without their major disadvantages, namely concerning the need for increased resolutions, meaning more disk space
     needed and old content becoming more and more outdated.
-
-    % TODO 16-Sep-20 Show pixelation images
+    \bigskip
+    \begin{figure}
+        \includegraphics[width=0.45\textwidth]{Raster1.png}
+        \includegraphics[width=0.55\textwidth]{Raster2.png}
+        \caption[Pixelation]{Pixelation occurs when displaying a raster image at a higher resolution than its own}
+        \label{fig:pixelation}
+    \end{figure}
 
     \subsection{Vector Graphics}\label{subsec:vector-graphics}
 
@@ -256,7 +261,7 @@ bottom=40mm
 
     \bigskip
     The greatest advantages of vector graphics that they address the main issues of raster graphics mentioned in
-    the section~\fullref{subsec:raster-graphics}, that is to say that vector graphics are resolution independent
+    section~\fullref{subsec:raster-graphics}, that is to say that vector graphics are resolution independent
     and are (theoretically) infinitely scalable no matter the display.
     \sentence
     The scalability of vector graphics actually solves both issues at once because there is no longer a need for
@@ -281,7 +286,23 @@ bottom=40mm
 
     % TODO 16-Sep-20 Small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
 
-    % TODO 23-Sep-20 Images with Raster and Vector side by side, 1 for logo (Vector winner) 1 for portrait (raster winner)
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.3\textwidth]{ChromeRaster.png}
+        \includegraphics[width=0.3\textwidth]{ChromeVector.png}
+        \caption[Chrome]{Vector graphics are very practical for logos, the vector graphics image on the right scales
+        significantly better than its raster counterpart on the left and has a smaller size too (4kb vector, 50kb
+        raster)}
+        \label{fig:chrome}
+    \end{figure}
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.3\textwidth]{WomanRaster.jpg}
+        \includegraphics[width=0.3\textwidth]{WomanVector.png}
+        \caption[Woman]{Vector graphics suffer with high tone fluctuation images, the vector image on the right is
+        worse and larger in size than its raster counterpart on the left (25kb raster, 1MB vector)}
+        \label{fig:woman}
+    \end{figure}
 
     \subsection{Image Compression}\label{subsec:image-compression}
 
@@ -330,8 +351,6 @@ bottom=40mm
     \italic{visually lossless compression} being a lossy compression method that aims to be "lossless to the human
     eye" which is preferred if lossy compression is the compression method of choice.
 
-    % TODO 16-Sep-20 We can have an image comparing popular image file types with regards to compression
-
     \subsection{Vectorization}\label{subsec:vectorization}
 
     \tab
@@ -361,7 +380,7 @@ bottom=40mm
     terms of accuracy or file size or both.
     \sentence
     These kind of images are most often photographs or other kinds of images with a high degree of color fluctuations
-    as mentioned in the section~\fullref{subsec:vector-graphics}.
+    as mentioned in section~\fullref{subsec:vector-graphics}.
     \sentence
     Whereas images with discrete color regions such as logos, icons and other "man-made graphics" often contain less
     of these qualities and will more likely do well in the vectorization process because the vectorization process
@@ -402,7 +421,7 @@ bottom=40mm
     quality loss when doing so because of the main daunting issue with video, video is naturally very storage expensive.
     \sentence
     This issue continues to compound as display resolutions continue to increase and raster media keeps catching up
-    to it showing the same issues mentioned with raster graphics in the section~\fullref{subsec:raster-graphics}.
+    to it showing the same issues mentioned with raster graphics in section~\fullref{subsec:raster-graphics}.
     \sentence
     In addition to this, video media is ever-growing in popularity and ubiquity, especially on the web, making the
     demand for high fidelity, low bandwidth consuming video higher than ever.
@@ -640,7 +659,7 @@ bottom=40mm
     \sentence
     The ideal input video is one that is most friendly towards vectorization, meaning it has the most vectorizable
     qualities and characteristics with as few incompatibilities as possible, these were mentioned in depth
-    in the section~\fullref{subsec:existing-limitations} but will be briefly repeated within this new context.
+    in section~\fullref{subsec:existing-limitations} but will be briefly repeated within this new context.
 
     \bigskip
     Since vectorization is heavily dependent on the color variation of the original raster image, an ideal input
@@ -705,7 +724,7 @@ bottom=40mm
     \sentence
     This frame-based characteristic of the output is important because it means we can leverage existing theories and
     concepts from raster videos mainly with regard to compression as is made clearer in
-    the section~\fullref{subsubsec:frame-merging}.
+    section~\fullref{subsubsec:frame-merging}.
     \sentence
     This frame based vector graphics video output makes the process as simple as possible while still achieving the
     desired benefits of vector graphics into the original raster video, namely improved scalability and reduced size.
@@ -750,7 +769,7 @@ bottom=40mm
     While the expected behavior is extremely simple, the actual process is extremely difficult and complicated and
     there are many possible correct approaches to this problem that yield varying results.
     \sentence
-    These processes are detailed more thoroughly in the subsection~\fullref{subsec:vectorization-methods} further below
+    These processes are detailed more thoroughly in subsection~\fullref{subsec:vectorization-methods} further below
     with their advantages and disadvantages.
     \sentence
     From a high level standpoint however, all the approaches aim to achieve the same result, that is to transform the
@@ -791,7 +810,7 @@ bottom=40mm
     advanced method.
     \sentence
     The main concept to be brought over from current raster video compression is compression through leveraging
-    temporal redundancy in a video as mentioned in the section~\fullref{subsec:video-graphics}.
+    temporal redundancy in a video as mentioned in section~\fullref{subsec:video-graphics}.
     \sentence
     In this case, we can join a series of similar frames into what we call a frameset which will have a root
     or anchor frame.
@@ -955,7 +974,7 @@ bottom=40mm
     region.
     \sentence
     In essence we are performing a kind of color quantization since there will be reduced colors at the end of the
-    process but unlike classic color quantization mentioned in the
+    process but unlike classic color quantization mentioned in
     section~\fullref{subsubsec:color-quantization-approach}, the desired number of colors is no longer an input,
     solving the issue with that approach.
     \sentence
@@ -1022,7 +1041,7 @@ bottom=40mm
     methodology that is extremely efficient and has little fixed planning with a very easy way of adapting to changes.
     \sentence
     This proved to be extremely beneficial, more so than expected because of the many major roadblocks that were
-    faced during development which are further explained in detail in the section~\fullref{sec:results}.
+    faced during development which are further explained in detail in section~\fullref{sec:results}.
     \sentence
     The constant occurrence of very negative results, especially after a complex and time-consuming amount of work
     put in meant that plans had to change and adapt rapidly in accordance to this, which is common and expected in

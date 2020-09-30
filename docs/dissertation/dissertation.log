@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  29 SEP 2020 22:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/W32TeX) (preloaded format=pdflatex 2020.9.1)  30 SEP 2020 01:07
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -600,7 +600,6 @@ tion.out)
 \@outlinefile=\write4
 \openout4 = `dissertation.out'.
 
-\GPT@outputbox=\box48
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <14.4> on input line 41.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -633,7 +632,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.}) has b
 een already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.79 ...on}{\numberline {7}Results}{26}{section.7}
+l.79 ...on}{\numberline {7}Results}{28}{section.7}
                                                   % [3])
 \tf@toc=\write5
 \openout5 = `dissertation.toc'.
@@ -643,34 +642,77 @@ een already used, duplicate ignored
 <to be read again> 
                    \relax 
 l.72 
-      [4] [1] [2] [3] [4] [5] [6] [7] [8] [9]
-<./images/Pipeline.png, id=384, 623.32875pt x 261.97874pt>
+      [4] [1] [2]
+<./images/Raster1.png, id=340, 618.81187pt x 680.5425pt>
+File: ./images/Raster1.png Graphic file (type png)
+<use ./images/Raster1.png>
+Package pdftex.def Info: ./images/Raster1.png  used on input line 228.
+(pdftex.def)             Requested size: 192.0548pt x 211.21521pt.
+<./images/Raster2.png, id=341, 821.31844pt x 666.23906pt>
+File: ./images/Raster2.png Graphic file (type png)
+<use ./images/Raster2.png>
+Package pdftex.def Info: ./images/Raster2.png  used on input line 229.
+(pdftex.def)             Requested size: 234.73654pt x 190.40874pt.
+
+Overfull \hbox (2.61107pt too wide) in paragraph at lines 228--230
+[][] [] 
+ []
+
+[3] [4 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/.
+/images/Raster1.png> <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/
+dissertation/./images/Raster2.png>]
+<./images/ChromeRaster.png, id=357, 335.00156pt x 344.78813pt>
+File: ./images/ChromeRaster.png Graphic file (type png)
+<use ./images/ChromeRaster.png>
+Package pdftex.def Info: ./images/ChromeRaster.png  used on input line 291.
+(pdftex.def)             Requested size: 128.0387pt x 131.77843pt.
+<./images/ChromeVector.png, id=358, 576.65437pt x 542.77782pt>
+File: ./images/ChromeVector.png Graphic file (type png)
+<use ./images/ChromeVector.png>
+Package pdftex.def Info: ./images/ChromeVector.png  used on input line 292.
+(pdftex.def)             Requested size: 128.0387pt x 120.513pt.
+<./images/WomanRaster.jpg, id=359, 612.2875pt x 821.0675pt>
+File: ./images/WomanRaster.jpg Graphic file (type jpg)
+<use ./images/WomanRaster.jpg>
+Package pdftex.def Info: ./images/WomanRaster.jpg  used on input line 300.
+(pdftex.def)             Requested size: 128.0387pt x 171.69008pt.
+<./images/WomanVector.png, id=360, 645.16031pt x 685.8122pt>
+File: ./images/WomanVector.png Graphic file (type png)
+<use ./images/WomanVector.png>
+Package pdftex.def Info: ./images/WomanVector.png  used on input line 301.
+(pdftex.def)             Requested size: 128.0387pt x 136.10307pt.
+ [5 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./im
+ages/ChromeRaster.png> <C:/Users/bassh/WebstormProjects/AnimationVectorizer/doc
+s/dissertation/./images/ChromeVector.png> <C:/Users/bassh/WebstormProjects/Anim
+ationVectorizer/docs/dissertation/./images/WomanRaster.jpg> <C:/Users/bassh/Web
+stormProjects/AnimationVectorizer/docs/dissertation/./images/WomanVector.png>] 
+[6] [7] [8] [9] [10] [11]
+<./images/Pipeline.png, id=406, 623.32875pt x 261.97874pt>
 File: ./images/Pipeline.png Graphic file (type png)
 <use ./images/Pipeline.png>
-Package pdftex.def Info: ./images/Pipeline.png  used on input line 609.
+Package pdftex.def Info: ./images/Pipeline.png  used on input line 619.
 (pdftex.def)             Requested size: 426.79135pt x 179.3784pt.
- [10 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./i
-mages/Pipeline.png>] [11] [12]
-[13] [14] [15] [16] [17] [18] [19
-
-] [20
-
-] [21
+ [12 <C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/./i
+mages/Pipeline.png>] [13] [14] [15] [16] [17] [18] [19] [20] [21
 
 ] [22
 
-] [23] [24] [25] [26] [27]
-[28] [29] [30] [31]
+] [23
 
-LaTeX Warning: Empty bibliography on input line 1546.
+] [24
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1550.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1550.
+] [25] [26]
+[27] [28] [29] [30] [31] [32] [33]
+
+LaTeX Warning: Empty bibliography on input line 1556.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1560.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1560.
 
 (C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/dissertation/disserta
 tion.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1550.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1550.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1560.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1560.
 
 Package rerunfilecheck Info: File `dissertation.out' has not changed.
 (rerunfilecheck)             Checksum: 079C2AA573E72E811C020EE6BE876647;3006.
@@ -688,13 +730,13 @@ Package logreq Info: Writing requests to 'dissertation.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 13599 strings out of 480893
- 244739 string characters out of 5907572
- 937235 words of memory out of 5000000
- 28960 multiletter control sequences out of 15000+600000
+ 13645 strings out of 480893
+ 245665 string characters out of 5907572
+ 937326 words of memory out of 5000000
+ 28994 multiletter control sequences out of 15000+600000
  541408 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 43i,6n,37p,823b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 43i,7n,37p,823b,755s stack positions out of 5000i,500n,10000p,200000b,80000s
 {d:/Programs/texlive/2020/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.en
 c}<d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pf
 b><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
@@ -703,10 +745,10 @@ b><d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb
 <d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
 <d:/Programs/texlive/2020/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb>
 Output written on C:/Users/bassh/WebstormProjects/AnimationVectorizer/docs/diss
-ertation/dissertation.pdf (35 pages, 193652 bytes).
+ertation/dissertation.pdf (37 pages, 1455891 bytes).
 PDF statistics:
- 536 PDF objects out of 1000 (max. 8388607)
- 484 compressed objects within 5 object streams
- 82 named destinations out of 1000 (max. 500000)
- 387 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 562 PDF objects out of 1000 (max. 8388607)
+ 497 compressed objects within 5 object streams
+ 87 named destinations out of 1000 (max. 500000)
+ 417 words of extra memory for PDF output out of 10000 (max. 10000000)
 
