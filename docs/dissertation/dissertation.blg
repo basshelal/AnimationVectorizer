@@ -3,37 +3,51 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: dissertation.aux
 The style file: ieeetr.bst
 Database file #1: bib.bib
+Warning--entry type for "noauthor_raster_nodate" isn't style-file defined
+--line 27 of file bib.bib
+Warning--entry type for "noauthor_paths_nodate" isn't style-file defined
+--line 39 of file bib.bib
+Warning--entry type for "node.js_about_nodate" isn't style-file defined
+--line 107 of file bib.bib
+Warning--entry type for "noauthor_typed_nodate" isn't style-file defined
+--line 125 of file bib.bib
+Warning--entry type for "noauthor_electron_nodate" isn't style-file defined
+--line 141 of file bib.bib
+Warning--entry type for "noauthor_gpu.js_nodate" isn't style-file defined
+--line 157 of file bib.bib
+Warning--entry type for "noauthor_peter_nodate" isn't style-file defined
+--line 173 of file bib.bib
 Warning--empty journal in rippel2017
 You've used 16 entries,
             1876 wiz_defined-function locations,
-            548 strings with 5370 characters,
-and the built_in function-call counts, 2525 in all, are:
-= -- 223
-> -- 92
+            558 strings with 5661 characters,
+and the built_in function-call counts, 2703 in all, are:
+= -- 262
+> -- 104
 < -- 0
-+ -- 39
-- -- 23
-* -- 133
-:= -- 339
-add.period$ -- 15
++ -- 43
+- -- 27
+* -- 137
+:= -- 385
+add.period$ -- 22
 call.type$ -- 16
 change.case$ -- 11
 chr.to.int$ -- 0
 cite$ -- 17
 duplicate$ -- 122
 empty$ -- 317
-format.name$ -- 23
-if$ -- 641
+format.name$ -- 27
+if$ -- 684
 int.to.chr$ -- 0
 int.to.str$ -- 16
 missing$ -- 14
-newline$ -- 57
-num.names$ -- 10
-pop$ -- 79
+newline$ -- 64
+num.names$ -- 14
+pop$ -- 96
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 96
+skip$ -- 61
 stack$ -- 0
 substring$ -- 60
 swap$ -- 24
@@ -42,7 +56,7 @@ text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 1
-while$ -- 15
+while$ -- 19
 width$ -- 18
-write$ -- 123
-(There was 1 warning)
+write$ -- 141
+(There were 8 warnings)
