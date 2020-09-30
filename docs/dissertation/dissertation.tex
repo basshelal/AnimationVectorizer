@@ -4,7 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{tabto}
 \usepackage{graphicx}
-\usepackage{biblatex}
+\usepackage[backend=biber, style=ieee]{biblatex}
 \usepackage{pdflscape}
 \usepackage{hyperref}
 \addbibresource{bibliography.bib}
@@ -32,8 +32,6 @@ bottom=40mm
 \author{Bassam Helal}
 \date{September 2020}
 \begin{document}
-    % TODO 12-Sep-20 Remove black background and white text
-
 
     \pagenumbering{gobble} % Remove page numbering
 
@@ -430,7 +428,7 @@ bottom=40mm
     image graphics with video being simply a series of sequential images that can be encoded in many different ways
     for optimal compression and quality.
 
-    \subsection{Toolchain}\label{subsec:toolchain}
+    \subsection{Libraries}\label{subsec:libraries}
 
     \tab
     This project uses a variety of popular tools and libraries to achieve its aims and objectives both efficiently
@@ -508,10 +506,14 @@ bottom=40mm
     % TODO 29-Sep-20 Finish!
 
     \bigskip
-    In addition to vectorization, image and video compression research has always been thriving and growing and it
+    In addition to vectorization, image and video compression research has been thriving and growing and it
     too has also been bolstered in the current age of machine learning.
     \sentence
-    % TODO 29-Sep-20 Finish!
+    In recent years there have been novel developments in image compression using machine learning that can produce
+    files more than 2 times smaller than those produced by JPEG compression~\cite{rippel2017}.
+    \sentence
+    This is made possible through the help of machine learning techniques that are becoming more and mainstream
+    within the research community to try to improve compression rate over traditional methods.
 
     \subsection{Current Applications}\label{subsec:current-applications}
 
@@ -612,13 +614,12 @@ bottom=40mm
 
     \subsection{Pipeline}\label{subsec:pipeline}
 
-    \bigskip
-
-    % TODO 25-Sep-20 Make pipeline image look better
-
-    \includegraphics[width=\textwidth]{Pipeline.png}
-
-    % TODO 15-Sep-20 Add a caption, read more here https://cs.overleaf.com/learn/latex/Inserting_Images
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=\textwidth]{Pipeline.png}
+        \caption[Pipeline]{Process pipeline}
+        \label{fig:pipeline}
+    \end{figure}
 
     \bigskip
 
@@ -689,8 +690,15 @@ bottom=40mm
     In summary, the minimum required input is simply any video but the expectation is that it will be an
     animated cartoon video and the ideal input being an animated cartoon video that has highly vectorizable qualities.
 
-    % TODO 20-Sep-20 Show examples of good cartoons and have images, so Fairly OddParents, Teen Titans Go
-    % TODO 20-Sep-20 Show example of some less optimal cartoons like old Tom and Jerry, Hannah Barbera and Ed, Edd n Eddy
+    \bigskip
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.95\textwidth]{FairlyOddParents.jpg}
+        \caption[Fairly Odd Parents]{\italic{The Fairly OddParents} is stylized with discrete color regions making it
+        ideal for vectorization}
+        \label{fig:fairlyoddparents}
+    \end{figure}
+    \bigskip
 
     \subsubsection{Output}\label{subsubsec:output}
 
@@ -742,7 +750,6 @@ bottom=40mm
     \sentence
     To do this, we use the industry standard tool, FFmpeg to create a directory of PNG images for each frame of the
     video using the command:
-    % TODO 25-Sep-20 Possibly explain the command
     \begin{center}
         \code{ffmpeg -i input.mp4 outputDirectory/\%d.png -y}
     \end{center}
@@ -754,8 +761,6 @@ bottom=40mm
     serial for each frame, it is much more efficient to split the workload first by first dividing the video into
     frames stored on disk and then perform the vectorization step, now with the additional benefit of being able to
     run the vectorization step on multiple frames at once.
-
-    % TODO 20-Sep-20 Picture showing the directory of frames
 
     \subsubsection{Vectorization}\label{subsubsec:vectorization}
 
@@ -791,8 +796,6 @@ bottom=40mm
     \sentence
     Across all tried approaches, this is the common method used to create a vector graphics image, with the only
     differences being in how these color regions are parsed and determined from the original raster image.
-
-    % TODO 25-Sep-20 Picture showing pixels of a single color being converted to a single SVG path
 
     \subsubsection{Frame Merging}\label{subsubsec:frame-merging}
 
