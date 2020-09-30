@@ -1423,7 +1423,51 @@ bottom=40mm
     \section{Results}\label{sec:results}
 
     \tab
-    % TODO 30-Sep-20 Finish something
+    Results have been relatively mixed and have been both extremely motivating and extremely disappointing such that
+    much of the development process itself was very heavily affected by the results.
+    \sentence
+    Overall, the process shows that it is feasible to perform this very well with \italic{theoretical} high levels of
+    accuracy with relatively small file sizes.
+    \sentence
+    However, there is always a key issue preventing the success from being fully met and ready to celebrate.
+    \sentence
+    Raster graphics are flawed in their nature, to divide an image into a grid of colors will always be lossy and
+    inaccurate and add to that any effects that are added in post processing to help make the image clearer or less
+    jagged, then there is even more data lost.
+    \sentence
+    The image becomes clear to the human eye from its resolution but so much data was lost and altered to achieve
+    this, data that any process such as vectorization would have a very difficult time reconstructing.
+    \sentence
+    This was shown especially when using Color based CCL where over 95\% of all regions had less than 5 pixels in
+    them because those were new pixels added for anti-aliasing, an effect added between edges to make them less
+    jagged to the eye.
+    \sentence
+    Rasterization added data that was never there that the vectorization process now has to find and undo, this is
+    why the project became much harder than anticipated, because of this deadly realization.
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{OriginalFrame.png}
+        \caption[OriginalFrame]{Original image, a frame from \italic{Teen Titans Go!} 1MB}
+        \label{fig:originalframe}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{CCL.png}
+        \caption[CCL]{Image after Color based CCL, an impressive 336kb meaning ~70\% savings but note some minor data
+        loss in the clouds background, oven window and fridge drawer}
+        \label{fig:CCL}
+    \end{figure}
+
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=\textwidth]{SmallComponents.png}
+        \caption[SmallComponents]{Highlighting the components less than 5 pixels in size shows that edges of color
+        regions seem to be the culprit of problems, these are the pixels in between colors, those that are added by
+        anti-aliasing}
+        \label{fig:smallcomponents}
+    \end{figure}
 
     \pagebreak
 
@@ -1608,7 +1652,9 @@ bottom=40mm
     One of the main ways this can be achieved is by using the machine's hardware more efficiently especially by using
     more of the resources and making use of the many processing cores most modern machines possess today.
     \sentence
-    As discussed earlier, % TODO 25-Sep-20 Node sucks at this and we need multithreading and GPU execution finish
+    As discussed earlier, the libraries and tools are not helpful in this regard thus either more work would be done
+    in order to achieve this with the given tools, or a tool migration may be needed to fully leverage the power of
+    other platforms such as the JVM when it comes to concurrency and multi-threading.
 
     \subsection{Future Research}\label{subsec:future-research}
 
@@ -1646,8 +1692,29 @@ bottom=40mm
     Finally, we conclude by summarizing what this document has gone over and provide some final thoughts and
     statements with regards to the impact that this project may have on the world, now and in the future.
     \sentence
-    % TODO 30-Sep-20 Finish
-
+    Vectorization is an already well established form of transforming graphics data from raster to vector with a lot
+    of existing research and implementations that provide high quality results.
+    \sentence
+    However, all of them have some inherent flaws, with newer machine-learning based ones inheriting the flaws of
+    machine learning with them, and older ones requiring human input for color, or just completely ignoring color
+    entirely.
+    \sentence
+    This project aimed at remedying the problem by experimenting with possible solutions to this problem tackling it
+    from an angle specifically based on animated cartoons to have a well established expected input and output.
+    \sentence
+    Results were mixed in that they showed the possibility and feasibility of such a solution especially one that
+    uses no machine learning and requires minimal input.
+    \sentence
+    But results were always lacking in some form leaving much to be desired and introducing more questions and
+    problems than answers and solutions.
+    \sentence
+    However, despite these results, it is absolutely possible that given more time to develop and optimize and
+    research more into this problem, more potential avenues for this problem will be found to be used as a basis to
+    finally solve this problem.
+    \sentence
+    With that solution, we can hope that timeless animated cartoons like \italic{Tom and Jerry} and \italic{The
+    Fairly OddParents} which have brought happiness and meaning to millions of lives across generations and borders
+    will continue to do so for many more generations to come.
 
     \pagebreak
 

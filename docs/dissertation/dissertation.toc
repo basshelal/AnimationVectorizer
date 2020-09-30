@@ -44,11 +44,11 @@
 \contentsline {subsection}{\numberline {6.2}Compression}{29}{subsection.6.2}%
 \contentsline {subsubsection}{\numberline {6.2.1}Quantitative Methods}{29}{subsubsection.6.2.1}%
 \contentsline {section}{\numberline {7}Results}{30}{section.7}%
-\contentsline {section}{\numberline {8}Challenges}{31}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Toolchain}{31}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Performance}{32}{subsection.8.2}%
-\contentsline {section}{\numberline {9}Reflection}{33}{section.9}%
-\contentsline {section}{\numberline {10}Future Work}{34}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Optimization}{34}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Future Research}{34}{subsection.10.2}%
-\contentsline {section}{\numberline {11}Conclusion}{35}{section.11}%
+\contentsline {section}{\numberline {8}Challenges}{32}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Toolchain}{32}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Performance}{33}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Reflection}{34}{section.9}%
+\contentsline {section}{\numberline {10}Future Work}{35}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Optimization}{35}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Future Research}{35}{subsection.10.2}%
+\contentsline {section}{\numberline {11}Conclusion}{36}{section.11}%
