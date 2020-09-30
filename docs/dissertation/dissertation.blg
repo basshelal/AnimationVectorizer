@@ -1,9 +1,48 @@
-[0] Config.pm:312> INFO - This is Biber 2.15
-[0] Config.pm:315> INFO - Logfile is 'dissertation.blg'
-[96] biber-MSWIN32:330> INFO - === 
-[113] Biber.pm:415> INFO - Reading 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\dissertation.bcf'
-[233] Biber.pm:952> INFO - Found 2 citekeys in bib section 0
-[250] Biber.pm:4334> INFO - Processing section 0
-[260] Biber.pm:4523> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
-[266] 1ae19b41.pm:1682> INFO - LaTeX decoding ...
-[273] 1ae19b41.pm:1494> INFO - Found BibTeX data source 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\bibliography.bib'
+This is BibTeX, Version 0.99d (TeX Live 2020/W32TeX)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: dissertation.aux
+The style file: ieeetr.bst
+Database file #1: bib.bib
+Warning--empty journal in rippel2017
+You've used 2 entries,
+            1876 wiz_defined-function locations,
+            489 strings with 3778 characters,
+and the built_in function-call counts, 334 in all, are:
+= -- 24
+> -- 19
+< -- 0
++ -- 7
+- -- 5
+* -- 27
+:= -- 64
+add.period$ -- 2
+call.type$ -- 2
+change.case$ -- 2
+chr.to.int$ -- 0
+cite$ -- 3
+duplicate$ -- 17
+empty$ -- 33
+format.name$ -- 5
+if$ -- 71
+int.to.chr$ -- 0
+int.to.str$ -- 2
+missing$ -- 2
+newline$ -- 9
+num.names$ -- 2
+pop$ -- 8
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 4
+stack$ -- 0
+substring$ -- 0
+swap$ -- 1
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 2
+width$ -- 3
+write$ -- 18
+(There was 1 warning)

@@ -4,13 +4,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage{tabto}
 \usepackage{graphicx}
-\usepackage[backend=biber, style=ieee]{biblatex}
 \usepackage{pdflscape}
 \usepackage{hyperref}
-\addbibresource{bibliography.bib}
 \graphicspath{ {./images/} }
 \hypersetup{
-colorlinks=false, % TODO 26-Sep-20 Properly configure links https://www.overleaf.com/learn/latex/hyperlinks
+colorlinks=false,
 linktoc=all
 }
 \geometry{
@@ -858,8 +856,6 @@ bottom=40mm
     Many more compression optimizations can be done during this step to further reduce the size of the final
     video, hence the importance of the frame merging step within the process pipeline.
 
-    % TODO 25-Sep-20 Picture showing too many successive frames are identical
-
     \subsection{Vectorization Methods}\label{subsec:vectorization-methods}
 
     \tab
@@ -940,7 +936,8 @@ bottom=40mm
     This way of thinking lends itself extremely well to Connected Component Labelling (CCL) which is exactly that,
     dividing the image into a partition of connected components that together form the whole image.
     \sentence
-    % TODO 26-Sep-20 Where CCL is used and some theory background
+    Connected Component Labelling is used to discriminate and segregate regions of an image into components, which
+    can typically be done using any arbitrary property such as in our case, color.
     \sentence
     Connected Component Labelling does not in itself describe any particular implementation and thus can be
     implemented in many different ways depending on the context and desired outcome.
@@ -1094,34 +1091,17 @@ bottom=40mm
     This is why a Gantt Chart was used to plot a schedule containing the general phases of the project's development
     against the time allocated to work on the project.
     \sentence
-    % TODO 21-Sep-20 Describe what is a Gantt Chart
-    \sentence
-    % TODO 21-Sep-20 Introduce the Gantt chart below
-
+    The Gantt chart below shows the schedule used during the development of the project.
 
     \pagebreak
     \thispagestyle{empty}
     \begin{landscape}
         \begin{center}
             \huge{Gantt Chart}
+            \vspace{1cm}
+
             \normalsize
-            \begin{itemize}
-                \item Frame Managing (video to frames and frames to video)
-                \subitem Video to frames (ffmpeg)
-                \subitem Read frame image data
-                \subitem Write frame image data (SVG and PNG)
-                \subitem Combine frames to a playable video
-                \item Vectorization
-                \subitem Core programming (ImageTracerJS)
-                \subitem Edge detection
-                \subitem Connected Component Labelling
-                \subitem Path/Polygon parsing
-                \item Writing
-                \subitem Latex setup and learning
-                \subitem User evaluations
-                \subitem Resource compiling
-                \subitem Core writing
-            \end{itemize}
+            \includegraphics[scale=0.53]{Gantt.png}
         \end{center}
     \end{landscape}
     \pagebreak
@@ -1140,28 +1120,71 @@ bottom=40mm
     strategies to counter such risks and avoid their possibly devastating effects.
     \sentence
     % TODO 21-Sep-20 Introduce the chart below and describe the format of the chart
-    % TODO 21-Sep-20 Chart should have Risk name, description, type? Probability, Consequentiality, mitigation
 
-    \pagebreak
-    \thispagestyle{empty}
-    \begin{landscape}
-        \begin{center}
-            \huge{Risks Chart}
-            \normalsize
-            \begin{itemize}
-                \item Bad time management
-                \item Data Loss
-                \item Hardware performance issues
-                \item Tools too difficult
-                \item Tools not cooperative
-                \item Personal issues (stress, burnout)
-                \item Covid related crap
-                \item Poor results
-                \item Catastrophic fatal disaster ;)
-            \end{itemize}
-        \end{center}
-    \end{landscape}
-    \pagebreak
+    \paragraph{Bad Time Management}
+    \begin{itemize}
+        \item Description: Time is not managed well or correctly and development falls behind schedule
+        \item Probability: 5
+        \item Consequentiality: 3
+        \item Mitigation: Define a safe schedule with large buffer zones early on and skip and tasks taking too long
+        to complete
+    \end{itemize}
+
+    \paragraph{Data Loss}
+    \begin{itemize}
+        \item Description: Data is lost as a result of some hardware failure and/or negligence
+        \item Probability: 1
+        \item Consequentiality: 5
+        \item Mitigation: Back up all data using online services like GitHub as well as external drives
+    \end{itemize}
+
+    \paragraph{Tools Too Difficult}
+    \begin{itemize}
+        \item Description: Tools and libraries used are too difficult to use or learn
+        \item Probability: 2
+        \item Consequentiality: 4
+        \item Mitigation: Ensure familiarity with tools beforehand by reading and experimenting before project
+        development
+    \end{itemize}
+
+    \paragraph{Tools Not Helpful}
+    \begin{itemize}
+        \item Description: Tools and libraries are not being cooperative and are slowing down development
+        \item Probability: 4
+        \item Consequentiality: 2
+        \item Mitigation: Ensure using popular tools with strong community, ensure familiarity with tools beforehand,
+        use alternative tools if possible or necessary
+    \end{itemize}
+
+    \paragraph{Catastrophic fatal disaster}
+    \begin{itemize}
+        \item Description: By some horrible disaster an intergalactic alien invasion finally commences on earth and
+        the aliens aim directly and only on my working space destroying all equipment and data
+        \item Probability: 1
+        \item Consequentiality: 5
+        \item Mitigation: Ensure backups of all data are made on services like GitHub and on external drives and
+        continue work on an external machine or using online tools
+    \end{itemize}
+
+    \paragraph{Personal issues}
+    \begin{itemize}
+        \item Description: Personal or family issues get in the way of development causing delays or prolonged
+        periods of inefficiency
+        \item Probability: 4
+        \item Consequentiality: 4
+        \item Mitigation: Ensure that some work is done at least every day in order to ensure no loss of momentum and
+        keep in touch with supervisor to update with progress or any issues
+    \end{itemize}
+
+    \paragraph{Poor results}
+    \begin{itemize}
+        \item Description: Results are not promising or motivating and project proves to be more difficult than
+        anticipated
+        \item Probability: 3
+        \item Consequentiality: 4
+        \item Mitigation: Ensure that the most research and effort is made during the project and make clear the
+        significant effort put as well as the difficulty of the project within the final document
+    \end{itemize}
 
     \subsection{Testing}\label{subsec:testing}
 
@@ -1581,12 +1604,13 @@ bottom=40mm
     Finally, we conclude by summarizing what this document has gone over and provide some final thoughts and
     statements with regards to the impact that this project may have on the world, now and in the future.
     \sentence
+    % TODO 30-Sep-20 Finish
 
 
     \pagebreak
 
-
-    \printbibliography[heading=bibintoc,title={References}]
+    \bibliographystyle{ieeetr}
+    \bibliography{bib}
 
     \pagebreak
 

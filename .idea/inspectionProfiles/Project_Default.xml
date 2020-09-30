@@ -4,7 +4,7 @@
     <inspection_tool class="LatexCommandAlreadyDefined" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LatexFigureNotReferenced" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LatexMissingImport" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="numberOfIndexedUsePackages" value="10" />
+      <option name="numberOfIndexedUsePackages" value="9" />
     </inspection_tool>
     <inspection_tool class="LatexTooLargeSection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="TsLint" enabled="true" level="WARNING" enabled_by_default="true" />
