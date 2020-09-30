@@ -27,8 +27,8 @@ bottom=40mm
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\fullref}[1]{\ref{#1}~\nameref{#1}}
 \title{Vectorization and Compression of Animated Cartoon Videos}
-\author{Bassam Helal}
-\date{September 2020}
+\author{}
+\date{}
 \begin{document}
 
     \pagenumbering{gobble} % Remove page numbering
@@ -36,15 +36,26 @@ bottom=40mm
     \maketitle % TODO 29-Sep-20 Better title page??
 
     \begin{center}
-        \vspace{8cm}
+        \vspace{5cm}
+        \large
+        September 2020
+        \linebreak
+        \linebreak
+        Bassam Helal
+        \linebreak
+        809293
+    \end{center}
+    \begin{center}
+        \vspace{2cm}
         \includegraphics[scale=0.65]{SwanseaUniversityLogo.png}
     \end{center}
     \begin{center}
         \vspace{1cm}
-        \large
-        Bassam Helal
+        \normalsize
+        Department of Science, Swansea University
         \linebreak
-        809293
+        \linebreak
+        Project Dissertation submitted to Swansea University in Partial Fulfilment for the Degree of Master of Science
     \end{center}
 
     \pagebreak
@@ -145,7 +156,12 @@ bottom=40mm
     After months of research and development results have shown that the process is much more difficult than
     anticipated but still theoretically feasible without the need for any machine learning.
     \sentence
-    % TODO 30-Sep-20 Finish
+    These positive results are still far from perfect as there have been many unexpected challenges and issues faced
+    that reduce the impressiveness of the results and prove to show that the project is much more challenging than it
+    may seem.
+    \sentence
+    However despite that, the results show that it is technically possible to achieve some fairly impressive results
+    and perhaps given more time to properly develop and optimize the process, even greater results would follow.
 
     \bigskip
     This document will cover the story of several months of research and development from the necessary background
@@ -292,8 +308,6 @@ bottom=40mm
     excellent for logos and icons specifically because of their scalable nature but are inferior when used for
     photographs because of the complex color fluctuations of those images.
 
-    % TODO 16-Sep-20 Small table comparing Raster & Vector Graphics for the attributes like size,scalability etc
-
     \begin{figure}[h]
         \centering
         \includegraphics[width=0.3\textwidth]{ChromeRaster.png}
@@ -402,6 +416,15 @@ bottom=40mm
     vectorization will allow those people to convert their graphics from raster to vector in a manner that is as
     effective as possible in order to obtain visually lossless transformation that will still be optimal as a vector
     graphics output.
+
+    \bigskip
+    \begin{figure}[h]
+        \centering
+        \includegraphics[scale=0.6]{Comparison.png}
+        \caption[Comparison]{A chart comparing some properties between raster and vector graphics, while raster
+        graphics is most popular, vector graphics have grown in popularity within some domains}
+        \label{fig:comparison}
+    \end{figure}
 
     \subsection{Video Graphics}\label{subsec:video-graphics}
 
@@ -1091,7 +1114,20 @@ bottom=40mm
     This is why a Gantt Chart was used to plot a schedule containing the general phases of the project's development
     against the time allocated to work on the project.
     \sentence
-    The Gantt chart below shows the schedule used during the development of the project.
+    The Gantt chart below shows the schedule used during the development of the project which was developed into 3
+    main phases each matching roughly a single month of development from the allotted three months.
+    \sentence
+    The first phase frame merging was related to ensuring that the videos could be split into a more usable medium,
+    images, and then reconstructed back into videos, this also included tools setup.
+    \sentence
+    The second phase and most important was the vectorization phase where many methods were explored and experimented
+    to try to attain the most impressive results.
+    \sentence
+    The final phase was the writing of this document as this is a more challenging thing to do and required delicate
+    time management.
+    \sentence
+    As is clear, many parts of the project were developed in parallel, more specifically merging within one another,
+    i.e. as one phase was being ended the new one was already beginning, making the workflow smooth and seamless.
 
     \pagebreak
     \thispagestyle{empty}
@@ -1099,14 +1135,12 @@ bottom=40mm
         \begin{center}
             \huge{Gantt Chart}
             \vspace{1cm}
-
+            \linebreak
             \normalsize
             \includegraphics[scale=0.53]{Gantt.png}
         \end{center}
     \end{landscape}
     \pagebreak
-
-    % TODO 21-Sep-20 Detail the stuff we showed in the chart above
 
     \pagebreak
 
@@ -1119,7 +1153,12 @@ bottom=40mm
     As such, it is important to detect these risks as early as possible and have detailed and usable mitigation
     strategies to counter such risks and avoid their possibly devastating effects.
     \sentence
-    % TODO 21-Sep-20 Introduce the chart below and describe the format of the chart
+    Below are the risks listed and detailed with 4 key properties, first a detailed description to supplement the
+    title of the risk.
+    \sentence
+    Then, a probability and consequentiality score out of 5 with 5 being the highest and 1 being the lowest.
+    \sentence
+    Finally, the mitigation strategy that would be used to offset and handle the consequences of the risk.
 
     \paragraph{Bad Time Management}
     \begin{itemize}
@@ -1383,6 +1422,9 @@ bottom=40mm
 
     \section{Results}\label{sec:results}
 
+    \tab
+    % TODO 30-Sep-20 Finish something
+
     \pagebreak
 
 
@@ -1566,7 +1608,7 @@ bottom=40mm
     One of the main ways this can be achieved is by using the machine's hardware more efficiently especially by using
     more of the resources and making use of the many processing cores most modern machines possess today.
     \sentence
-    As discussed earlier, % TODO 25-Sep-20 Node sucks at this and we need multithreading and GPU execution
+    As discussed earlier, % TODO 25-Sep-20 Node sucks at this and we need multithreading and GPU execution finish
 
     \subsection{Future Research}\label{subsec:future-research}
 

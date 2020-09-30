@@ -4,7 +4,7 @@
 \contentsline {subsection}{\numberline {2.2}Vector Graphics}{4}{subsection.2.2}%
 \contentsline {subsection}{\numberline {2.3}Image Compression}{6}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}Vectorization}{6}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Video Graphics}{7}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.5}Video Graphics}{8}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}Libraries}{8}{subsection.2.6}%
 \contentsline {section}{\numberline {3}Related Work}{10}{section.3}%
 \contentsline {subsection}{\numberline {3.1}Current Research}{10}{subsection.3.1}%
@@ -25,30 +25,30 @@
 \contentsline {section}{\numberline {5}Software Engineering}{21}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Methodology}{21}{subsection.5.1}%
 \contentsline {subsection}{\numberline {5.2}Schedule}{21}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Risks}{23}{subsection.5.3}%
-\contentsline {paragraph}{Bad Time Management}{23}{section*.3}%
-\contentsline {paragraph}{Data Loss}{23}{section*.4}%
-\contentsline {paragraph}{Tools Too Difficult}{23}{section*.5}%
-\contentsline {paragraph}{Tools Not Helpful}{23}{section*.6}%
-\contentsline {paragraph}{Catastrophic fatal disaster}{24}{section*.7}%
-\contentsline {paragraph}{Personal issues}{24}{section*.8}%
-\contentsline {paragraph}{Poor results}{24}{section*.9}%
-\contentsline {subsection}{\numberline {5.4}Testing}{24}{subsection.5.4}%
-\contentsline {subsubsection}{\numberline {5.4.1}Unit Testing}{25}{subsubsection.5.4.1}%
-\contentsline {subsubsection}{\numberline {5.4.2}Integration Testing}{25}{subsubsection.5.4.2}%
-\contentsline {subsubsection}{\numberline {5.4.3}Acceptance Testing}{26}{subsubsection.5.4.3}%
-\contentsline {section}{\numberline {6}Evaluation}{27}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Accuracy}{27}{subsection.6.1}%
-\contentsline {subsubsection}{\numberline {6.1.1}Quantitative Methods}{27}{subsubsection.6.1.1}%
-\contentsline {subsubsection}{\numberline {6.1.2}Qualitative Methods}{27}{subsubsection.6.1.2}%
-\contentsline {subsection}{\numberline {6.2}Compression}{28}{subsection.6.2}%
-\contentsline {subsubsection}{\numberline {6.2.1}Quantitative Methods}{28}{subsubsection.6.2.1}%
-\contentsline {section}{\numberline {7}Results}{29}{section.7}%
-\contentsline {section}{\numberline {8}Challenges}{30}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Toolchain}{30}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Performance}{31}{subsection.8.2}%
-\contentsline {section}{\numberline {9}Reflection}{32}{section.9}%
-\contentsline {section}{\numberline {10}Future Work}{33}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Optimization}{33}{subsection.10.1}%
-\contentsline {subsection}{\numberline {10.2}Future Research}{33}{subsection.10.2}%
-\contentsline {section}{\numberline {11}Conclusion}{34}{section.11}%
+\contentsline {subsection}{\numberline {5.3}Risks}{24}{subsection.5.3}%
+\contentsline {paragraph}{Bad Time Management}{24}{section*.3}%
+\contentsline {paragraph}{Data Loss}{24}{section*.4}%
+\contentsline {paragraph}{Tools Too Difficult}{24}{section*.5}%
+\contentsline {paragraph}{Tools Not Helpful}{25}{section*.6}%
+\contentsline {paragraph}{Catastrophic fatal disaster}{25}{section*.7}%
+\contentsline {paragraph}{Personal issues}{25}{section*.8}%
+\contentsline {paragraph}{Poor results}{25}{section*.9}%
+\contentsline {subsection}{\numberline {5.4}Testing}{26}{subsection.5.4}%
+\contentsline {subsubsection}{\numberline {5.4.1}Unit Testing}{26}{subsubsection.5.4.1}%
+\contentsline {subsubsection}{\numberline {5.4.2}Integration Testing}{26}{subsubsection.5.4.2}%
+\contentsline {subsubsection}{\numberline {5.4.3}Acceptance Testing}{27}{subsubsection.5.4.3}%
+\contentsline {section}{\numberline {6}Evaluation}{28}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Accuracy}{28}{subsection.6.1}%
+\contentsline {subsubsection}{\numberline {6.1.1}Quantitative Methods}{28}{subsubsection.6.1.1}%
+\contentsline {subsubsection}{\numberline {6.1.2}Qualitative Methods}{28}{subsubsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.2}Compression}{29}{subsection.6.2}%
+\contentsline {subsubsection}{\numberline {6.2.1}Quantitative Methods}{29}{subsubsection.6.2.1}%
+\contentsline {section}{\numberline {7}Results}{30}{section.7}%
+\contentsline {section}{\numberline {8}Challenges}{31}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Toolchain}{31}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Performance}{32}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Reflection}{33}{section.9}%
+\contentsline {section}{\numberline {10}Future Work}{34}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Optimization}{34}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}Future Research}{34}{subsection.10.2}%
+\contentsline {section}{\numberline {11}Conclusion}{35}{section.11}%
