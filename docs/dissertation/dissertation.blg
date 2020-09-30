@@ -1,9 +1,9 @@
 [0] Config.pm:312> INFO - This is Biber 2.15
 [0] Config.pm:315> INFO - Logfile is 'dissertation.blg'
 [96] biber-MSWIN32:330> INFO - === 
-[114] Biber.pm:415> INFO - Reading 'dissertation.bcf'
-[227] Biber.pm:952> INFO - Found 1 citekeys in bib section 0
-[244] Biber.pm:4334> INFO - Processing section 0
-[254] Biber.pm:4523> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
-[261] 1ae19b41.pm:1682> INFO - LaTeX decoding ...
-[269] 1ae19b41.pm:1494> INFO - Found BibTeX data source 'bibliography.bib'
+[113] Biber.pm:415> INFO - Reading 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\dissertation.bcf'
+[233] Biber.pm:952> INFO - Found 2 citekeys in bib section 0
+[250] Biber.pm:4334> INFO - Processing section 0
+[260] Biber.pm:4523> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
+[266] 1ae19b41.pm:1682> INFO - LaTeX decoding ...
+[273] 1ae19b41.pm:1494> INFO - Found BibTeX data source 'C:\Users\bassh\WebstormProjects\AnimationVectorizer\docs\dissertation\bibliography.bib'
