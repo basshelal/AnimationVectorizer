@@ -63,6 +63,67 @@ bottom=40mm
     \begin{center}
         \section*{Abstract}
     \end{center}
+    Preserving media made by those who preceded us is an important duty that we must do our best to
+    accomplish, as during that moment we are the keepers of and choosers of history.
+    \sentence
+    Cartoons an excellent example of this, a form of media created and pioneered by our ancestors that have shaped
+    our lives and will shape the lives of our children and those who follow us.
+    \sentence
+    Cartoons are currently stored using the most prevalent format, raster graphics, a format that is susceptible to
+    aging due to its issues with scaling on newer higher resolution displays.
+    \sentence
+    As time goes on and these displays continue to increase in resolution, the risk of older media becoming unusable,
+    obsolete or simply unwatchable increases more and more, risking future generations to be unaware or uninterested
+    in otherwise masterpieces of art and culture.
+    \sentence
+    One way of tackling this dire problem, is by converting the media into an infinitely scalable format that they
+    are well suited to, vector graphics which will in addition allow them to take up less disk space.
+    \sentence
+    There have been existing attempts at performing this task and many continue to be researched and developed such
+    as those made by the ever popular machine learning computational model.
+    \sentence
+    But with machine learning comes a dependence on a training dataset leading to a model that is neither sustainable
+    nor general purpose and will only succeed on the data it is trained against.
+    \sentence
+    This project attempts to tackle this problem by experimenting with different methods and techniques to convert
+    the data into vector formats and while doing so reduce its size as well.
+    \sentence
+    While results are very promising, there is still more to explore and discover, the problem we are facing is more
+    challenging and complex than it seems.
+    \sentence
+    But it is a necessary struggle as it may make be the small push needed to help create a method of preserving
+    these cultural and historic treasures that we grew up with and loved and hopefully live to watch our descendents
+    enjoy them as much as we did, no matter the technology difference.
+
+    \pagebreak
+
+    \begin{center}
+        \section*{Declarations}
+    \end{center}
+    \subsection*{Declaration}
+    This work has not previously been accepted in substance for any degree and is
+    not being concurrently submitted in candidature for any degree.
+
+    \subsection*{Statement 1}
+    This dissertation is the result of my own independent work/investigation, except
+    where otherwise stated.
+    Other sources are acknowledged by giving explicit references.
+    A bibliography is appended.
+
+    \subsection*{Statement 2}
+    I hereby give consent for my dissertation, if accepted, to be available for
+    photocopying and for inter-library loan, and for the title and summary to be
+    made available to outside organisations.
+
+    \bigskip
+    \begin{figure}[h!]
+        \centering
+        \includegraphics[width=0.4\textwidth]{Signature.png}
+        \linebreak
+        \today\label{fig:signature}
+    \end{figure}
+
+    \newpage
 
     % TODO 12-Sep-20 Abstract
 
@@ -210,13 +271,13 @@ bottom=40mm
     Raster graphics is the current most popular way of representing and storing graphics data.
     \sentence
     This representation format stores the image data as a grid of pixels, a pixel (picture element) being the
-    smallest element of the image containing the color information of the image at a particular point in the grid.
+    smallest element of the image containing the color information of the image at a particular point in the grid\cite{foley1994introduction}.
     \sentence
     Colors can be represented in many different formats but the most common is the three channel RGB (Red, Green, Blue)
     with RGBA (Red, Green, Blue, Alpha) gaining popularity.
     \sentence
     Each channel has a bit depth which details the number of possible colors that the channel can contain with 8 bits
-    per channel being the current most common but higher values exist as well such as 10 and 12 bits per channel.
+    per channel being the current most common but higher values exist as well such as 10 and 12 bits per channel\cite{foley1994introduction}.
     \sentence
     So a pixel in RGB format is really just a 3-tuple (triple) of numbers for each color channel in that pixel.
     \sentence
@@ -263,30 +324,30 @@ bottom=40mm
     \sentence
     Vector graphics uses a more declarative style of data storage, where instead of storing the data to be shown
     (such as pixels containing color information), vector graphics is based on instructions to a renderer
-    about how to draw the image.
+    about how to draw the image\cite{ferraiolo2000scalable}.
     \sentence
     These instructions are based on a set of standard geometric elements that are used in that vector graphics format
     or protocol.
     \sentence
     The most common and well known vector graphics format today is SVG, Scalable Vector Graphics, which is developed
     by the W3C since 1999, this is the format we will be using throughout this document when referencing vector
-    graphics.
+    graphics\cite{ferraiolo2000scalable}.
     \sentence
     An SVG file is nothing more than an XML-like text file with XML elements part of the SVG standard that describe
     to the renderer how to draw the image.
     \sentence
     The SVG specification defines many elements that can be used in an SVG file but the most important one in our
-    case is the SVG \code{path} element.
+    case is the SVG \code{path} element\cite{noauthor_paths_nodate}.
     \sentence
     The \code{path} element can be used to draw a complex line by providing it with commands on where and how to
     draw, it is perhaps the single most powerful element within the SVG specification and is the only element that we
-    will use in this project.
+    will use in this project\cite{noauthor_paths_nodate}.
     \sentence
 
     \bigskip
     The greatest advantages of vector graphics that they address the main issues of raster graphics mentioned in
     section~\fullref{subsec:raster-graphics}, that is to say that vector graphics are resolution independent
-    and are (theoretically) infinitely scalable no matter the display.
+    and are (theoretically) infinitely scalable no matter the display\cite{ferraiolo2000scalable}.
     \sentence
     The scalability of vector graphics actually solves both issues at once because there is no longer a need for
     higher resolution media thus saving on disk space \italic{and} keeping old media still usable because of infinite
@@ -296,7 +357,7 @@ bottom=40mm
     \sentence
     Simply put, vector graphics are only good at displaying certain kinds of images and media because of the way they
     represent data, making it very difficult to accurately and efficiently store other kinds of images such as images
-    of natural scenery or faces.
+    of natural scenery or faces\cite{noauthor_raster_nodate}.
     \sentence
     This is because those kinds of images tend to have a large degree of color fluctuations and especially
     non-linear, complex color fluctuations.
@@ -346,7 +407,7 @@ bottom=40mm
     removing unnecessary data.
     \sentence
     In the graphics world this is what is known as \italic{visually lossless compression} which means visually, to
-    the human eye, no data was lost, although technically the algorithm is lossy and data was actually lost.
+    the human eye, no data was lost, although technically the algorithm is lossy and data was actually lost\cite{rabbani_digital_1991}.
     \sentence
     Because of its lossy nature, lossy compression is a one way process that will have irreversible data loss such
     that attempting to compress again using lossless compression will not regain the lost data.
@@ -363,11 +424,11 @@ bottom=40mm
     \sentence
     Lossy formats include JPEG and GIF which will show compression artifacts if encoded many times successively
     showing the data loss upon each compression pass, these formats are excellent for portability and transfer and
-    indeed have been very popular on the web where bandwidth and data caps are noteworthy.
+    indeed have been very popular on the web where bandwidth and data caps are noteworthy\cite{rabbani_digital_1991}.
     \sentence
     Lossless formats include BMP and PNG which will always retain their data even after successive compresses, these
     formats however offer less compression compared to the lossy formats but are useful for those who need the
-    highest quality with the guarantee of no data loss.
+    highest quality with the guarantee of no data loss\cite{rabbani_digital_1991}.
     \sentence
     These concepts are essentially identical to those found in classic file compression with the exception of
     \italic{visually lossless compression} being a lossy compression method that aims to be "lossless to the human
@@ -385,10 +446,10 @@ bottom=40mm
     This process is, by its nature, lossy, meaning the original data will be lost during the process because the
     process is transformative and even though a lossless process is theoretically possible, it would not be practical
     or efficient as it would not introduce any of the benefits of vector graphics and would instead just be
-    converting pixels into pixels in vector graphics.
+    converting pixels into pixels in vector graphics\cite{vectortoraster}.
     \sentence
     Therefore, the process aims to be \italic{Visually Lossless} aiming for highest accuracy while also trying to
-    effectively and efficiently transform the data into suitable optimal vector graphics data.
+    effectively and efficiently transform the data into suitable optimal vector graphics data\cite{vectortoraster}.
     \sentence
     This will often mean trying to undo rasterization effects or artifacts in order to achieve a better output that
     makes sense in a vector format such as for example, interpolating pixels in order to create smooth lines
@@ -443,13 +504,14 @@ bottom=40mm
     and codecs will store the video data differently in order to optimize for quality, compression or both.
     \sentence
     One such codec, the popular MPEG and its derivatives, explicitly make use of video's temporal nature in order to
-    find and eliminate redundant data to increase compression rate while minimizing quality loss.
+    find and eliminate redundant data to increase compression rate while minimizing quality loss\cite{richardson2004h}.
     \sentence
     This essentially aims to group similar frames into a frameset and instead of storing all the frames, store only
     the difference between the frames which is especially effective when the frames are very similar to one another.
     \sentence
     These codecs also perform a wide variety of other smart operations to maximize compression rate while minimizing
-    quality loss when doing so because of the main daunting issue with video, video is naturally very storage expensive.
+    quality loss when doing so because of the main daunting issue with video, video is naturally very storage
+    expensive\cite{richardson2004h}.
     \sentence
     This issue continues to compound as display resolutions continue to increase and raster media keeps catching up
     to it showing the same issues mentioned with raster graphics in section~\fullref{subsec:raster-graphics}.
@@ -468,17 +530,17 @@ bottom=40mm
     and quickly, this section will briefly go over the most important tools used.
     \sentence
     This project uses Node.js as its runtime platform, Node.js is a cross-platform runtime environment that executes
-    JavaScript code on a machine instead of the usual JavaScript runtime, the browser.
+    JavaScript code on a machine instead of the usual JavaScript runtime, the browser\cite{node.js_about_nodate}.
     \sentence
     The choice for Node.js was made paradoxically because of both a familiarity with the runtime and the JavaScript
     ecosystem as well as a strong desire to further enhance our knowledge and experience in both the platform and
     ecosystem.
     \sentence
-    Node.js uses JavaScript as its runtime language, while JavaScript is a powerful and excellent language for
-    rapid-prototyping, it is also a very error-prone language as it has no typing checks in place.
+    Node.js uses JavaScript as its runtime language\cite{node.js_about_nodate}, while JavaScript is a powerful and
+    excellent language for rapid-prototyping, it is also a very error-prone language as it has no typing checks in place.
     \sentence
     TypeScript is a programming language that is a strict superset of JavaScript that adds typing features onto
-    JavaScript and transpiles to performant, cross-platform compatible JavaScript by means of a TypeScript compiler.
+    JavaScript and transpiles to performant, cross-platform compatible JavaScript by means of a TypeScript compiler\cite{noauthor_typed_nodate}.
     \sentence
     TypeScript was chosen as the programming language of choice for the project for its many benefits not limited to
     its added type safety.
@@ -492,16 +554,16 @@ bottom=40mm
     \sentence
     Electron allows developers to write desktop applications using web technologies, it is essentially a Chromium
     browser with two processes, a front-end process called the "renderer" which is similar to a Chromium web page
-    that displays HTML, and a back-end process called the main process which is a Node.js process.
+    that displays HTML, and a back-end process called the main process which is a Node.js process\cite{noauthor_electron_nodate}.
     \sentence
     Electron combines Node.js and Chromium to allow a developer to write a native desktop application using the same
     technologies used on the web, this has its own advantages and disadvantages but in our case, it means we can
     quickly develop a GUI desktop application that can access our Node.js code without resorting to web servers and
-    other more complicated means.
+    other more complicated means\cite{noauthor_electron_nodate}.
     \sentence
     GPU.js is a JavaScript library that allows developers to run code on the host machine's GPU making use of the
     GPGPU (General-Purpose computing on Graphics Processing Units) paradigm to allow for very large performance
-    improvements and speedups for computationally expensive mathematical operations.
+    improvements and speedups for computationally expensive mathematical operations\cite{noauthor_gpu.js_nodate}.
     \sentence
     In summary, the project uses the Node.js runtime for its large ecosystem, the TypeScript programming language for
     its added type safety benefits, Electron to easily display a GUI and GPU.js to run code on the GPU for additional
@@ -566,7 +628,7 @@ bottom=40mm
     use vectorization in parts of their application or service.
     \sentence
     Potrace is one the oldest and most well known applications that can convert raster images to monochrome vector
-    graphics formats with high performance.
+    graphics formats with high performance\cite{noauthor_peter_nodate}.
     \sentence
     It is used across many different applications and service most notably Inkscape, one of the most popular vector
     image editors to date.
@@ -583,10 +645,10 @@ bottom=40mm
     time.
     \sentence
     Perhaps the most important and most influential of these being the JPEG format which continues to be the most
-    widely used image compression standard since its inception in 1992.
+    widely used image compression standard since its inception in 1992\cite{pennebaker1992jpeg}.
     \sentence
     JPEG aims for visually lossless compression by using the Discrete Cosine Transform which itself is also used for
-    compression across other popular codecs such as those developed by the MPEG group as well as the H.26x codecs.
+    compression across other popular codecs such as those developed by the MPEG group as well as the H.26x codecs\cite{richardson2004h}.
     \sentence
     There continue to be more developments towards formats that can perform even better compression with less quality
     loss \italic{and} with fast encode times (for videos) such as the very recently developed H.266 video codec.
@@ -957,17 +1019,17 @@ bottom=40mm
     form the whole image as if they are parts of a partition.
     \sentence
     This way of thinking lends itself extremely well to Connected Component Labelling (CCL) which is exactly that,
-    dividing the image into a partition of connected components that together form the whole image.
+    dividing the image into a partition of connected components that together form the whole image\cite{dillencourt1992general}.
     \sentence
     Connected Component Labelling is used to discriminate and segregate regions of an image into components, which
     can typically be done using any arbitrary property such as in our case, color.
     \sentence
     Connected Component Labelling does not in itself describe any particular implementation and thus can be
-    implemented in many different ways depending on the context and desired outcome.
+    implemented in many different ways depending on the context and desired outcome\cite{dillencourt1992general}.
     \sentence
     However, the basic idea is that a single pass is made across the image and each pixel is checked to see if it
     fits within its neighbors' components, if so it is added to that component, if not it is the first in a new
-    component.
+    component\cite{dillencourt1992general}.
     \sentence
     A second pass may be made to merge any components that are adjacent but this can be done in a single pass
     by checking to merge components after the initial component assignment.
@@ -1081,7 +1143,6 @@ bottom=40mm
     The software methodology used for the development of this project is a very lean agile methodology aptly named,
     Lean-Agile.
     \sentence
-    % TODO 20-Sep-20 Ref https://www.bluefruit.co.uk/lean-agile-series/whats-lean-agile-how-can-help-you-avoid-project-waste/
     This methodology inherits heavily from modern agile methodologies following all the core principles and values
     but adds principles adapted from lean manufacturing, particularly emphasizing minimal waste and minimal
     prediction.

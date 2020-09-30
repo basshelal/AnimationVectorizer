@@ -1,4 +1,48 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{foley1994introduction}
+J.~D. Foley, A.~Van~Dam, S.~K. Feiner, J.~F. Hughes, and R.~L. Phillips, {\em
+  Introduction to computer graphics}, vol.~55.
+\newblock Addison-Wesley Reading, 1994.
+
+\bibitem{ferraiolo2000scalable}
+J.~Ferraiolo, F.~Jun, and D.~Jackson, {\em Scalable vector graphics (SVG) 1.0
+  specification}.
+\newblock iuniverse Bloomington, 2000.
+
+\bibitem{noauthor_paths_nodate}
+``Paths.''
+
+\bibitem{noauthor_raster_nodate}
+``Raster ( {Bitmap} ) vs {Vector}.''
+
+\bibitem{rabbani_digital_1991}
+M.~Rabbani and P.~W. Jones, {\em Digital {Image} {Compression} {Techniques}}.
+\newblock Spie Optical Engineering Press, 1991.
+\newblock Google-Books-ID: GvRRAAAAMAAJ.
+
+\bibitem{vectortoraster}
+R.~Congalton, ``Exploring and evaluating the consequences of vector-to-raster
+  and raster-to-vector conversion,'' {\em Photogrammetric Engineering and
+  Remote Sensing}, vol.~63, pp.~425--434, 04 1997.
+
+\bibitem{richardson2004h}
+I.~E. Richardson, {\em H. 264 and MPEG-4 video compression: video coding for
+  next-generation multimedia}.
+\newblock John Wiley \& Sons, 2004.
+
+\bibitem{node.js_about_nodate}
+{Node.js}, ``About.''
+
+\bibitem{noauthor_typed_nodate}
+``Typed {JavaScript} at {Any} {Scale} ..''
+
+\bibitem{noauthor_electron_nodate}
+``Electron {\textbar} {Build} cross-platform desktop apps with {JavaScript} ,
+  {HTML} , and {CSS} ..''
+
+\bibitem{noauthor_gpu.js_nodate}
+``{GPU} .js - {GPU} accelerated {Javascript}.''
 
 \bibitem{masteringsketch}
 E.~Simo-Serra, S.~Iizuka, and H.~Ishikawa, ``Mastering sketching: Adversarial
@@ -7,5 +51,18 @@ E.~Simo-Serra, S.~Iizuka, and H.~Ishikawa, ``Mastering sketching: Adversarial
 
 \bibitem{rippel2017}
 O.~Rippel and L.~Bourdev, ``Real-time adaptive image compression,'' 2017.
+
+\bibitem{noauthor_peter_nodate}
+``Peter {Selinger} : {Potrace}.''
+
+\bibitem{pennebaker1992jpeg}
+W.~B. Pennebaker and J.~L. Mitchell, {\em JPEG: Still image data compression
+  standard}.
+\newblock Springer Science \& Business Media, 1992.
+
+\bibitem{dillencourt1992general}
+M.~B. Dillencourt, H.~Samet, and M.~Tamminen, ``A general approach to
+  connected-component labeling for arbitrary image representations,'' {\em
+  Journal of the ACM (JACM)}, vol.~39, no.~2, pp.~253--280, 1992.
 
 \end{thebibliography}
